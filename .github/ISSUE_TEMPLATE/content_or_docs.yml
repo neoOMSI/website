@@ -1,0 +1,28 @@
+name: Documentation or content issue
+description: Report an issue with the website content or documentation
+title: "docs: "
+labels: ["documentation"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for helping improve the neoOMSI documentation!
+  - type: input
+    id: page
+    attributes:
+      label: Page URL
+      description: Which page on neoomsi.com does this affect?
+      placeholder: https://neoomsi.com/docs/...
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What is inaccurate, outdated, or missing?
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested improvement
+      description: How should this be updated or rephrased?
