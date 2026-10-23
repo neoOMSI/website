@@ -59,12 +59,26 @@ const releaseChannel = (release: Release): Channel | undefined => {
   if (/-rc\.\d+$/i.test(release.tag_name)) return "rc";
 };
 
-const newestRelease = (list: Release[], channel: Channel) =>
-  list
-    .filter((release) => releaseChannel(release) === channel)
-    .sort(
-      (a, b) => Date.parse(b.published_at) - Date.parse(a.published_at),
-    )[0] ?? null;
+const newestRelease = (list: Release[], channel: Channel) => {
+  const matching =
+    list
+      .filter((release) => releaseChannel(release) === channel)
+      .sort(
+        (a, b) => Date.parse(b.published_at) - Date.parse(a.published_at),
+      )[0] ?? null;
+
+  if (channel === "rc" && matching) {
+    const stable = list.find((r) => releaseChannel(r) === "stable");
+    if (
+      stable &&
+      Date.parse(matching.published_at) <= Date.parse(stable.published_at)
+    ) {
+      return null;
+    }
+  }
+
+  return matching;
+};
 
 const families = (builds: Build[]) =>
   [...new Set(builds.map((b) => b.family))].map((family) =>
