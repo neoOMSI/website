@@ -2,6 +2,12 @@
 
 neoOMSI includes headless dedicated server capabilities for hosting multiplayer sessions without requiring a graphical display or audio hardware.
 
+## Session invitations and host identity
+
+New multiplayer invitations use the format `NEO-XXXX-XXXX-XXXX-XXXX-X`: an 80-bit fingerprint of a per-session public key and a typo checksum. Copy the entire invitation when joining. Clients check the advertised public key against the fingerprint to authenticate relay addresses, tunnel addresses, and the initial welcome, including on tunnel fallback. Old short and long invitation formats are not accepted. Direct-address joins remain available but do not contain a host identity and cannot provide this verification. An invitation must be shared through a trusted channel; substituting the invitation itself substitutes the trusted identity.
+
+The identity check authenticates the host's initial welcome and discovery advertisements; it does not encrypt or authenticate all subsequent gameplay datagrams. Relay availability is still dependent on the public relay service, which can withhold messages even though it cannot forge signed host advertisements.
+
 ## Running the server
 
 Start `neoomsi` with the `--server` flag and specify the path to your server configuration file:

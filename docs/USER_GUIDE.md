@@ -11,14 +11,7 @@ This guide covers running neoOMSI, essential keybindings, and common configurati
 2. Extract the archive into a dedicated folder with write permissions (e.g. inside your user directory, not `Program Files`).
 3. Launch `neoomsi` (`neoomsi.exe` on Windows).
 4. On first start, select your OMSI 2 installation folder (the directory containing `maps` and `Vehicles`). neoOMSI reads these files without modifying them.
-5. Select a map, vehicle, and timetable duty, then start driving.
-
-> [!NOTE]
-> **Linux:** the launcher runs in Chromium's sandbox. If the system restricts user namespaces (Ubuntu 24.04 and later), configure the sandbox helper once from the neoOMSI folder:
->
-> ```sh
-> sudo chown root:root launcher/chrome-sandbox && sudo chmod 4755 launcher/chrome-sandbox
-> ```
+5. Select a map, vehicle, and timetable duty in the start menu, then start driving.
 
 ## Keybindings
 
@@ -49,6 +42,7 @@ This guide covers running neoOMSI, essential keybindings, and common configurati
 - **Cockpit switches:** Left-click to toggle, click and drag to turn rotary dials.
 - **Look around:** Hold Right-Mouse-Button and move mouse (or arrow keys / `I`/`J`/`K`/`L`).
 - **In-game menu:** Press `Esc` to access settings, switch buses, or exit.
+- **Find a setting:** Type in the search field of **Options** (or `Ctrl+F`). It matches names, descriptions, key bindings and related words ("lag", "mic", "fullscreen"), forgives typos, and shows where each result lives. `Esc` clears it.
 
 ## Trip evaluation
 
@@ -97,6 +91,37 @@ Puddle reflections remain visible from inside the bus through its windows and ra
 films. Glass tint and raindrops affect the view, including the reflections outside.
 Each graphics mode keeps its own lighting and colour treatment.
 
+## Upscaling (DLSS and FSR)
+
+Settings → Graphics → **Upscaling** chooses how the picture is brought to the window size:
+
+- **Off (native resolution)**: full resolution, no upscaling.
+- **Render scale (previous)**: the previous behaviour, controlled by *Render scale* (default).
+- **AMD FSR 3.1**: on DirectX 12 and Vulkan, on most graphics cards.
+- **NVIDIA DLSS**: on DirectX 12 and Vulkan, on NVIDIA GeForce RTX cards.
+
+For FSR and DLSS, **Upscaling quality** picks Native AA / DLAA (full resolution, best
+edges), Quality, Balanced or Performance. The change takes effect at once, no restart.
+While driving, the line **Upscaling in use** shows what actually runs; hovering it shows the
+render size, the graphics interface and why a choice is unavailable. The settings are stored
+as `upscaler` and `upscale_quality` under `[graphics]`.
+
+When a choice is unavailable the game keeps *Render scale (previous)* and says why, for
+example:
+
+- *its runtime files are not installed next to the game*: the optional FSR or DLSS files
+  are missing.
+- *needs an NVIDIA GeForce RTX graphics card*: use FSR instead.
+- *it was prepared for … at start*: DLSS was set up for the other graphics API. Choose the
+  named one under *Graphics API* and restart.
+- *it could not start (…)*: the driver or runtime refused; update the graphics driver. After
+  such an error the choice stays off until the next start.
+
+Tips: Quality or Native AA give the cleanest picture; Performance helps most when the
+graphics card is the limit and does little when the processor is. Upscaling does not apply to
+triple-screen and VR views, which keep the spatial path. Windows smaller than 32 pixels (for
+example while being restored) draw without DLSS for those frames.
+
 ## Command-line options
 
 You can launch directly into a specific scenario using command-line arguments:
@@ -117,25 +142,11 @@ neoomsi --map maps/Grundorf/global.cfg --bus Vehicles/MAN_SD200/MAN_SD80.bus
 
 ## Modding
 
-Install mods on the launcher's **Mods** page (an archive - `.zip`, `.7z`, `.rar` - or a folder). Each mod
-goes into the `mods` folder of neoOMSI's content folder, one folder or `.zip` per mod, exactly as it
-was packed; neoOMSI finds the folder with OMSI's content (`Vehicles`, `maps`, `Sceneryobjects` ...)
-inside it by itself. The content folder is the folder of the `neoomsi` program (its `neoOMSI`
-folder when the program sits in the OMSI 2 folder), `~/.neoomsi/content` when that folder cannot be
-written, or the folder `OMSI_CONTENT` names. A folder or `.zip` copied into `mods` by hand works
-the same way. The original OMSI 2 files are never changed.
+Place mods into the `mods` folder of neoOMSI's content folder (as a folder or a `.zip` archive), exactly as packed; neoOMSI automatically finds the OMSI content layout (`Vehicles`, `maps`, `Sceneryobjects`, etc.) within it. The content folder is the folder of the `neoomsi` executable (or its `neoOMSI` folder when placed directly in the OMSI 2 root), `~/.neoomsi/content` when that folder cannot be written, or the path set via `OMSI_CONTENT`. A folder or `.zip` copied into `mods` by hand works the same way. The original OMSI 2 files are never changed.
 
-**Load order.** The Mods page lists your mods by priority: an entry higher in the list wins every
-file it shares with the entries below it, and with the original OMSI 2 files - for example, put an
-add-on above the mod it changes. Files no higher entry has come from the ones below, so a mod can use
-the files of another mod. You decide the order (drag an entry or use its arrows, then **Apply**); the
-launcher never reorders it. A newly installed mod goes to the top or the bottom, as you choose
-there, and an updated mod keeps its place. The order is kept in `mods/.load-order.json`; **Reset**
-returns to the default (archives of the old `Archives` folder, then the mods alphabetically). Each entry shows which files it replaces and which are hidden by entries above it.
+**Load order.** Mods are loaded according to their priority: an entry higher in the load order overrides files it shares with lower entries and with the original OMSI 2 files. For example, place an add-on or repaint above the bus it modifies. The order is stored in `mods/.load-order.json`. When unconfigured, default ordering applies (archives from the old `Archives` folder first, followed by mods alphabetically).
 
-A mod's plugins (program code that runs in the game) load only after you allow them for that mod
-on the Mods page. Uninstalling moves a mod to `mods/uninstalled`; nothing is deleted. Changes to
-the installed mods and the load order take effect the next time a game starts.
+A mod's plugins (code running alongside the game) can be configured per mod. Uninstalling moves a mod to `mods/uninstalled`; nothing is deleted. Changes take effect on the next game start.
 
 OMSI 2 plugins (an `.opl` file and its DLL in a `plugins` folder) load as in OMSI. They are 32-bit
 Windows programs, so they run in `legacy-plugin-host32.exe`, which comes with neoOMSI; on Linux and
@@ -148,11 +159,7 @@ A plugin can be turned off (or on) in `settings.toml`, by the name of its DLL wi
 (`[plugins.GPM]`, `enabled = true`): it waits for GPM's online service, which is down, and holds
 the INEO box of the map's buses at its login meanwhile.
 
-When content a map or bus needs cannot be found, the game says so once after loading, and the
-session's entry on the launcher's Sessions page shows what is missing: a pack that is not
-installed, one that lies in `mods/uninstalled`, or files missing in a mod. The Drive page checks
-the chosen map before the start (the first check of a big map takes a moment). A finding you
-dismiss is not shown again, unless what is wrong changes.
+When content required by a map or vehicle cannot be found, neoOMSI logs missing files and notifies you upon loading.
 
 Set `OMSI_NO_SURF=1` before starting neoOMSI to disable OMSI `.surf` height maps for an A/B comparison of wheel contact.
 
@@ -162,12 +169,9 @@ Set `OMSI_NO_SURF=1` before starting neoOMSI to disable OMSI `.surf` height maps
 **Procedural passenger animation** independently selects the pose system; `pax_ik`
 and `--pax-ik` control it (`ik` remains a settings alias).
 
-For realistic models, press **Download the realistic passengers** under
-**Settings → Gameplay** in the launcher (a few hundred MB, once). The launcher installs
+For realistic models, select **Download the realistic passengers** under
+**Settings → Gameplay** (or in the in-game options menu). neoOMSI installs
 them into the content folder's `Packs/RealisticPax` and selects **Passenger models →
-Realistic**; they appear from the next game start. Games that are running then show
-the old passengers until they are restarted: the launcher offers **Restart the game now**,
-which ends their drives and starts each of them again as it was started; games started
-after the change are left running. Licensing details are in
+Realistic**; they take effect upon starting a new drive. Licensing details are in
 [RealisticPax](../tools/realistic-pax/README.md). Without the pack, installed OMSI
 passengers remain in use.
