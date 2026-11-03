@@ -29,6 +29,8 @@ jobs:
         run: |
           npm ci
           npm run build
+          npm run test:telemetry
+          npx wrangler deploy --dry-run --config telemetry/wrangler.jsonc
 
   deploy:
     name: Deploy website
@@ -51,3 +53,4 @@ jobs:
         run: |
           npm ci
           npm run deploy
+          npx wrangler deploy --config telemetry/wrangler.jsonc

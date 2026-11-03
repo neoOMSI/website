@@ -123,6 +123,12 @@ const STATIC: Record<string, Omit<Meta, "path">> = {
       crumbs(["neoOMSI and openOMSI", "/openomsi/"]),
     ],
   },
+  "/privacy/telemetry": {
+    title: "Performance report privacy",
+    description:
+      "What optional neoOMSI performance reports contain, how they help improve the game, and how long they are retained.",
+    type: "article",
+  },
 };
 
 export const PAGES = [

@@ -13,6 +13,7 @@ import { Issue, Issues } from "./pages/Issues";
 import { NotFound } from "./pages/NotFound";
 import { OpenOmsi } from "./pages/OpenOmsi";
 import { Releases } from "./pages/Releases";
+import { TelemetryPrivacy } from "./pages/TelemetryPrivacy";
 import { BASE, docPath, navigate, url, type Route } from "./lib/routes";
 import { headTags, meta } from "./lib/seo";
 import { useTheme } from "./lib/theme";
@@ -106,7 +107,7 @@ const Footer = () => (
         </a>{" "}
         for attribution.
       </p>
-      <nav className="flex min-w-0 flex-wrap gap-x-6 gap-y-1 xl:flex-[0_1_auto]">
+      <nav className="flex min-w-0 flex-wrap gap-x-5 gap-y-1 xl:flex-[0_1_auto]">
         <a className="hover:text-ink" href={`https://github.com/${REPO}`}>
           GitHub
         </a>
@@ -121,6 +122,9 @@ const Footer = () => (
         </a>
         <a className="hover:text-ink" href={url("/openomsi/")}>
           neoOMSI and openOMSI
+        </a>
+        <a className="hover:text-ink" href={url("/privacy/telemetry/")}>
+          Telemetry privacy
         </a>
         <a
           className="hover:text-ink"
@@ -158,6 +162,7 @@ function Page({ path }: { path: string }) {
   if (path === "/issues") return <Issues />;
   if (path === "/faq") return <Faq />;
   if (path === "/openomsi") return <OpenOmsi />;
+  if (path === "/privacy/telemetry") return <TelemetryPrivacy />;
   const issue = path.match(/^\/issues\/(\d+)$/)?.[1];
   if (issue) return <Issue key={issue} n={issue} />;
   return <NotFound />;
