@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
+import { EXAMPLE_REPORT } from "./example-report.ts";
 import worker from "./src/index.ts";
 
 const distribution = {
@@ -76,6 +77,15 @@ test("stores a valid summary without storing the caller IP", async () => {
   assert.equal(h.inserted[0][1], "0.3.0");
   assert.equal(JSON.parse(h.inserted[0][2]).frame.p95_ms, 33);
   assert.equal(h.inserted[0].length, 3);
+});
+
+test("privacy-page example matches the accepted report schema", async () => {
+  const h = harness();
+  const response = await worker.fetch(request(EXAMPLE_REPORT), h.env);
+
+  assert.equal(response.status, 204);
+  assert.equal(h.inserted.length, 1);
+  assert.equal(JSON.parse(h.inserted[0][2]).game_version, EXAMPLE_REPORT.game_version);
 });
 
 test("rejects unknown fields and oversized requests", async () => {
