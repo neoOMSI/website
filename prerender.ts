@@ -118,7 +118,7 @@ const summary = `# neoOMSI
 
 > ${s.DESCRIPTION}
 
-neoOMSI requires an installed copy of OMSI 2 and contains no game content of its own. It targets the observable behavior of OMSI 2.2.032 on a modern 64-bit engine and is licensed under GPL-3.0-or-later. It developed independently from an earlier openOMSI codebase.
+neoOMSI requires an installed copy of OMSI 2 and contains no game content of its own. It targets the observable behavior of OMSI 2.2.032 on a modern 64-bit engine. It developed independently from an earlier openOMSI codebase.
 `;
 
 write(
@@ -138,7 +138,7 @@ ${docs.join("\n")}
 ## Optional
 
 - [Full text](${s.absolute("llms-full.txt")}): The FAQ and every document in one file
-- [Source code](https://github.com/${s.REPO}): The neoOMSI repository on GitHub
+- [Releases repository](https://github.com/${s.REPO}): The neoOMSI repository on GitHub
 `,
 );
 

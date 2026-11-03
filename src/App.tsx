@@ -97,24 +97,24 @@ const Footer = () => (
     <div className="wrap flex max-w-[max(70vw,1360px)] flex-wrap items-start justify-between gap-x-12 gap-y-4 py-10 text-[15px] text-muted xl:flex-nowrap">
       <p className="max-w-[38em] xl:max-w-none xl:flex-[0_1_44em]">
         neoOMSI is an independent project, not affiliated with the makers of
-        OMSI&nbsp;2. OMSI&nbsp;2 is required to play. neoOMSI is licensed under{" "}
+        OMSI&nbsp;2. OMSI&nbsp;2 is required to play. See{" "}
         <a
           className="link"
-          href={`https://github.com/${REPO}/blob/main/LICENSE`}
+          href={`https://github.com/${REPO}/blob/main/NOTICE`}
         >
-          GPL-3.0-or-later
-        </a>
-        .
+          NOTICE
+        </a>{" "}
+        for attribution.
       </p>
       <nav className="flex min-w-0 flex-wrap gap-x-6 gap-y-1 xl:flex-[0_1_auto]">
         <a className="hover:text-ink" href={`https://github.com/${REPO}`}>
-          Source code
+          GitHub
         </a>
-        <a className="hover:text-ink" href={url(docPath("BUILDING"))}>
-          Building
+        <a className="hover:text-ink" href={url(docPath("COMPATIBILITY"))}>
+          Compatibility
         </a>
-        <a className="hover:text-ink" href={url(docPath("DEVELOPMENT"))}>
-          Contributing
+        <a className="hover:text-ink" href={url(docPath("SERVER"))}>
+          Dedicated server
         </a>
         <a className="hover:text-ink" href={url("/faq/")}>
           FAQ

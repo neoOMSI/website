@@ -1,88 +1,52 @@
-# OMSI 2 compatibility
+# OMSI 2 compatibility guide
 
-Compatibility with **OMSI 2.2.032** is the primary behavioral target of neoOMSI.
+neoOMSI is built to run your existing OMSI 2 library directly: original maps, buses, timetable duties, weather profiles, and community add-ons.
 
-The objective is to reproduce the behavior observable by OMSI content creators and players using a modern, maintainable Rust implementation.
+The simulator reproduces original OMSI 2.2.032 behavior while replacing the legacy 32-bit executable with a modern 64-bit engine that eliminates memory crashes.
 
-## Reference baseline
+## What is working today
 
-OMSI 2.2.032 serves as the ground truth for legacy subsystems unless an intentional neoOMSI extension is explicitly documented:
+Most standard OMSI 2 content runs without conversion or modification:
 
-- Input handling, key bindings, and force feedback
-- Script execution, system variables, macros, and math semantics
-- Vehicle physics, transmissions, pneumatic systems, and electrical circuits
-- Map structures, splines, terrain, and scenery objects
-- Pedestrian pathfinding, queues, and passenger ticketing
-- AI traffic rules, priorities, and intersection control
-- Timetables, duty schedules, HOF files, and IBIS matrix displays
-- Dynamic weather, time progression, and seasonal variations
-- Material definitions, lighting calculations, and camera projections
-- Configuration file parsing and fallback mechanics
+### Vehicles and physics
+- **Drivetrain simulation:** Automatic and manual gearboxes, torque converters, engine curves, retarders, and pneumatic air brakes.
+- **Controls & cockpits:** Dashboard switches, instrument needles, indicator lights, windshield wipers, and interior illumination.
+- **Buses:** Standard MAN SD200, SD202, NL/NG series, Citaro families, and custom community buses using standard OMSI script macros.
+- **Hardware controllers:** Steering wheels (Logitech G29/G920, Thrustmaster, Fanatec), pedal sets, H-shifters, force feedback, and gamepads.
 
-## Verification workflow
+### Maps and traffic
+- **World & terrain:** Map tiles, road splines, elevated structures, bridges, water surfaces, and scenery objects.
+- **AI vehicles & pedestrians:** Road traffic following lane rules and priorities, traffic light phases, passenger pathfinding, boarding, and seating.
+- **Timetables & scheduling:** Full timetable tours, scheduled departures, delay tracking, and the in-game route navigator HUD.
+- **Destination displays:** Matrix and rollband destination signs powered by `.hof` files and IBIS route codes.
 
-Parity changes must follow this sequence:
+### Audio and visuals
+- **Audio engine:** Plays vehicle sounds and ambient audio defined in `sound.cfg` files, with optional 3D spatial audio and cabin sound isolation via Steam Audio.
+- **Dynamic environment:** Real-time day/night cycles, dynamic rain, seasonal textures, and live airport METAR weather synchronization.
+- **Modern rendering:** Native 64-bit DirectX 12, Vulkan, and Metal rendering with AMD FSR and NVIDIA DLSS upscaling to boost frame rates.
+- **Virtual Reality:** PCVR headset support on Windows through OpenXR with 3D cockpit viewing and spatial menus.
 
-1. **Observe.** Isolate and reproduce the behavior in OMSI 2.2.032 under controlled conditions.
-2. **Document.** Record test parameters: exact content, configuration, and boundary conditions.
-3. **Compare.** Run the corresponding scenario in neoOMSI and capture discrepancies.
-4. **Identify the root cause.** Determine the underlying subsystem rule rather than patching isolated visual or kinematic symptoms.
-5. **Implement.** Apply the simplest correct, idiomatic fix to the core engine.
-6. **Protect.** Add a deterministic regression test or fixture where feasible.
+## Add-ons and community mods
 
-## Black-box methodology
+neoOMSI includes a safe, dedicated mod system that keeps your original OMSI 2 files completely clean:
 
-Verification relies on black-box observation: inputs, outputs, configuration values, script state, event timing, and visible simulation state.
+- **Folder mods & archives:** You can drop uncompressed add-on folders or `.zip` archives directly into neoOMSI's `Mods` directory.
+- **Virtual overlay:** Mod files are loaded on top of your game without overwriting or moving files in your Steam OMSI 2 installation.
+- **Activating and reordering:** Use the in-game **Mods** menu in the launcher to enable, disable, or change the priority of installed add-ons.
 
-Contributors must **never** decompile original OMSI binaries, commit proprietary source code, or import copyrighted assets. All neoOMSI code must remain an independent, clean-room implementation.
+## Current limitations and active work
 
-## Parity evidence
+Because neoOMSI is in active development, a few specialized systems are still being refined:
 
-A well-formed parity report or pull request includes:
+- **Proprietary DRM plugins:** Some commercial Steam add-ons use closed-source, Windows-only DRM wrappers that cannot yet be executed outside of 32-bit Windows.
+- **External web services:** Certain modern ticket printers that attempt to connect to external internet servers or local web browsers are currently disabled or run in offline mode.
+- **Complex multi-articulated joints:** Double-articulated buses (such as bi-articulated vehicles) are undergoing physics calibration.
 
-- OMSI 2 version (defaults to 2.2.032)
-- Map, vehicle, or scenario used for reproduction
-- Minimal configuration or script snippets demonstrating the case
-- Step-by-step reproduction instructions
-- Expected behavior (OMSI 2) vs. observed behavior (neoOMSI)
-- Supporting evidence: logs, captured variable states, or video where helpful
+## Testing your favorite content
 
-Subjective impressions ("steering feels different") must be broken down into measurable physical or kinematic parameters before changes are accepted.
+To test a custom map or bus:
 
-## Compatibility status
-
-Subsystem parity progresses through four explicit states:
-
-```text
-Unknown
-  ↓
-OMSI verified      (behavior characterized in OMSI 2.2.032)
-  ↓
-neoOMSI compared   (differences mapped to engine subsystems)
-  ↓
-Parity achieved    (verified and regression-tested)
-```
-
-Existing code that runs without crashes does not imply parity. Code remains provisional until validated against the reference baseline.
-
-## Mod-specific issues
-
-When an issue appears only with a particular third-party mod:
-
-> Does this content expose a general OMSI rule that neoOMSI implements incorrectly?
-
-- **Yes:** Correct the underlying engine rule. Use the mod as a test case.
-- **No:** If the mod relies on undefined behavior, broken scripts, or non-standard configurations that even OMSI 2 does not guarantee, the issue may be documented and deferred or closed.
-
-Do not introduce special-case workarounds or hardcode mod names into engine logic.
-
-## Extensions
-
-Features that extend beyond OMSI 2 are allowed but secondary to compatibility:
-
-- Must be clearly identified as neoOMSI-specific.
-- Must not alter default OMSI 2 behavior or break existing content.
-- Must not force compatibility layers to guess whether legacy or extended semantics apply.
-- Should be deferred if they add complexity to an unverified subsystem.
-
-A configuration toggle is not an acceptable alternative to fixing broken baseline behavior.
+1. Launch neoOMSI and verify that your OMSI 2 folder is selected.
+2. In the start menu, choose your map from the map selector.
+3. Choose your vehicle, select a timetable tour, and click **Drive**.
+4. If you spot an issue (such as an incorrect script behavior or missing sound), report it on our [GitHub issue tracker](https://github.com/neoOMSI/neoOMSI/issues) or share the details in our [Discord](https://discord.gg/neoomsi).

@@ -15,75 +15,78 @@ import { Answers } from "./Faq";
 
 const FEATURES = [
   [
-    "sync_alt",
-    "Built for OMSI 2 content",
-    "Our goal is to run existing maps, buses and scripts without conversion. Some content is not compatible yet.",
+    "speed",
+    "No memory crashes",
+    "A 64-bit engine that handles high-resolution buses, large maps, and dense traffic without running out of RAM.",
   ],
   [
-    "speed",
-    "Modern 64-bit engine",
-    "Designed for large maps and detailed buses without OMSI 2's 32-bit process memory limit.",
+    "sync_alt",
+    "Existing maps & buses",
+    "Directly loads your original OMSI 2 maps, vehicles, timetable schedules, and custom bus scripts.",
   ],
   [
     "monitor",
-    "Modern graphics",
-    "Hardware-accelerated graphics using DirectX 12, Metal and Vulkan.",
+    "Modern graphics & upscaling",
+    "Hardware-accelerated DirectX 12, Vulkan, and Metal rendering, with DLSS and FSR upscaling on Windows.",
   ],
   [
-    "install_desktop",
-    "Cross-platform",
-    "Try development builds on Windows, macOS and Linux.",
-  ],
-  [
-    "departure_board",
-    "Integrated launcher",
-    "Choose a map, bus and timetable, with vehicle previews and controller settings.",
-  ],
-  [
-    "dns",
-    "Dedicated server",
-    "A headless server for hosting multiplayer sessions on Windows and Linux.",
+    "tune",
+    "3D cabin sound",
+    "Realistic acoustics with Steam Audio, featuring directional 3D sound, engine occlusion, and cabin reverberation.",
   ],
   [
     "extension",
-    "Separate mod folder",
-    "Install add-ons separately without changing your original OMSI 2 files.",
+    "Safe modding",
+    "Install add-ons and repaints into a dedicated Mods folder so your original OMSI 2 files stay completely untouched.",
   ],
   [
-    "public",
-    "Free and open source",
-    "The engine is available under GPL-3.0-or-later. Original OMSI 2 game content is not included.",
+    "departure_board",
+    "Built-in vehicle browser",
+    "Pick maps, routes, timetables, and bus liveries with real-time 3D previews before driving.",
+  ],
+  [
+    "install_desktop",
+    "Windows, macOS & Linux",
+    "Play natively on modern 64-bit Windows, Mac, or Linux without legacy DirectX 9 wrappers.",
+  ],
+  [
+    "dns",
+    "Multiplayer servers",
+    "Host multiplayer convoy sessions with dedicated lightweight server packages for Windows and Linux.",
   ],
   [
     "check_circle",
-    "Reviewed and tested",
-    "Changes are reviewed before they are merged, and compatibility tests are added as systems are verified.",
+    "Tested for stability",
+    "Every subsystem is tested against original OMSI 2 behavior so your vehicles and schedules behave as expected.",
   ],
 ];
 
 const STEPS: [string, ReactNode][] = [
   [
     "Install OMSI 2",
-    "neoOMSI contains no game content. It plays on the maps, vehicles and files of an installed copy of OMSI 2 and does not start without one.",
+    "neoOMSI contains no copyrighted game content. It reads maps, vehicles, textures, and sounds directly from a licensed OMSI 2 installation and requires one to run.",
   ],
   [
     "Download neoOMSI",
     <>
-      Get the build for your system from the{" "}
+      Get the release zip from the{" "}
       <a className="link" href={url("/download/")}>
         download page
       </a>{" "}
-      and unpack it into a folder of your own.
+      and extract it into a separate folder (such as <code>C:\Games\neoOMSI</code>).
     </>,
   ],
   [
-    "Choose your OMSI 2 folder",
+    "Select your OMSI 2 folder",
     <>
-      On the first start, point the launcher to the folder with{" "}
-      <code>maps</code> and <code>Vehicles</code>. Nothing in it is changed.
+      On first start, point the launcher to your OMSI 2 installation (typically{" "}
+      <code>C:\Program Files (x86)\Steam\steamapps\common\OMSI 2</code>, or your custom Steam library path). Your original files are never modified.
     </>,
   ],
-  ["Drive", "Pick a map, a bus and a duty in the launcher."],
+  [
+    "Select your run and drive",
+    "Choose your map, timetable tour, bus livery, and controller profile in the launcher, then start driving.",
+  ],
 ];
 
 const STOPS = [
@@ -93,8 +96,8 @@ const STOPS = [
     url("/download/"),
   ],
   ["User guide", "Setup, controls and options", url(docPath("USER_GUIDE"))],
-  ["Releases", "Every version and what changed", url("/releases/")],
-  ["Discord", "Talk to players and developers", DISCORD],
+  ["Releases", "Changelogs and version history", url("/releases/")],
+  ["Discord", "Join the community", DISCORD],
 ];
 
 const SHEEN =
@@ -204,8 +207,8 @@ export function Home() {
         </h1>
         <p className="mt-7 max-w-[32em] text-[20px] leading-relaxed text-muted">
           <span className="text-heading">OMSI 2, rebuilt for modern systems.</span>{" "}
-          neoOMSI is a free, open-source project aiming to run your existing
-          maps, buses and scripts on a new 64-bit engine.
+          A modern 64-bit engine that runs your existing OMSI 2 maps, buses,
+          and add-ons with smooth performance and no 4GB memory crashes.
         </p>
         <div className="mt-7 flex flex-wrap gap-3">
           <a className="btn gap-2" href={url("/download/")}>
@@ -220,18 +223,17 @@ export function Home() {
         <p className="mt-5 text-[15px] text-muted">
           {release && `Build ${version(release)} · ${date(release.published_at)}. `}
           {release && !release.prerelease
-            ? "Compatibility is still being improved."
-            : "Early development. Expect bugs and missing features."}
+            ? "Stable release."
+            : "Early development build."}
         </p>
       </RoadHero>
 
       <section className="relative -mt-[18svh] sm:-mt-[34svh]">
         <div className="bleed grid gap-x-16 gap-y-10 py-16 sm:py-20 lg:grid-cols-[minmax(0,17rem)_minmax(0,1fr)]">
           <div>
-            <h2 className="text-[2rem] leading-tight">What we're building</h2>
+            <h2 className="text-[2rem] leading-tight">Key features</h2>
             <p className="mt-3 max-w-[22em] text-muted">
-              A work-in-progress replacement for OMSI 2, with compatibility improved
-              step by step against the original game.
+              Running OMSI 2 maps, buses, and scripts on a modern 64-bit architecture.
             </p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-[repeat(3,minmax(0,15vw))]">

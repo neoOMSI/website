@@ -940,23 +940,23 @@ function Navigator() {
 
 export const DEMOS = [
   {
-    title: "Choose a bus",
-    text: "Buses detected in your OMSI 2 folder, sorted by manufacturer, with available liveries and a 3D preview.",
+    title: "Choose a vehicle",
+    text: "Inspect buses detected in your OMSI 2 installation, sorted by manufacturer, with real-time 3D model previews and livery variants.",
     Demo: Bus,
   },
   {
     title: "Pick a line and a tour",
-    text: "Choose a line and a trip from the map's timetable.",
+    text: "Browse timetable tours, scheduled departures, line termini, and total run durations directly from map timetable data.",
     Demo: Route,
   },
   {
-    title: "Set the time and the weather",
-    text: "Choose a date and weather, use live weather reports, or let conditions change as you drive.",
+    title: "Set the time and weather",
+    text: "Select simulation date and time, apply custom weather profiles, synchronize live airport METAR conditions, or enable dynamic seasonal transitions.",
     Demo: Weather,
   },
   {
     title: "Drive with the navigator",
-    text: "See your speed, upcoming turns and stops, and whether you are running late.",
+    text: "Monitor vehicle speed, speed limits, schedule punctuality, upcoming turn-by-turn maneuvers, and passenger stop requests on the in-game HUD.",
     Demo: Navigator,
   },
 ];

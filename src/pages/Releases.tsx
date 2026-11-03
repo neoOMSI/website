@@ -141,19 +141,13 @@ export function Releases() {
     <>
       <PageHead>
         <h1 className="display">Releases</h1>
-        <p className="mt-6 max-w-[34em] text-[19px] text-muted">
-          All published engine releases and changelogs, ordered newest first.{" "}
-          {stable ? (
+        <p className="mt-6 max-w-[36em] text-[19px] text-muted">
+          A complete history of published neoOMSI updates and changelogs.
+          Check what improvements have been made to vehicle physics, map compatibility,
+          and performance, or download specific release archives.
+          {stable && (
             <>
-              The latest stable release is available on the{" "}
-              <a className="link" href={url("/download/")}>
-                download page
-              </a>
-              .
-            </>
-          ) : (
-            <>
-              Development snapshots can be downloaded from the{" "}
+              {" "}Looking for the recommended build? Head to the{" "}
               <a className="link" href={url("/download/")}>
                 download page
               </a>

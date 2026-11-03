@@ -1,177 +1,104 @@
 # User guide
 
-This guide covers running neoOMSI, essential keybindings, and common configuration options.
+This guide covers setting up neoOMSI, essential driving keybindings, graphics and audio options, and managing community mods.
 
 > [!IMPORTANT]
-> **neoOMSI requires an existing OMSI 2 installation.** neoOMSI does not distribute copyrighted game content. On first launch, you must provide the path to your OMSI 2 installation folder.
+> **neoOMSI requires an existing OMSI 2 installation.** neoOMSI contains no copyrighted maps, buses, or textures of its own. On first start, point the launcher to your existing OMSI 2 installation.
 
 ## Getting started
 
-1. Download the build for your operating system from the [Download page](https://neoomsi.com/download/) or GitHub [Releases](https://github.com/neoOMSI/neoOMSI/releases).
-2. Extract the archive into a dedicated folder with write permissions (e.g. inside your user directory, not `Program Files`).
-3. Launch `neoomsi` (`neoomsi.exe` on Windows).
-4. On first start, select your OMSI 2 installation folder (the directory containing `maps` and `Vehicles`). neoOMSI reads these files without modifying them.
-5. Select a map, vehicle, and timetable duty in the start menu, then start driving.
+1. Download neoOMSI from the [Download page](/download/) for your operating system.
+2. Extract the downloaded `.zip` archive into any folder on your computer (such as `C:\Games\neoOMSI`).
+3. Double-click `neoomsi.exe` (or run `./neoomsi` on Linux/macOS).
+4. On first launch, the start menu will ask for your OMSI 2 installation directory (typically `C:\Program Files (x86)\Steam\steamapps\common\OMSI 2`, or your custom Steam library path on another drive). Your original game files are strictly read-only and never modified.
+5. Choose your map, select a bus and livery, pick a scheduled timetable duty, and click **Drive**.
 
-## Keybindings
+## Keybindings & controls
 
 ### Driving controls
 
-| Action             | Primary Key | Alternative                   |
-| ------------------ | ----------- | ----------------------------- |
-| **Throttle**       | `W`         | `Up Arrow`                    |
-| **Brake**          | `S`         | `Down Arrow`                  |
-| **Steer Left**     | `A`         | `Left Arrow`                  |
-| **Steer Right**    | `D`         | `Right Arrow`                 |
-| **Mouse Steering** | `O`         | Toggles mouse steering on/off |
+| Action | Primary Key | Alternative |
+| --- | --- | --- |
+| **Throttle** | `W` | `Up Arrow` |
+| **Brake** | `S` | `Down Arrow` |
+| **Steer Left** | `A` | `Left Arrow` |
+| **Steer Right** | `D` | `Right Arrow` |
+| **Mouse Steering** | `O` | Toggles steering with mouse on/off |
+
+### Steering wheels and gamepads
+
+- **Steering wheels:** Plug in your wheel before launching neoOMSI.
+- **Calibration:** Open **Settings → Controls** to assign steering axes, pedals, gear shifters, and adjust force feedback strength or deadzones. DirectInput, Raw Input, and SDL2 hardware are automatically detected.
 
 ### Vehicle operations
 
-| Action                 | Key         | Description                              |
-| ---------------------- | ----------- | ---------------------------------------- |
-| **Battery / Ignition** | `E`         | Inserts key and powers electrical system |
-| **Engine Starter**     | `M`         | Hold to crank engine until started       |
-| **Drive Gear (D)**     | `Shift + D` | Engages forward drive                    |
-| **Neutral (N)**        | `N`         | Neutral gear                             |
-| **Reverse (R)**        | `R`         | Reverse gear                             |
-| **Parking Brake**      | `.`         | Toggles handbrake                        |
-| **Quick Autostart**    | `Shift + U` | Automates the complete startup sequence  |
+| Action | Key | Description |
+| --- | --- | --- |
+| **Battery / Ignition** | `E` | Inserts key and turns on vehicle electrics |
+| **Engine Starter** | `M` | Hold to crank engine until started |
+| **Drive Gear (D)** | `Shift + D` | Engages forward automatic drive gear |
+| **Neutral (N)** | `N` | Puts transmission in neutral |
+| **Reverse (R)** | `R` | Engages reverse gear |
+| **Parking Brake** | `.` | Toggles handbrake on/off |
+| **Quick Autostart** | `Shift + U` | Automatically starts up the bus and prepares to drive |
 
-### Camera & cockpit
+### Camera and cockpit
 
-- **Cockpit switches:** Left-click to toggle, click and drag to turn rotary dials.
-- **Look around:** Hold Right-Mouse-Button and move mouse (or arrow keys / `I`/`J`/`K`/`L`).
-- **In-game menu:** Press `Esc` to access settings, switch buses, or exit.
-- **Find a setting:** Type in the search field of **Options** (or `Ctrl+F`). It matches names, descriptions, key bindings and related words ("lag", "mic", "fullscreen"), forgives typos, and shows where each result lives. `Esc` clears it.
+- **Cockpit switches:** Left-click on buttons and levers to toggle them; click and drag rotary knobs.
+- **Look around:** Hold the right mouse button and drag to look around the cabin, or use `I` / `J` / `K` / `L`.
+- **In-game menu:** Press `Esc` to access settings, switch buses, view timetables, or return to the menu.
+- **Settings search:** Press `Ctrl + F` inside Options to search for any setting, keybinding, or display toggle.
 
-## Trip evaluation
+## Trip evaluation and timetable punctuality
 
-At the final stop of a scheduled trip, stop the bus and open a passenger door to
-show the trip evaluation. Service trips and vehicles without a passenger cabin
-only require stopping. The screen pauses single-player simulation; LAN sessions
-continue running.
+At the final stop of a scheduled timetable trip, bring the bus to a halt and open the passenger doors to view your completed trip evaluation report.
 
-The table lists every planned stop with planned and actual arrival/departure
-times (`HH:MM:SS`), signed differences in seconds, and a status. Positive
-differences mean late; negative differences mean early. Day offsets identify
-trips crossing midnight. Missing observations appear as `-`; the final departure
-has no actual time when the report opens on arrival.
+The report displays every stop along your route, showing your scheduled arrival time, actual arrival time, and whether you arrived on time, early, or delayed. You can review your driving statistics, scroll through the timetable stops, and click **Save as text…** (`Ctrl + S`) if you wish to export your trip log for virtual bus companies (VBCs).
 
-Use the in-game menu to view the current trip or the last completed trip. Scroll
-with the mouse wheel, arrow keys, or Page Up/Page Down. Select **Save as text…**
-(or press `Ctrl+S`) to export the table. **Continue** or `Esc` resumes driving.
+## Passenger behavior
 
-Observations are recorded while a duty is active. Earlier observations are not
-reconstructed when loading a saved situation or joining a trip partway through.
-The last completed report remains available during the current session; save it
-to a text file to keep it after exiting.
+Under **Settings → Gameplay → Passengers**, you can tailor how passengers behave on your bus:
 
-## Passenger seating
+- **Passengers prefer available seats:** When enabled, boarding passengers seek out and reserve open seats before using standing areas.
+- **Rear door boarding:** Allows passengers who do not need to buy a ticket to board through rear doors, speeding up busy station stops.
+- **Realistic passenger models:** An optional high-definition passenger pack can be downloaded directly through the in-game settings to replace default character models.
 
-Under **Settings → Gameplay → Passengers**, enable **Passengers prefer available seats**
-to reserve free seats before using standing places when passengers board. Standing places
-are used once all seats are occupied or reserved. This neoOMSI option is off by default;
-with it off, passengers choose randomly among all free places, as in OMSI 2.
+## Graphics and upscaling (DLSS and FSR)
 
-The option can also be changed through the in-game **Options → Gameplay** menu. Changes
-apply to subsequent place reservations in player and timetable buses. In `settings.cfg`,
-the option is stored as `pax_prefer_seats=1` (enabled) or `pax_prefer_seats=0` (disabled).
+neoOMSI uses a modern 64-bit graphics engine supporting DirectX 12 (Windows), Metal (macOS), and Vulkan (Linux).
 
-**Boarding at the rear doors** (on by default) lets passengers who buy no ticket from the
-driver get on at the exit doors too. Turned off, everybody boards at the bus's entries, as
-in OMSI 2. It is stored as `pax_rear_entry`.
+Under **Settings → Graphics → Upscaling**, Windows players can boost performance using hardware upscalers:
 
-## Wet-road reflections
+- **AMD FSR:** Supported on Windows (DirectX 12 and Vulkan) across modern AMD, NVIDIA, and Intel graphics cards.
+- **NVIDIA DLSS:** Available on Windows for NVIDIA GeForce RTX graphics cards (DirectX 12 and Vulkan).
+- **Quality presets:** Choose between *Quality*, *Balanced*, or *Performance* to achieve your desired balance of sharpness and high frame rates.
 
-Vanilla, Vanilla+ and Enhanced show reflections of buses, buildings and scenery in
-wet-road puddles. Enable reflections in the graphics settings, or set `reflections=1`
-in `settings.cfg`.
+## Road reflections and weather
 
-Puddle reflections remain visible from inside the bus through its windows and rain
-films. Glass tint and raindrops affect the view, including the reflections outside.
-Each graphics mode keeps its own lighting and colour treatment.
+When driving in rainy weather, wet road surfaces display dynamic real-time reflections of buildings, streetlights, scenery, and your bus. Wet-road reflections are visible from both outside cameras and through cockpit windows.
 
-## Upscaling (DLSS and FSR)
+You can customize the simulation weather from the start menu by selecting a sunny preset, dynamic rain storms, or clicking **Live Weather** to automatically synchronize local wind, temperature, and cloud cover with real-world airport METAR reports.
 
-Settings → Graphics → **Upscaling** chooses how the picture is brought to the window size:
+## Installing mods and add-ons
 
-- **Off (native resolution)**: full resolution, no upscaling.
-- **Render scale (previous)**: the previous behaviour, controlled by *Render scale* (default).
-- **AMD FSR 3.1**: on DirectX 12 and Vulkan, on most graphics cards.
-- **NVIDIA DLSS**: on DirectX 12 and Vulkan, on NVIDIA GeForce RTX cards.
+neoOMSI features a dedicated **Mods** directory located directly inside your neoOMSI folder.
 
-For FSR and DLSS, **Upscaling quality** picks Native AA / DLAA (full resolution, best
-edges), Quality, Balanced or Performance. The change takes effect at once, no restart.
-While driving, the line **Upscaling in use** shows what actually runs; hovering it shows the
-render size, the graphics interface and why a choice is unavailable. The settings are stored
-as `upscaler` and `upscale_quality` under `[graphics]`.
+- **Installing content:** Place custom map folders, bus folders, or `.zip` mod archives into the `Mods/` folder.
+- **Safe loading:** neoOMSI automatically reads these files without overwriting or altering your original OMSI 2 installation.
+- **In-game manager:** Open the **Mods** tab in the neoOMSI start menu to enable, disable, or adjust the load order of your installed add-ons.
 
-When a choice is unavailable the game keeps *Render scale (previous)* and says why, for
-example:
+## Advanced command-line options
 
-- *its runtime files are not installed next to the game*: the optional FSR or DLSS files
-  are missing.
-- *needs an NVIDIA GeForce RTX graphics card*: use FSR instead.
-- *it was prepared for … at start*: DLSS was set up for the other graphics API. Choose the
-  named one under *Graphics API* and restart.
-- *it could not start (…)*: the driver or runtime refused; update the graphics driver. After
-  such an error the choice stays off until the next start.
-
-Tips: Quality or Native AA give the cleanest picture; Performance helps most when the
-graphics card is the limit and does little when the processor is. Upscaling does not apply to
-triple-screen and VR views, which keep the spatial path. Windows smaller than 32 pixels (for
-example while being restored) draw without DLSS for those frames.
-
-## Command-line options
-
-You can launch directly into a specific scenario using command-line arguments:
+For power users who prefer launching scenarios directly from shortcuts or batch scripts, `neoomsi` supports command-line arguments:
 
 ```sh
 neoomsi --map maps/Grundorf/global.cfg --bus Vehicles/MAN_SD200/MAN_SD80.bus
 ```
 
-| Flag                  | Description                                                  |
-| --------------------- | ------------------------------------------------------------ |
-| `--root <path>`       | Path to the OMSI 2 base directory                            |
-| `--map <path>`        | Path to the map global configuration (`maps/.../global.cfg`) |
-| `--bus <path>`        | Vehicle file to load (`Vehicles/.../*.bus`)                  |
-| `--weather <path>`    | Weather profile to apply (`Weather/*.owt`)                   |
-| `--time <HH:MM>`      | Initial simulation time                                      |
-| `--date <YYYY-MM-DD>` | Initial simulation date                                      |
-| `--enhanced`          | Enable enhanced physically based rendering mode              |
-
-## Modding
-
-Place mods into the `mods` folder of neoOMSI's content folder (as a folder or a `.zip` archive), exactly as packed; neoOMSI automatically finds the OMSI content layout (`Vehicles`, `maps`, `Sceneryobjects`, etc.) within it. The content folder is the folder of the `neoomsi` executable (or its `neoOMSI` folder when placed directly in the OMSI 2 root), `~/.neoomsi/content` when that folder cannot be written, or the path set via `OMSI_CONTENT`. A folder or `.zip` copied into `mods` by hand works the same way. The original OMSI 2 files are never changed.
-
-**Load order.** Mods are loaded according to their priority: an entry higher in the load order overrides files it shares with lower entries and with the original OMSI 2 files. For example, place an add-on or repaint above the bus it modifies. The order is stored in `mods/.load-order.json`. When unconfigured, default ordering applies (archives from the old `Archives` folder first, followed by mods alphabetically).
-
-A mod's plugins (code running alongside the game) can be configured per mod. Uninstalling moves a mod to `mods/uninstalled`; nothing is deleted. Changes take effect on the next game start.
-
-OMSI 2 plugins (an `.opl` file and its DLL in a `plugins` folder) load as in OMSI. They are 32-bit
-Windows programs, so they run in `legacy-plugin-host32.exe`, which comes with neoOMSI; on Linux and
-macOS that needs Wine (`wine` on the path, or the program `OMSI_WINE` names). A plugin that talks to
-hardware over a serial port sees the ports Wine maps in `~/.wine/dosdevices` (for example
-`com1 -> /dev/ttyUSB0`).
-
-A plugin can be turned off (or on) in `settings.toml`, by the name of its DLL without `.dll`:
-`[plugins.Gazz]` with `enabled = false`. Grand Paris-Moulon's `GPM.dll` is off unless you turn it on
-(`[plugins.GPM]`, `enabled = true`): it waits for GPM's online service, which is down, and holds
-the INEO box of the map's buses at its login meanwhile.
-
-When content required by a map or vehicle cannot be found, neoOMSI logs missing files and notifies you upon loading.
-
-Set `OMSI_NO_SURF=1` before starting neoOMSI to disable OMSI `.surf` height maps for an A/B comparison of wheel contact.
-
-## Passenger models and movement
-
-**Settings → Gameplay → Passenger movement** selects Natural or OMSI 2 movement.
-**Procedural passenger animation** independently selects the pose system; `pax_ik`
-and `--pax-ik` control it (`ik` remains a settings alias).
-
-For realistic models, select **Download the realistic passengers** under
-**Settings → Gameplay** (or in the in-game options menu). neoOMSI installs
-them into the content folder's `Packs/RealisticPax` and selects **Passenger models →
-Realistic**; they take effect upon starting a new drive. Licensing details are in
-[RealisticPax](../tools/realistic-pax/README.md). Without the pack, installed OMSI
-passengers remain in use.
+| Argument | Description |
+| --- | --- |
+| `--map <path>` | Loads directly into a specified map configuration |
+| `--bus <path>` | Automatically spawns the specified vehicle `.bus` file |
+| `--weather <path>` | Applies a specific weather profile on launch |
+| `--time <HH:MM>` | Sets the starting simulation time |
+| `--date <YYYY-MM-DD>` | Sets the starting simulation date |

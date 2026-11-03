@@ -16,7 +16,7 @@ export interface Meta {
 export const OG_IMAGE = { path: "og.png", width: 1200, height: 630 };
 
 export const DESCRIPTION =
-  "neoOMSI is a free, open-source reimplementation of OMSI 2 for modern 64-bit systems. It uses maps, buses and other game files from your OMSI 2 installation.";
+  "neoOMSI is a free 64-bit reimplementation of OMSI 2 in Rust. It uses maps, buses and add-on files from your OMSI 2 installation.";
 
 const ORG = {
   "@type": "Organization",
@@ -50,14 +50,12 @@ const APP = {
   softwareRequirements: "An installed copy of OMSI 2",
   programmingLanguage: "Rust",
   isAccessibleForFree: true,
-  license: "https://www.gnu.org/licenses/gpl-3.0.html",
   offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" },
   publisher: { "@id": ORG["@id"] },
   isBasedOn: {
-    "@type": "SoftwareSourceCode",
+    "@type": "SoftwareApplication",
     name: "openOMSI",
-    codeRepository: OPENOMSI.repo,
-    license: "https://opensource.org/license/mit",
+    url: OPENOMSI.repo,
   },
 };
 
@@ -94,13 +92,13 @@ const STATIC: Record<string, Omit<Meta, "path">> = {
   "/download": {
     title: "Download neoOMSI for Windows, macOS and Linux",
     description:
-      "Download neoOMSI for Windows, macOS or Linux, including development builds and dedicated server packages. Requires your own OMSI 2 files.",
+      "Download neoOMSI for Windows, macOS, or Linux, including stable releases, release candidates, and dedicated headless servers.",
     schema: [APP, crumbs(["Download", "/download/"])],
   },
   "/releases": {
     title: "neoOMSI releases and changelog",
     description:
-      "All neoOMSI releases and development changelogs, newest first, with packaged downloads for Windows, macOS, Linux and the dedicated server.",
+      "All published neoOMSI releases, release candidates, and development changelogs with packaged downloads for desktop systems and dedicated servers.",
     schema: [crumbs(["Releases", "/releases/"])],
   },
   "/issues": {
@@ -116,9 +114,9 @@ const STATIC: Record<string, Omit<Meta, "path">> = {
     schema: [faqPage(FAQ), crumbs(["FAQ", "/faq/"])],
   },
   "/openomsi": {
-    title: "neoOMSI and openOMSI: how the two projects compare",
+    title: "neoOMSI and openOMSI: Comparison & Differences",
     description:
-      "Learn how neoOMSI and openOMSI relate, their shared origins, development processes, and how to test neoOMSI alongside openOMSI.",
+      "A comparison of neoOMSI and openOMSI: design focus, supported platforms, graphics, audio, and multiplayer features.",
     type: "article",
     schema: [
       faqPage(OPENOMSI_FAQ),
@@ -142,7 +140,7 @@ export function meta(path: string): Meta {
   if (entry && doc) {
     const description = clip(
       plain(doc.lead) ||
-        `${doc.title} for neoOMSI, the open-source OMSI 2 recreation in Rust.`,
+        `${doc.title} for neoOMSI, the 64-bit OMSI 2 recreation in Rust.`,
     );
     return {
       title: `${doc.title}: neoOMSI docs`,

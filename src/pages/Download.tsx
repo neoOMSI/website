@@ -15,23 +15,24 @@ import { Icon, PlatformIcon } from "../components/icons";
 const INSTALL: Record<string, ReactNode> = {
   Windows: (
     <>
-      Extract the zip archive into a dedicated folder (avoid <code>Program Files</code>)
-      and launch <code>neoomsi.exe</code>. Windows SmartScreen may warn about an unknown publisher. Check that
-      the archive came from the official neoOMSI GitHub release before deciding
-      whether to run it.
+      Extract the zip archive into any folder (for example, <code>C:\Games\neoOMSI</code>) and launch{" "}
+      <code>neoomsi.exe</code>. On first run, Windows may show a standard "Windows protected your PC"
+      prompt for unsigned community software: click <b>More info</b> and then <b>Run anyway</b>.
+      When the launcher opens, point it to your Steam OMSI 2 folder.
     </>
   ),
   macOS: (
     <>
-      Extract the archive and open <code>neoOMSI.app</code>. macOS may block applications from unidentified developers. Verify the download
-      came from the official GitHub release before approving it in
-      System Settings under Privacy & Security.
+      Extract the archive and open <code>neoOMSI.app</code>. If macOS shows an unnotarized app prompt
+      on first launch, open <b>System Settings &rarr; Privacy &amp; Security</b> and click{" "}
+      <b>Open Anyway</b>. Point the launcher to your OMSI 2 directory.
     </>
   ),
   Linux: (
     <>
-      Extract the archive and run <code>./neoomsi</code>. If required, make the binary
-      executable with <code>chmod +x neoomsi</code>. Supported Vulkan drivers are required.
+      Extract the archive and run <code>./neoomsi</code> (ensure the binary is executable with{" "}
+      <code>chmod +x neoomsi</code>). A modern graphics driver supporting Vulkan 1.2+ is required
+      (such as Mesa on Debian/Ubuntu/Fedora or Arch).
     </>
   ),
 };
@@ -184,7 +185,6 @@ export function Download() {
   const selected =
     available.find((entry) => entry.key === channel) ?? available[0];
   const release = selected?.release;
-  const stable = available.find((entry) => entry.key === "stable");
   const file = mine && asset(release, mine);
 
   return (
@@ -192,8 +192,8 @@ export function Download() {
       <PageHead>
         <h1 className="display">Download</h1>
         <p className="mt-6 max-w-[38em] text-[19px] text-muted">
-          Get neoOMSI for Windows, macOS or Linux. You'll need your own
-          OMSI&nbsp;2 installation for maps, buses and other game files.
+          Download neoOMSI for Windows, macOS or Linux. An existing OMSI 2
+          installation is required for maps, buses, and other game assets.
         </p>
         {available.length > 1 && (
           <div
@@ -241,18 +241,13 @@ export function Download() {
                   <p className="font-semibold text-heading">
                     {selected?.key === "rc"
                       ? "Release candidate"
-                      : "Development build"}
+                      : "Preview build"}
                   </p>
                   <p className="mt-1 text-muted">
                     {selected?.key === "rc"
-                      ? "Candidate for a future stable release. Bugs may still occur."
-                      : "Experimental development build. Expect bugs, performance issues and missing features."}
+                      ? "Pre-release version undergoing final testing before general release."
+                      : "Early development build with the latest compatibility fixes and features. Ideal for testing and reporting feedback."}
                   </p>
-                  {!stable && (
-                    <p className="mt-2 text-muted">
-                      No stable release has been published yet.
-                    </p>
-                  )}
                 </div>
               </div>
             )}
@@ -340,9 +335,9 @@ export function Download() {
           <div>
             <h2 className="section-title">Installing</h2>
             <p className="mt-3 max-w-[24em] text-[16px] text-muted">
-              Put mods in the folder next to the game, or add them on the
-              launcher's <b className="text-ink">Mods</b> page. The original
-              OMSI&nbsp;2 folder is never changed.
+              Put mod folders or .zip archives in the <code>Mods</code> folder next
+              to the game, or manage them on the launcher's <b className="text-ink">Mods</b> page.
+              The original OMSI&nbsp;2 folder is never changed.
             </p>
           </div>
           <div>
@@ -400,15 +395,11 @@ export function Download() {
         <p className="mt-24 flex items-center gap-2 text-muted">
           <Icon name="history" size={20} />
           <span>
-            Older versions are on the{" "}
+            Looking for previous versions or full changelogs? Visit the{" "}
             <a className="link" href={url("/releases/")}>
               Releases
             </a>{" "}
-            page. See{" "}
-            <a className="link" href={url(docPath("RELEASING"))}>
-              Releasing &amp; versioning
-            </a>
-            .
+            page.
           </span>
         </p>
       </div>

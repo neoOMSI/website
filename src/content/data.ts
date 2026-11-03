@@ -17,7 +17,7 @@ export const DOCS = [
   {
     file: "COMPATIBILITY",
     slug: "compatibility",
-    title: "Compatibility",
+    title: "Compatibility guide",
     group: "Playing",
     icon: "sync_alt",
   },
@@ -27,34 +27,6 @@ export const DOCS = [
     title: "Dedicated server",
     group: "Playing",
     icon: "dns",
-  },
-  {
-    file: "BUILDING",
-    slug: "building",
-    title: "Building",
-    group: "Contributing",
-    icon: "construction",
-  },
-  {
-    file: "DEVELOPMENT",
-    slug: "development",
-    title: "Development workflow",
-    group: "Contributing",
-    icon: "alt_route",
-  },
-  {
-    file: "ISSUE_TRIAGE",
-    slug: "issue-triage",
-    title: "Issue triage",
-    group: "Contributing",
-    icon: "flag",
-  },
-  {
-    file: "RELEASING",
-    slug: "releasing",
-    title: "Releasing & versioning",
-    group: "Contributing",
-    icon: "inventory_2",
   },
 ];
 
@@ -74,7 +46,7 @@ export const PLATFORMS: Build[] = [
     name: "Windows",
     family: "Windows",
     arch: "x64",
-    note: "Almost every PC, Windows 10 or newer",
+    note: "64-bit Windows 10 or 11, DirectX 12 or Vulkan",
     os: "windows",
   },
   {
@@ -82,7 +54,7 @@ export const PLATFORMS: Build[] = [
     name: "Windows on ARM",
     family: "Windows",
     arch: "ARM64",
-    note: "Snapdragon laptops, Windows 11",
+    note: "Windows 11 on ARM (Snapdragon X Elite / Copilot+ PCs)",
     os: "windows-arm",
   },
   {
@@ -90,7 +62,7 @@ export const PLATFORMS: Build[] = [
     name: "macOS (Apple silicon)",
     family: "macOS",
     arch: "Apple silicon",
-    note: "M1 or newer, macOS 11 or newer",
+    note: "Apple silicon (M1 through M4), macOS 11 Big Sur or newer",
     os: "mac",
   },
   {
@@ -98,7 +70,7 @@ export const PLATFORMS: Build[] = [
     name: "macOS (Intel)",
     family: "macOS",
     arch: "Intel",
-    note: "Intel Macs, macOS 11 or newer",
+    note: "Intel Macs with Metal support, macOS 11 Big Sur or newer",
     os: "mac-intel",
   },
   {
@@ -106,7 +78,7 @@ export const PLATFORMS: Build[] = [
     name: "Linux",
     family: "Linux",
     arch: "x64",
-    note: "x86-64 with Vulkan drivers",
+    note: "x86-64 Linux distribution with Vulkan 1.2+ drivers",
     os: "linux",
   },
   {
@@ -114,7 +86,7 @@ export const PLATFORMS: Build[] = [
     name: "Linux on ARM",
     family: "Linux",
     arch: "ARM64",
-    note: "ARM64 with Vulkan drivers",
+    note: "ARM64 Linux desktops and SBCs with Vulkan 1.2+",
     os: "linux-arm",
   },
 ];
@@ -125,28 +97,28 @@ export const SERVERS: Build[] = [
     name: "Server for Windows",
     family: "Windows",
     arch: "x64",
-    note: "No window, no GPU needed",
+    note: "Headless 64-bit Windows binary; no window or GPU required",
   },
   {
     key: "server-windows-arm64",
     name: "Server for Windows on ARM",
     family: "Windows",
     arch: "ARM64",
-    note: "No window, no GPU needed",
+    note: "Headless Windows on ARM binary for WoA devices and servers",
   },
   {
     key: "server-linux-x64",
     name: "Server for Linux",
     family: "Linux",
     arch: "x64",
-    note: "No window, no GPU needed",
+    note: "Headless x86-64 Linux binary for cloud VPS and dedicated servers",
   },
   {
     key: "server-linux-arm64",
     name: "Server for Linux on ARM",
     family: "Linux",
     arch: "ARM64",
-    note: "Raspberry Pi 4/5 and ARM VPS",
+    note: "Headless Linux ARM64 binary for Raspberry Pi 4/5 and ARM VPS",
   },
 ];
 

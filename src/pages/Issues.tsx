@@ -1,6 +1,6 @@
 import { useEffect, useState, type CSSProperties } from "react";
 import { Failure, Labels, PageHead, Untrusted } from "../components/ui";
-import { REPO } from "../content/data";
+import { DISCORD, REPO } from "../content/data";
 import {
   ago,
   gh,
@@ -9,7 +9,7 @@ import {
   type User,
 } from "../lib/github";
 import { useAsync, useTitle } from "../lib/hooks";
-import { docPath, url } from "../lib/routes";
+import { url } from "../lib/routes";
 import { Icon } from "../components/icons";
 
 const OPEN = "#3fb950";
@@ -133,16 +133,15 @@ export function Issues() {
       <PageHead>
         <h1 className="display">Issues</h1>
         <p className="mt-6 max-w-[34em] text-[19px] text-muted">
-          Report bugs, compatibility problems and feature requests on GitHub.
-          A GitHub account is required. For bugs, include your build, map, bus
-          and steps to reproduce the problem.
+          Found a bug or visual glitch? Help us make neoOMSI better by reporting it on GitHub
+          or joining our Discord. Let us know which map or bus you were driving and what happened.
         </p>
         <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
           <a className="btn" href={`https://github.com/${REPO}/issues/new`}>
-            Report an issue
+            Report an issue on GitHub
           </a>
-          <a className="link text-[16px]" href={url(docPath("ISSUE_TRIAGE"))}>
-            How issues are handled
+          <a className="btn-quiet" href={DISCORD}>
+            Get help on Discord
           </a>
         </div>
       </PageHead>
