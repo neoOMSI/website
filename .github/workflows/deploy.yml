@@ -31,8 +31,6 @@ jobs:
           npm run build
           npx wrangler deploy --dry-run
           npm run test:telemetry
-          npm run test:www-redirect
-          npx wrangler deploy --dry-run --config www-redirect/wrangler.jsonc
           npx wrangler deploy --dry-run --config telemetry/wrangler.jsonc
 
   deploy:
@@ -56,5 +54,4 @@ jobs:
         run: |
           npm ci
           npm run deploy
-          npx wrangler deploy --config www-redirect/wrangler.jsonc
           npx wrangler deploy --config telemetry/wrangler.jsonc
