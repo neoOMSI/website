@@ -1,6 +1,6 @@
 # Performance report service
 
-The game posts one bounded, anonymous performance summary to `https://telemetry.neoomsi.com/v1/report` after a player session. Reports include frame-time percentiles and hitches, the slowest measured frame stages, grouped summaries by camera view/traffic/pause state, selected graphics settings, and GPU adapter plus render-pass timings where timestamp queries are supported. Frame-stage timings can include renderer or frame-pacing waits, and nested stages can overlap, so do not add them together as total CPU time. This Worker validates a strict schema, applies a per-IP request limit, stores reports in D1, and removes records older than 30 days. It does not write IP addresses to D1. Cloudflare still processes request connection metadata; see `/privacy/telemetry/` on the project site.
+The game posts one bounded, anonymous performance summary to `https://telemetry.neoomsi.com/v1/report` after a player session. Reports include frame-time percentiles and hitches from rendered frames, selected CPU work stages, grouped summaries by camera view/traffic/pause state, selected graphics settings, and GPU adapter plus render-pass timings where timestamp queries are supported. The CPU stage list omits known waits and overlapping parent scopes. This Worker validates a strict schema, applies a per-IP request limit, stores reports in D1, and removes records older than 30 days. It does not write IP addresses to D1. Cloudflare still processes request connection metadata; see `/privacy/telemetry/` on the project site.
 
 ## First deployment
 
