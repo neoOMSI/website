@@ -36,7 +36,7 @@ const COMPARISON: Row[] = [
       <>
         Strict fidelity with original OMSI 2.2.032 behavior, testing vehicle
         scripts, physics, and timetables against the reference game. See the{" "}
-        <a className="link" href={url(docPath("COMPATIBILITY"))}>
+        <a className="link" href={docPath("COMPATIBILITY")}>
           compatibility guide
         </a>
         .
@@ -118,7 +118,7 @@ export function OpenOmsi() {
             <Icon name="download" size={20} />
             Download neoOMSI
           </a>
-          <a className="btn-quiet gap-2" href={url(docPath("COMPATIBILITY"))}>
+          <a className="btn-quiet gap-2" href={docPath("COMPATIBILITY")}>
             <Icon name="sync_alt" size={20} />
             Compatibility guide
           </a>

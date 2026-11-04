@@ -10,7 +10,7 @@ export const NotFound = () => (
         home page
       </a>
       , the{" "}
-      <a className="link" href={url(docPath("USER_GUIDE"))}>
+      <a className="link" href={docPath("USER_GUIDE")}>
         user guide
       </a>{" "}
       or the{" "}

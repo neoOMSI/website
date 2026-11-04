@@ -1,10 +1,13 @@
 # neoOMSI Website
 
-Source code and documentation pages for [neoomsi.com](https://neoomsi.com/).
+Source for [neoomsi.com](https://neoomsi.com/) and its public guides at
+[docs.neoomsi.com](https://docs.neoomsi.com/).
 
 ## Overview
 
-The site is built with React 19, Vite, Tailwind CSS, and TypeScript. All static pages are prerendered at build time for optimal performance and SEO, and served globally through Cloudflare Workers.
+The main site is built with React 19, Vite, Tailwind CSS, and TypeScript. Its static
+pages are prerendered and served through Cloudflare Workers. The versioned docs site
+uses Docusaurus and is in [docs-site](docs-site/README.md).
 
 ## Local development
 
@@ -52,5 +55,5 @@ npm run deploy
 
 ## License
 
-Documentation content is licensed under [Creative Commons Attribution-ShareAlike 4.0](docs/LICENSE).
+Documentation content is licensed under [Creative Commons Attribution-ShareAlike 4.0](docs-site/static/LICENSE.txt).
 Brand assets and logos are subject to the project [trademark guidelines](https://github.com/neoOMSI/neoOMSI/blob/main/TRADEMARKS.md).

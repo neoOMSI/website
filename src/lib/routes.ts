@@ -1,4 +1,4 @@
-import { DOCS, SITE } from "../content/data";
+import { DOCS, DOCS_SITE, SITE } from "../content/data";
 
 export const BASE = import.meta.env.BASE_URL;
 
@@ -6,9 +6,9 @@ export const url = (path: string) => BASE + path.replace(/^\//, "");
 
 export const absolute = (path: string) => SITE + path.replace(/^\//, "");
 
-export const docPath = (file: string, anchor?: string) => {
+export const docPath = (file: string) => {
   const doc = DOCS.find((d) => d.file === file);
-  return `/docs/${doc?.slug ?? file.toLowerCase()}/${anchor ? `#${anchor}` : ""}`;
+  return `${DOCS_SITE}${doc?.path ?? `/${file.toLowerCase()}/`}`;
 };
 
 export interface Route {
@@ -26,12 +26,10 @@ export function parse(pathname: string, hash = ""): Route {
   };
 }
 
-// Links from before the site had real paths look like #/docs/USER_GUIDE#section.
+// Older website links used hash-based routes such as #/issues/123.
 export function legacy(hash: string) {
   if (!hash.startsWith("#/")) return null;
-  const [path, anchor] = hash.slice(2).split("#");
-  const doc = path.match(/^docs\/(\w+)/);
-  if (doc) return url(docPath(doc[1], anchor));
+  const path = hash.slice(2).split("#")[0];
   return url(path ? `${path}${path.startsWith("issues/") ? "" : "/"}` : "");
 }
 

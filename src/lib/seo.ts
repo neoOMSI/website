@@ -1,8 +1,17 @@
 import mark from "../../assets/icons/app/neoomsi-512.png";
-import { DISCORD, DOCS, OPENOMSI, REPO, SITE } from "../content/data";
-import { esc, plain, render } from "../content/docs";
+import { DISCORD, OPENOMSI, REPO, SITE } from "../content/data";
 import { FAQ, OPENOMSI_FAQ, type Question } from "../content/faq";
 import { absolute } from "./routes";
+
+const ENTITIES: Record<string, string> = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#39;",
+};
+
+const esc = (text: string) => text.replace(/[&<>"']/g, (c) => ENTITIES[c]);
 
 export interface Meta {
   title: string;
@@ -80,9 +89,6 @@ const crumbs = (...items: [string, string][]) => ({
   ),
 });
 
-const clip = (text: string, n = 158) =>
-  text.length <= n ? text : `${text.slice(0, text.lastIndexOf(" ", n - 3))}...`;
-
 const STATIC: Record<string, Omit<Meta, "path">> = {
   "/": {
     title: "neoOMSI: OMSI 2 rebuilt for modern systems",
@@ -131,44 +137,11 @@ const STATIC: Record<string, Omit<Meta, "path">> = {
   },
 };
 
-export const PAGES = [
-  ...Object.keys(STATIC),
-  ...DOCS.map((d) => `/docs/${d.slug}`),
-];
+export const PAGES = Object.keys(STATIC);
 
 export function meta(path: string): Meta {
   const page = STATIC[path];
   if (page) return { ...page, path };
-
-  const slug = path.match(/^\/docs\/([\w-]+)$/)?.[1];
-  const entry = DOCS.find((d) => d.slug === slug);
-  const doc = entry && render(entry.file);
-  if (entry && doc) {
-    const description = clip(
-      plain(doc.lead) ||
-        `${doc.title} for neoOMSI, the 64-bit OMSI 2 recreation in Rust.`,
-    );
-    return {
-      title: `${doc.title}: neoOMSI docs`,
-      description,
-      path,
-      type: "article",
-      schema: [
-        {
-          "@type": "TechArticle",
-          headline: doc.title,
-          description,
-          url: absolute(`${path}/`),
-          image: absolute(OG_IMAGE.path),
-          inLanguage: "en",
-          isPartOf: { "@id": WEBSITE["@id"] },
-          publisher: { "@id": ORG["@id"] },
-          about: { "@id": APP["@id"] },
-        },
-        crumbs(["Docs", "/docs/user-guide/"], [doc.title, `${path}/`]),
-      ],
-    };
-  }
 
   const issue = path.match(/^\/issues\/(\d+)$/)?.[1];
   if (issue)

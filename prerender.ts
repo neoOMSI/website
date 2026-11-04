@@ -109,10 +109,9 @@ write(
 `,
 );
 
-const docs = s.DOCS.map((d) => {
-  const doc = s.renderDoc(d.file)!;
-  return `- [${doc.title}](${canonical(`/docs/${d.slug}`)}): ${s.plain(doc.lead) || d.title}`;
-});
+const docs = s.DOCS.map(
+  (d) => `- [${d.title}](${s.DOCS_SITE}${d.path})`,
+);
 
 const summary = `# neoOMSI
 
@@ -133,6 +132,9 @@ write(
 
 ## Docs
 
+All player, server, creator, and compatibility guides, including versioned releases:
+
+- [Documentation site](${s.DOCS_SITE}/)
 ${docs.join("\n")}
 
 ## Optional
@@ -156,7 +158,10 @@ ${answers(s.FAQ)}
 
 ${answers(s.OPENOMSI_FAQ)}
 
-${s.DOCS.map((d) => s.source(d.file)!.trim().replace(/^#/gm, "##")).join("\n\n")}
+${s.DOCS.map(
+  (d) =>
+    `## ${d.title}\n\nSource: ${s.DOCS_SITE}${d.path}\n\n${readFileSync(join(import.meta.dirname, "docs-site", "docs", d.source), "utf8").trim()}`,
+).join("\n\n")}
 `,
 );
 

@@ -24,7 +24,9 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: package-lock.json
+          cache-dependency-path: |
+            package-lock.json
+            docs-site/package-lock.json
       - name: Build
         run: |
           npm ci
@@ -32,10 +34,17 @@ jobs:
           npx wrangler deploy --dry-run
           npm run test:telemetry
           npx wrangler deploy --dry-run --config telemetry/wrangler.jsonc
+      - name: Build and validate documentation
+        working-directory: docs-site
+        run: |
+          npm ci
+          npm run build
+          npx wrangler deploy --dry-run
 
   deploy:
     name: Deploy website
     if: github.event_name != 'pull_request'
+    needs: deploy-docs
     runs-on: ubuntu-slim
     environment:
       name: website
@@ -55,3 +64,26 @@ jobs:
           npm ci
           npm run deploy
           npx wrangler deploy --config telemetry/wrangler.jsonc
+
+  deploy-docs:
+    name: Deploy documentation
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-slim
+    environment:
+      name: docs
+      url: https://docs.neoomsi.com/
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: docs-site/package-lock.json
+      - name: Build and deploy
+        working-directory: docs-site
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          npm ci
+          npm run deploy

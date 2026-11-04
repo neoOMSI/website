@@ -1,0 +1,11 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "neoomsi-docs",
+  "compatibility_date": "2026-11-04",
+  "routes": [{ "pattern": "docs.neoomsi.com", "custom_domain": true }],
+  "assets": {
+    "directory": "./build",
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash"
+  }
+}

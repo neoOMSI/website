@@ -1,4 +1,5 @@
 export const SITE = "https://neoomsi.com/";
+export const DOCS_SITE = "https://docs.neoomsi.com";
 export const REPO = "neoOMSI/neoOMSI";
 export const DISCORD = "https://discord.gg/neoomsi";
 export const OPENOMSI = {
@@ -9,24 +10,39 @@ export const OPENOMSI = {
 export const DOCS = [
   {
     file: "USER_GUIDE",
-    slug: "user-guide",
-    title: "User guide",
-    group: "Playing",
-    icon: "directions_bus",
+    path: "/player/user-guide/",
+    title: "Player guide",
+    source: "player/user-guide.md",
+  },
+  {
+    file: "LINUX_CONTROLLER_AXES",
+    path: "/player/linux-controller-axes/",
+    title: "Linux controller axes",
+    source: "player/linux-controller-axes.md",
   },
   {
     file: "COMPATIBILITY",
-    slug: "compatibility",
-    title: "Compatibility guide",
-    group: "Playing",
-    icon: "sync_alt",
+    path: "/compatibility/",
+    title: "Compatibility",
+    source: "compatibility.md",
   },
   {
     file: "SERVER",
-    slug: "server",
+    path: "/server/",
     title: "Dedicated server",
-    group: "Playing",
-    icon: "dns",
+    source: "server.md",
+  },
+  {
+    file: "HTMLTEXTURE",
+    path: "/creators/html-textures/",
+    title: "HTML textures",
+    source: "creators/html-textures.md",
+  },
+  {
+    file: "TROLLEYBUSES",
+    path: "/next/creators/trolleybuses/",
+    title: "Trolleybuses",
+    source: "creators/trolleybuses.md",
   },
 ];
 

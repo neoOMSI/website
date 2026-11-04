@@ -375,7 +375,7 @@ export function Download() {
               <p className="mt-3 max-w-[24em] text-[16px] text-muted">
                 Only for hosting a multiplayer session without playing on that
                 machine. See{" "}
-                <a className="link" href={url(docPath("SERVER"))}>
+                <a className="link" href={docPath("SERVER")}>
                   Dedicated server
                 </a>
                 .

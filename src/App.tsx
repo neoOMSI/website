@@ -2,10 +2,9 @@ import { useEffect, useRef } from "react";
 import mark from "../assets/logos/icon-gradient.svg";
 import wordmark from "../assets/logos/wordmark-gradient-dark.svg";
 import wordmarkLight from "../assets/logos/wordmark-gradient-light.svg";
-import { DISCORD, DOCS, REPO } from "./content/data";
+import { DISCORD, REPO } from "./content/data";
 import { useRoute } from "./lib/hooks";
 import { Icon } from "./components/icons";
-import { Docs } from "./pages/Docs";
 import { Download } from "./pages/Download";
 import { Faq } from "./pages/Faq";
 import { Home } from "./pages/Home";
@@ -19,7 +18,7 @@ import { headTags, meta } from "./lib/seo";
 import { useTheme } from "./lib/theme";
 
 const NAV = [
-  ["Docs", url(docPath("USER_GUIDE")), "/docs"],
+  ["Docs", docPath("USER_GUIDE"), undefined],
   ["FAQ", url("/faq/"), "/faq"],
   ["Releases", url("/releases/"), "/releases"],
   ["Issues", url("/issues/"), "/issues"],
@@ -27,13 +26,13 @@ const NAV = [
   ["Discord", DISCORD],
 ];
 
-function Header({ path, wide }: { path: string; wide: boolean }) {
+function Header({ path }: { path: string }) {
   const { theme, toggle } = useTheme();
   const light = theme === "light";
   return (
     <header className="fixed inset-x-0 top-0 z-50 bg-page">
       <div
-        className={`wrap flex flex-wrap items-center gap-x-8 py-3 sm:h-16 sm:py-0${wide ? " max-w-[1440px] lg:px-10" : ""}`}
+        className="wrap flex flex-wrap items-center gap-x-8 py-3 sm:h-16 sm:py-0"
       >
         <a
           href={url("/")}
@@ -111,10 +110,10 @@ const Footer = () => (
         <a className="hover:text-ink" href={`https://github.com/${REPO}`}>
           GitHub
         </a>
-        <a className="hover:text-ink" href={url(docPath("COMPATIBILITY"))}>
+        <a className="hover:text-ink" href={docPath("COMPATIBILITY")}>
           Compatibility
         </a>
-        <a className="hover:text-ink" href={url(docPath("SERVER"))}>
+        <a className="hover:text-ink" href={docPath("SERVER")}>
           Dedicated server
         </a>
         <a className="hover:text-ink" href={url("/faq/")}>
@@ -154,8 +153,6 @@ const Footer = () => (
 );
 
 function Page({ path }: { path: string }) {
-  const doc = DOCS.find((d) => path === `/docs/${d.slug}`);
-  if (doc) return <Docs file={doc.file} />;
   if (path === "/") return <Home />;
   if (path === "/download") return <Download />;
   if (path === "/releases") return <Releases />;
@@ -195,7 +192,6 @@ function applyHead(path: string) {
 
 export function App({ route }: { route?: Route }) {
   const { path, anchor } = useRoute(route);
-  const docs = path.startsWith("/docs/");
   const first = useRef(true);
 
   useEffect(() => {
@@ -214,7 +210,7 @@ export function App({ route }: { route?: Route }) {
 
   return (
     <>
-      <Header path={path} wide={docs} />
+      <Header path={path} />
       <main className="min-h-[60vh]">
         <Page path={path} />
       </main>

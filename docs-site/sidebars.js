@@ -1,0 +1,25 @@
+module.exports = {
+  guide: [
+    "index",
+    {
+      type: "category",
+      label: "Players",
+      items: ["player/user-guide", "player/linux-controller-axes"],
+    },
+    {
+      type: "category",
+      label: "Server owners",
+      items: ["server"],
+    },
+    {
+      type: "category",
+      label: "Content creators",
+      items: ["creators/html-textures", "creators/trolleybuses"],
+    },
+    {
+      type: "category",
+      label: "Compatibility",
+      items: ["compatibility"],
+    },
+  ],
+};

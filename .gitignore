@@ -5,9 +5,12 @@ node_modules/
 # Build artifacts
 dist/
 dist-server/
+docs-site/.docusaurus/
+docs-site/build/
 
 # Cloudflare Wrangler
 .wrangler/
+docs-site/.wrangler/
 
 # Environment files
 .env

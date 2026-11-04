@@ -95,7 +95,7 @@ const STOPS = [
     "Windows, macOS and Linux",
     url("/download/"),
   ],
-  ["User guide", "Setup, controls and options", url(docPath("USER_GUIDE"))],
+  ["User guide", "Setup, controls and options", docPath("USER_GUIDE")],
   ["Releases", "Changelogs and version history", url("/releases/")],
   ["Discord", "Join the community", DISCORD],
 ];
@@ -215,7 +215,7 @@ export function Home() {
             <PlatformIcon build={build?.key} size={20} />
             {build ? `Download for ${build.name}` : "Download"}
           </a>
-          <a className="btn-quiet gap-2" href={url(docPath("USER_GUIDE"))}>
+          <a className="btn-quiet gap-2" href={docPath("USER_GUIDE")}>
             <Icon name="description" size={20} />
             Read the user guide
           </a>

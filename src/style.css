@@ -191,67 +191,6 @@
     @apply border-brand bg-brand;
   }
 
-  .docs-link {
-    @apply relative flex items-center justify-between gap-3 rounded-md px-3 py-2 text-muted transition-colors hover:bg-sunken hover:text-ink;
-  }
-  .docs-link svg {
-    @apply opacity-60 transition-opacity;
-  }
-  .docs-link:hover svg {
-    @apply opacity-100;
-  }
-  .docs-link.on {
-    @apply bg-sunken font-medium text-heading;
-  }
-  .docs-link.on svg {
-    @apply text-accent opacity-100;
-  }
-  .docs-link.on::before {
-    content: "";
-    @apply absolute top-2 bottom-2 left-0 w-[3px] rounded-full bg-brand;
-  }
-
-  .toc {
-    @apply m-0 list-none p-0 text-[14.5px] leading-snug;
-  }
-  .toc li {
-    @apply relative pb-3 pl-6 last:pb-0;
-  }
-  .toc li::before {
-    content: "";
-    @apply absolute top-[5px] left-0 z-10 size-[11px] rounded-full border-[3px] border-line-strong bg-page transition-colors;
-  }
-  .toc li::after {
-    content: "";
-    @apply absolute top-3 -bottom-[5px] left-[4px] w-[3px] bg-line transition-colors;
-  }
-  .toc li:last-child::after {
-    display: none;
-  }
-  .toc li.sub {
-    @apply pl-9;
-  }
-  .toc li.sub::before {
-    @apply left-[2px] size-[7px] border-2;
-    top: 7px;
-  }
-  .toc a {
-    @apply block text-muted transition-colors hover:text-ink;
-  }
-  .toc li.passed::before {
-    @apply border-heading;
-  }
-  .toc li.passed::after,
-  .toc li.current::before {
-    @apply bg-brand;
-  }
-  .toc li.current::before {
-    @apply border-brand;
-  }
-  .toc li.current a {
-    @apply text-heading;
-  }
-
   .doc {
     @apply min-w-0 max-w-[54rem];
   }
@@ -290,29 +229,11 @@
   .doc a {
     @apply text-accent underline underline-offset-[3px] hover:decoration-2;
   }
-  .doc a.anchor {
-    @apply ml-2 inline-flex align-middle text-muted no-underline opacity-0 transition-opacity hover:text-accent focus-visible:opacity-100;
-  }
-  .doc :is(h2, h3, h4):hover a.anchor {
-    @apply opacity-100;
-  }
-  .doc .code {
-    @apply mb-6 overflow-hidden rounded-lg border border-line bg-sunken;
-  }
-  .doc .code-bar {
-    @apply flex items-center justify-between border-b border-line py-1 pr-1.5 pl-4 font-mono text-[13px] text-muted;
-  }
-  .doc .code-copy {
-    @apply flex items-center gap-1.5 rounded px-2 py-1 font-sans text-[13.5px] font-medium transition-colors hover:bg-line hover:text-ink;
-  }
   .doc pre {
     @apply overflow-x-auto px-5 py-4 text-[15px] leading-normal;
   }
   .doc pre code {
     @apply bg-transparent p-0 text-ink;
-  }
-  .doc .table-frame {
-    @apply mb-6 overflow-x-auto rounded-lg border border-line;
   }
   .doc table {
     @apply w-full border-collapse text-[15.5px];
@@ -331,39 +252,11 @@
     @apply inline-flex h-7 min-w-7 items-center justify-center rounded-md border border-line-strong bg-sunken px-2 font-sans text-[13.5px] font-semibold text-heading;
     box-shadow: inset 0 -2px 0 var(--line-strong);
   }
-  .doc .kbd-plus {
-    @apply px-1 text-muted;
-  }
   .doc blockquote {
     @apply my-5 border-l-[3px] border-line pl-5 text-muted;
   }
   .doc blockquote p {
     @apply mb-0;
-  }
-  .doc .callout {
-    @apply my-6 rounded-lg border px-5 py-4;
-    --c: #4c8dff;
-    border-color: color-mix(in srgb, var(--c) 35%, transparent);
-    background: color-mix(in srgb, var(--c) 7%, transparent);
-  }
-  .doc .callout > :last-child {
-    @apply mb-0;
-  }
-  .doc .callout-title {
-    @apply mb-1.5 flex items-center gap-2 font-semibold;
-    color: var(--c);
-  }
-  .doc .callout-tip {
-    --c: #3fb950;
-  }
-  .doc .callout-important {
-    --c: #fd6b00;
-  }
-  .doc .callout-warning {
-    --c: #d8a020;
-  }
-  .doc .callout-caution {
-    --c: #f85149;
   }
   .doc img {
     @apply max-w-full;
