@@ -12,9 +12,9 @@ export function TelemetryPrivacy() {
       <p className="mt-3 text-muted">GPU timing may begin after the next game launch if you opt in while the game is already running.</p>
       <p className="mt-3 text-muted">Reports do not contain logs, account or device identifiers, map or vehicle names, file paths, command-line arguments, or raw frame-by-frame traces. Reports are sent once when a gameplay session ends. If sending fails, the game discards the report and does not retry.</p>
       <details className="mt-6 overflow-hidden rounded-lg border border-line">
-        <summary className="cursor-pointer px-4 py-3 font-medium">View a synthetic example report</summary>
+        <summary className="cursor-pointer px-4 py-3 font-medium">View a real report sample</summary>
         <div className="border-t border-line p-4">
-          <p className="text-muted">All values below are fictional. This is the JSON the game sends; the service replies with HTTP 204 and no response body.</p>
+          <p className="text-muted">This is a report sent by a player who opted in. Reports contain no player identifier. The GPU model is omitted, memory is rounded, and timing values are rounded to make the hardware profile less specific. The service replies with HTTP 204 and no response body.</p>
           <pre className="mt-4 max-h-[36rem] overflow-auto rounded-md bg-page p-4 text-xs leading-relaxed text-heading"><code>{JSON.stringify(EXAMPLE_REPORT, null, 2)}</code></pre>
         </div>
       </details>
