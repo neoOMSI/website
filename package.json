@@ -7,7 +7,8 @@
     "build": "tsc --noEmit && vite build && vite build --ssr src/server.tsx --outDir dist-server && node prerender.ts",
     "preview": "vite preview",
     "deploy": "npm run build && wrangler deploy",
-    "test:telemetry": "node --test telemetry/test.mjs"
+    "test:telemetry": "node --test telemetry/test.mjs",
+    "test:www-redirect": "node --test www-redirect/test.mjs"
   },
   "dependencies": {
     "@fontsource-variable/roboto": "^5.3.0",
