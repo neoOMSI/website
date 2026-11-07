@@ -14,7 +14,11 @@ module.exports = {
     {
       type: "category",
       label: "Content creators",
-      items: ["creators/html-textures", "creators/trolleybuses"],
+      items: [
+        "creators/html-textures",
+        "creators/trolleybuses",
+        "creators/shared-assets",
+      ],
     },
     {
       type: "category",
