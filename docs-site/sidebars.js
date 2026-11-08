@@ -18,6 +18,7 @@ module.exports = {
         "creators/html-textures",
         "creators/trolleybuses",
         "creators/shared-assets",
+        "creators/lua-plugins",
       ],
     },
     {
