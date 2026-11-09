@@ -37,10 +37,11 @@ omsi.every(60, function()
 end)
 ```
 
-The file runs once when the game starts. Then the plugin hears events (see below),
+The file runs when the game starts, and again when a new drive starts after the main menu. Then the plugin hears events (see below),
 runs its timers and reads and writes the bus. A changed `.lua` file is loaded again while
-the game runs (the `stop` event, then a fresh start); files in the plugin's data folder
-do not count.
+the game runs (the `stop` event, then a fresh start). The game looks for changes once a
+second; the saved data file (`*.save.lua`) and files in the plugin's data folder do not
+count.
 
 ## The sandbox
 
@@ -57,19 +58,21 @@ fail ten times is switched off until it changes or the game restarts. Errors go 
 log and appear on screen.
 
 Lua plugins run while the game runs, not while it is paused. Game events that happen
-during a pause wait for the next frame.
+during a pause wait for the next frame; keys pressed during a pause are not passed on.
 
 ## Events
 
 A plugin registers handlers with `omsi.on(event, fn)`, or defines a global function
-`on_<event>`. `omsi.off(event, fn)` removes a handler.
+`on_<event>`. `omsi.off(event, fn)` removes a handler. `omsi.emit(event, ...)` calls the
+plugin's own handlers for `event` at once, with the given arguments, the `on_<event>`
+function included. A plugin can use it for events of its own; it reaches no other plugin.
 
 | Event | Arguments | When |
 |---|---|---|
 | `start` | | The plugin was loaded. |
-| `vehicle` | `name` | The player's vehicle changed; `nil` without one. |
+| `vehicle` | `name` | The player's vehicle changed; `nil` without one. Also right after `start` when the player already has a vehicle. |
 | `frame` | `dt` | Every frame, after timers and watches; seconds since the last. |
-| `stop` | | The plugin is unloaded: the game ends or the file changed. |
+| `stop` | | The plugin is unloaded: the drive ends (back to the main menu or the game exits) or the file changed. |
 | `key` | `key, down` | A key went down (`true`) or up. Keys by their code name: `KeyA`, `F5`, `Digit1`, `Space`. |
 | `next_stop` | `new, old` | The next stop of the duty changed: another name, or the same name at another stop number. |
 | `view` | `new, old` | The camera changed: `driver`, `pax`, `outside`, `free`, `foot`. |
@@ -77,15 +80,18 @@ A plugin registers handlers with `omsi.on(event, fn)`, or defines a global funct
 | `crash` | `energy_kj, speed_kmh` | The player's bus hit something (the speed just before). |
 | `pedestrian` | `count` | The player's bus knocked down people. |
 | `stops_skipped` | `count, due_at, now_at, trip` | The duty jumped on over stops: a page's skip, or the bus found at a later stop. `count` stops were not served; it was due at stop `due_at` and is due at `now_at` (stop numbers from 1). A stop driven past is not a jump. |
-| `trip_done` | `trip, how, driving, comfort, ticket_selling` | A trip of the duty ended, once per trip. `how` is `arrived`, `skipped` (never begun) or `given_up`. The ratings are the session's so far, in per cent. Also when the player leaves the duty or the game ends; not when the game restarts into the same session. |
+| `trip_done` | `trip, how, driving, comfort, ticket_selling, line, tour, trip_name` | A trip of the duty ended, once per trip. `how` is `arrived`, `skipped` (never begun) or `given_up`. The ratings are the session's so far, in per cent. `line`, `tour` and `trip_name` are the ended trip's: `omsi.info()` may already show the next duty. Also when the player leaves the duty or the game ends; not when the game restarts into the same session. |
 | `jolt` | `along, across, speed_kmh, passengers` | Braking, accelerating or cornering hard enough to cost driving rating (m/s²), at most once a second. |
 | `ticket_sold` | `name, price` | A ticket was sold at the cash desk. |
 | `service` | `kind, by, amount` | `refuel` (litres), `wash`, `repair` (minutes), `reset` or `teleport` (metres), by `player`, `plugin`, `host` or `game`. |
 | `red_light` | `speed_kmh` | The player's bus went over a stop line at red (see [Traffic lights](#traffic-lights)). |
 
-Within a frame the game's events (`crash` to `red_light`) come first, then timers,
-watches, `key`, `next_stop`, `view`, `duty` and `frame`. A handler that fails does not
-keep the other handlers from their event.
+Within a frame `vehicle` comes first, then the game's events (`crash` to `red_light`),
+timers, watches, `key`, `next_stop`, `view`, `duty` and `frame`. A failing handler of a
+game event does not keep the other handlers from their event. Elsewhere a failing
+handler, timer or watch stops the rest of that frame's calls: the handlers after it and
+the events still to come in that frame do not run. The game keeps at most 256 events waiting
+between two Lua frames, for instance during a pause; later ones are dropped.
 
 ## Timers and watches
 
@@ -114,14 +120,16 @@ keep the other handlers from their event.
 | `omsi.speed()` | km/h. |
 | `omsi.distance(x, y)` | Metres from the bus to a point, or `nil`. |
 
-`omsi.sys(name)` reads an OMSI system variable: `Time`, `Timegap`, `Pause`, `Day`,
-`Month`, `Year`, `DayOfYear`, `Weather_Temperature`, `Weather_AbsHum`, `PrecipType`,
-`PrecipRate`, `SunAlt`, `AutoClutch`, `NoSound`.
+`omsi.sys(name)` reads an OMSI system variable: `Time`, `GetTime`, `Timegap`, `Pause`,
+`Day`, `Month`, `Year`, `DayOfYear`, `Weather_Temperature`, `Weather_AbsHum`,
+`PrecipType`, `PrecipRate`, `SunAlt`, `AutoClutch`, `NoSound`, `mouse_x`, `mouse_y`,
+`coll_pos_x`, `coll_pos_y`, `coll_pos_z`, `coll_energy` and `wearlifespan`, in any case.
+It returns `nil` for any other name.
 
 ## The game
 
 `omsi.info()` returns a table of what the game is doing. Fields that do not apply are
-`nil` (no duty, no bus).
+`nil` (no duty, no bus); `map` is an empty string without a map.
 
 | Field | |
 |---|---|
@@ -139,8 +147,9 @@ keep the other handlers from their event.
 | `next_stop_arrival`, `next_stop_departure` | Its timetable times, seconds of the day. |
 
 `omsi.command(name)` runs a game menu action after the frame: `refuel`, `wash`,
-`repair`, `reset`, `shot`, `save`, `load`, `weather`, `later`, `earlier`, `info`,
-`timetable`, `couple`, `uncouple`. It returns `false` for any other name.
+`repair`, `reset`, `save`, `load`, `weather`, `later`, `earlier`, `info`,
+`timetable`, `couple`, `uncouple`. It returns `false` for any other name, and once
+eight commands are waiting in the same frame.
 
 `omsi.message(text, seconds)` shows a line on the screen (5 s by default).
 `omsi.log(...)`, `omsi.warn(...)` and `print(...)` write to the game's log.
@@ -166,8 +175,9 @@ its number in the tour, its name or `"HH:MM"` (the first trip leaving in that mi
 the first after). Without it, the trip under way or next. The request is checked at once
 and the duty starts after the frame. It returns `true`, or `false` and why: no
 timetable, no bus, an unknown line, tour or trip, a line not for the player, a tour that
-does not run today, or a trip over by half an hour. Starting a duty ends the one before
-(`trip_done` for its trip). One change a frame: the last asked for.
+does not run today, or a trip over by half an hour (named or not; a night tour asked for
+in the evening is tonight's). Starting a duty ends the one before (`trip_done` for its
+trip). One change a frame: the last asked for.
 
 `omsi.duty.stop()` ends the duty after the frame; `false` without one.
 
@@ -223,8 +233,8 @@ at once.
 `omsi.files.read(name)` reads a file of the plugin's data folder: `plugins/<name>/data/`
 for a folder plugin, `plugins/<name>.data/` for a single file. Names may have folders
 (`sub/status.txt`) and are found in any case. Nothing outside the folder can be read: no
-`..`, no absolute names, no links out of it. A file may be up to 1 MB. It returns the
-text, or `nil` and why.
+`..`, no absolute names, no links out of it, and the folder itself is no link. A file may
+be up to 1 MB. It returns the text, or `nil` and why.
 
 ```lua
 local text = omsi.files.read("status.vsm")

@@ -2,7 +2,9 @@
 
 Content authors can reuse installed assets without copying them into every vehicle or scenery folder. Relative mesh and script references already work. The optional `[neo_texturepath]` and `[neo_texture]` tags extend this to texture lookup in vehicle `model.cfg` files and scenery `.sco` files, including a `.sco` that refers to a separate model configuration. These are **neoOMSI extensions**, not OMSI 2 parity features. The texture tags apply to the whole definition, so put them before the first `[mesh]`; they do not need a `[matl]` block.
 
-### Shared texture folders
+On this page, a *content pack* is any installed add-on: a mod in neoOMSI's `mods` folder, or content copied into the OMSI 2 folder.
+
+## Shared texture folders
 
 Add one `[neo_texturepath]` per fallback texture folder. Each tag takes exactly one line: the folder path, relative to the file containing the tag. Both `\` and `/` separators work, and `..` goes up one folder within the installed content root. Do not add quotes around paths containing spaces. Use relative paths rather than paths on your own PC.
 
@@ -35,7 +37,7 @@ be found through the custom bus's normal texture search. Authors do not have to 
 borrowed mesh or redistribute its textures. Specify the actual texture directory: the tag
 does not recursively search every subdirectory or infer the folder from the mesh path.
 
-### Individual texture files
+## Individual texture files
 
 Use `[neo_texture]` to share a single file instead of making its whole folder available:
 
@@ -50,7 +52,7 @@ use the explicitly shared `seats.dds`. This tag does not rename materials or red
 unrelated filename. Other textures in that donor directory remain unavailable unless
 another tag shares them. Repeat the tag for additional files.
 
-### Search order and existing materials
+## Search order and existing materials
 
 1. Existing local textures, selected repaint textures and normal global fallbacks keep
    their current priority.
@@ -73,7 +75,7 @@ the texture, neoOMSI uses its existing missing-texture handling and log warning;
 not invent a substitute from another bus. Give dependent packs distinctive filenames
 when unrelated textures would otherwise share a name.
 
-### Scenery objects
+## Scenery objects
 
 The same tags work in `.sco` files. Paths remain relative to the `.sco`, not to its mesh:
 
@@ -93,7 +95,7 @@ relative to that configuration, while tags in the wrapper remain relative to the
 All shared locations from the model are searched before the wrapper's shared locations;
 within each definition, shared folders precede individual files.
 
-### Shared scripts, variables and constants
+## Shared scripts, variables and constants
 
 Script sharing uses the existing counted lists; no new tag is necessary. In
 `Vehicles/Custom Bus/custom.bus`, for example:
@@ -124,7 +126,7 @@ vehicle. Scenery `.sco` files support the same script-list tags, with paths rela
 the `.sco`. Script instances still have their own state; these paths share source files,
 not live vehicle state.
 
-### Distribution and compatibility
+## Distribution and compatibility
 
 Declare the donor pack and required version as a dependency of your add-on. Players must
 install it themselves. These references do not download assets, bypass installation or

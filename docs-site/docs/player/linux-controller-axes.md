@@ -1,6 +1,6 @@
 # Linux controller axes
 
-Linux offers an **Axis mode** for each device under **Options → Controls → Game controllers**.
+Linux offers an **Axis mode** for each device under **Options → Controls → Controllers**.
 Select the device after adding it. The mode and **Invert** settings are saved immediately and
 kept after restarting.
 
