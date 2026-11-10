@@ -33,7 +33,7 @@ The first run creates `server.cfg` beside the server executable. The server writ
 | Setting | Default | Purpose |
 | --- | --- | --- |
 | `map` | `maps/Berlin-Spandau/global.cfg` | Map path relative to the OMSI 2 folder. |
-| `port` | `27015` | UDP port for game traffic. |
+| `port` | `27015` | UDP port for game traffic; TCP on the same number for map downloads. |
 | `web_port` | `27025` | TCP port for the status and WebSocket gateway. |
 | `max_players` | `16` | Player limit. |
 | `traffic` | `30` | Random traffic level. |
@@ -43,7 +43,15 @@ The first run creates `server.cfg` beside the server executable. The server writ
 | `share_positions` | `0` | Allow `GET /players` to show names, buses, lines, and positions. |
 | `admin_password` | empty | Password for the in-game server administration menu. |
 
-The game session uses UDP `port`; the gateway uses TCP `web_port`. For direct connections, configure the server host's firewall and router for the ports your players need. The quick tunnel can help when a gateway connection cannot reach the host directly; it does not replace the UDP game connection.
+For direct connections, the server needs three ports:
+
+| Port | Protocol | Used for |
+| --- | --- | --- |
+| `port` (default `27015`) | UDP | The game session. |
+| `port` (default `27015`) | TCP | Map files that joining players download from the host. |
+| `web_port` (default `27025`) | TCP | The status page and WebSocket gateway. |
+
+For direct connections, open these ports in the server host's firewall and forward them on the router. If only UDP `port` is open, players can connect but cannot download the map's files directly; the game then tries the server's quick tunnel, if one is running. Players who join through the tunnel address send the game traffic and the map downloads through the gateway, so the server needs no open ports for them.
 
 `tunnel = 1` starts a temporary tunnel and prints its changing address. Set it to `0` if you do not want to start one. If you enable `share_positions`, tell players that the gateway can expose their names, buses, lines, and positions to anyone who can reach it. Set a strong `admin_password` before sharing the server.
 

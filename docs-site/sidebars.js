@@ -4,7 +4,16 @@ module.exports = {
     {
       type: "category",
       label: "Players",
-      items: ["player/user-guide", "player/linux-controller-axes"],
+      items: [
+        "player/user-guide",
+        "player/controls",
+        "player/options",
+        "player/passengers",
+        "player/multiplayer",
+        "player/command-line",
+        "player/troubleshooting",
+        "player/linux-controller-axes",
+      ],
     },
     {
       type: "category",

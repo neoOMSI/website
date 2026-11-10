@@ -14,37 +14,43 @@ Use this guide to install neoOMSI, learn the controls, and find common gameplay 
 
 ## Keybindings
 
-### Driving controls
+neoOMSI uses OMSI 2's key layout: it reads `Inputs/keyboard.cfg` from your OMSI 2
+installation and adds its own keys on top. Keys are matched by their position on the
+keyboard and named as on a US QWERTY keyboard. The most important defaults:
 
-| Action             | Primary Key | Alternative                   |
-| ------------------ | ----------- | ----------------------------- |
-| **Throttle**       | `W`         | `Up Arrow`                    |
-| **Brake**          | `S`         | `Down Arrow`                  |
-| **Steer Left**     | `A`         | `Left Arrow`                  |
-| **Steer Right**    | `D`         | `Right Arrow`                 |
-| **Mouse Steering** | `O`         | Toggles mouse steering on/off |
+| Action | Key |
+| --- | --- |
+| **Throttle** / **Brake** | `Numpad 8` / `Numpad 2` (hold) |
+| **Steer left** / **Steer right** | `Numpad 4` / `Numpad 6` (hold) |
+| **Parking brake** | `.` |
+| **Battery disconnect switch** | `E` |
+| **Start engine** | `M` |
+| **Automatic: drive** / **neutral** / **reverse** | `D` / `N` / `R` |
+| Start up the bus, or switch it off | `Shift + U` |
+| **Switch mouse control** (mouse steering) | `O` |
 
-Configure wheels, pedals, and gamepads under **Options → Controls → Game controllers**. Linux
-also offers native axis modes; see the [Linux controller axis guide](linux-controller-axes.md).
-
-### Vehicle operations
-
-| Action                 | Key         | Description                              |
-| ---------------------- | ----------- | ---------------------------------------- |
-| **Battery / Ignition** | `E`         | Inserts key and powers electrical system |
-| **Engine Starter**     | `M`         | Hold to crank engine until started       |
-| **Drive Gear (D)**     | `Shift + D` | Engages forward drive                    |
-| **Neutral (N)**        | `N`         | Neutral gear                             |
-| **Reverse (R)**        | `R`         | Reverse gear                             |
-| **Parking Brake**      | `.`         | Toggles handbrake                        |
-| **Quick Autostart**    | `Shift + U` | Automates the complete startup sequence  |
+Change keys under **Options → Controls → Key bindings**. Configure wheels, pedals, and
+gamepads under **Options → Controls → Controllers**. Linux also offers native axis modes;
+see the [Linux controller axis guide](linux-controller-axes.md).
 
 ### Camera & cockpit
 
 - **Cockpit switches:** Left-click to toggle, click and drag to turn rotary dials.
-- **Look around:** Hold Right-Mouse-Button and move mouse (or arrow keys / `I`/`J`/`K`/`L`).
+- **Look around:** Hold the right mouse button and move the mouse, or use `Alt` + `I`/`J`/`K`/`L`.
 - **In-game menu:** Press `Esc` to access settings, switch buses, or exit.
 - **Find a setting:** Type in the search field of **Options** (or `Ctrl+F`). It matches names, descriptions, key bindings and related words ("lag", "mic", "fullscreen"), forgives typos, and shows where each result lives. `Esc` clears it.
+
+## Settings file
+
+neoOMSI saves its settings in `settings.toml`:
+
+- Windows: `%APPDATA%\neoOMSI\settings.toml`
+- macOS: `~/Library/Application Support/neoOMSI/settings.toml`
+- Linux: `$XDG_CONFIG_HOME/neoOMSI/settings.toml`, or `~/.config/neoOMSI/settings.toml`
+  when `XDG_CONFIG_HOME` is not set
+
+Options are grouped in TOML sections such as `[gameplay]` and `[graphics]`. Change them in
+the game where possible; when editing the file by hand, close neoOMSI first.
 
 ## Trip evaluation
 
@@ -70,24 +76,26 @@ to a text file to keep it after exiting.
 
 ## Passenger seating
 
-Under **Settings → Gameplay → Passengers**, enable **Passengers prefer available seats**
+Under **Options → Gameplay**, enable **Passengers prefer available seats**
 to reserve free seats before using standing places when passengers board. Standing places
 are used once all seats are occupied or reserved. This neoOMSI option is off by default;
 with it off, passengers choose randomly among all free places, as in OMSI 2.
 
-The option can also be changed through the in-game **Options → Gameplay** menu. Changes
-apply to subsequent place reservations in player and timetable buses. In `settings.cfg`,
-the option is stored as `pax_prefer_seats=1` (enabled) or `pax_prefer_seats=0` (disabled).
+The **Options** tab is in the start menu and in the in-game menu (`Esc`). Changes
+apply to subsequent place reservations in player and timetable buses. In
+[`settings.toml`](#settings-file), the option is stored under `[gameplay]` as
+`pax_prefer_seats = true` (enabled) or `pax_prefer_seats = false` (disabled).
 
 **Boarding at the rear doors** (on by default) lets passengers who buy no ticket from the
 driver get on at the exit doors too. Turned off, everybody boards at the bus's entries, as
-in OMSI 2. It is stored as `pax_rear_entry`.
+in OMSI 2. It is stored as `pax_rear_entry` under `[gameplay]`.
 
 ## Wet-road reflections
 
 Vanilla, Vanilla+ and Enhanced show reflections of buses, buildings and scenery in
-wet-road puddles. Enable reflections in the graphics settings, or set `reflections=1`
-in `settings.cfg`.
+wet-road puddles. They are part of **Options → Graphics → Reflection maps (paint, chrome,
+glass)** (`reflections` under `[graphics]` in [`settings.toml`](#settings-file), on by
+default), which switches off every reflection, not only the puddles.
 
 Puddle reflections remain visible from inside the bus through its windows and rain
 films. Glass tint and raindrops affect the view, including the reflections outside.
@@ -135,13 +143,14 @@ Set `OMSI_NO_SURF=1` before starting neoOMSI to disable OMSI `.surf` height maps
 
 ## Passenger models and movement
 
-**Settings → Gameplay → Passenger movement** selects Natural or OMSI 2 movement.
-**Procedural passenger animation** independently selects the pose system; `pax_ik`
-and `--pax-ik` control it (`ik` remains a settings alias).
+**Options → Gameplay → Passenger movement** selects Natural or OMSI 2 movement.
+**Procedural passenger animation** independently selects the pose system. It is stored as
+`ik` under `[passengers]` in [`settings.toml`](#settings-file); `--pax-ik true` or
+`--pax-ik false` overrides it for one start.
 
-For realistic models, select **Download the realistic passengers** under
-**Settings → Gameplay** (or in the in-game options menu). neoOMSI installs
-them into the content folder's `Packs/RealisticPax` and selects **Passenger models →
-Realistic**; they take effect upon starting a new drive. Licensing details are in the
+For realistic models, select **Download** next to **Realistic passenger models** under
+**Options → Gameplay**. neoOMSI installs them into the content folder's
+`Packs/RealisticPax` and selects **Passenger models → Realistic**; they are used from the
+next start of the game. Licensing details are in the
 [RealisticPax package](https://github.com/neoOMSI/neoOMSI/tree/main/tools/realistic-pax).
 Without the pack, installed OMSI passengers remain in use.
