@@ -28,6 +28,7 @@ module.exports = {
         "creators/trolleybuses",
         "creators/shared-assets",
         "creators/lua-plugins",
+        "creators/spotlight-cookies",
       ],
     },
     {
