@@ -7,14 +7,7 @@ export const EXAMPLE_REPORT = {
     memory_mb: 34264,
     os: "windows",
   },
-  gpu: {
-    adapter: "NVIDIA GeForce RTX 5070 (Vulkan)",
-    backend: "Vulkan",
-    driver: "NVIDIA",
-    driver_info: "617.42",
-    type: "DiscreteGpu",
-    vendor: "0x10de",
-  },
+  gpu: null,
   display: {
     resolution_class: "1080p",
     vsync: false,

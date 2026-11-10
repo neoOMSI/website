@@ -62,6 +62,27 @@ test("privacy-page example matches the accepted Schema 2 report schema", async (
   assert.equal(JSON.parse(h.inserted[0][2]).game_version, EXAMPLE_REPORT.game_version);
 });
 
+test("accepts a report with full gpu details", async () => {
+  const h = harness();
+  const reportWithGpu = {
+    ...report(),
+    gpu: {
+      adapter: "NVIDIA GeForce RTX 5070 (Vulkan)",
+      backend: "Vulkan",
+      driver: "NVIDIA",
+      driver_info: "617.42",
+      type: "DiscreteGpu",
+      vendor: "0x10de",
+    },
+  };
+  const response = await worker.fetch(request(reportWithGpu), h.env);
+
+  assert.equal(response.status, 204);
+  assert.equal(h.inserted.length, 1);
+  const stored = JSON.parse(h.inserted[0][2]);
+  assert.equal(stored.gpu.adapter, "NVIDIA GeForce RTX 5070 (Vulkan)");
+});
+
 test("rejects Schema 1 reports", async () => {
   const h = harness();
   const schema1Report = {
