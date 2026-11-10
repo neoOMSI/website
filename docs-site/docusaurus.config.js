@@ -31,6 +31,12 @@ const config = {
               banner: "unreleased",
               badge: true,
             },
+            "0.3.0": {
+              label: "0.3.0 Release Candidate",
+              path: "0.3.0",
+              banner: "unreleased",
+              badge: true,
+            },
             "0.2.3": {
               label: "0.2.3 Stable",
               banner: "none",

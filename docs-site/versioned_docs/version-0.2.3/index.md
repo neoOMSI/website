@@ -4,7 +4,7 @@ Guides for playing neoOMSI, hosting multiplayer sessions, and creating content: 
 
 neoOMSI is a 64-bit reimplementation of OMSI 2. It requires an installed copy of OMSI 2 and does not include the game's maps, vehicles, or other content.
 
-The documentation opens on **0.2.3 Stable**. Use the version menu to switch to the current development guide. Development builds may change or regress before release.
+The documentation opens on **0.2.3 Stable**. Use the version menu to switch to the 0.3.0 release candidate or the 0.4.0 Nightly development guide. Development builds may change or regress before release.
 
 ## Choose a guide
 

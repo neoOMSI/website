@@ -232,8 +232,9 @@ Set `OMSI_NO_SURF=1` before starting neoOMSI to disable OMSI `.surf` height maps
 
 How passengers choose stops, wait and board is described in [Passengers](passengers.md).
 
-> **Note:** with **Procedural passenger animation**, passengers duck under a path link's
-> `[next_roomheight]` since `0.3.0-rc.2`. The OMSI animation did so already before.
+> **New in 0.3.0:** with **Procedural passenger animation**, passengers duck under a path
+> link's `[next_roomheight]` since `0.3.0-rc.2`; `0.3.0-rc.4` also covers sitting down under a
+> low deck. The OMSI animation did so already before.
 
 **Options → Gameplay → Passenger movement** selects Natural or OMSI 2 movement.
 **Procedural passenger animation** independently selects the pose system. It is stored as
