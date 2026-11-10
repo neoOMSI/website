@@ -169,3 +169,11 @@ as an LED.
 folders or single files between installed content packs. Content without these tags keeps
 OMSI's lookup order. See [Shared assets](creators/shared-assets.md) for the syntax, the
 search order and the limits in OMSI 2.
+
+### Beam cookie headlamps
+
+<span id="spotlight-cookie"></span>
+
+Vehicles that declare their headlamps with `[spotlight_cookie]`, such as newer Sobol3D buses,
+get their light from a picture of the beam. See [Beam cookie headlamps](creators/spotlight-cookies.md)
+for the entry and the picture format.
