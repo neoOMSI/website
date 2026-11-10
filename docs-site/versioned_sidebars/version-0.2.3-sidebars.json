@@ -20,7 +20,8 @@
       "type": "category",
       "label": "Content creators",
       "items": [
-        "creators/html-textures"
+        "creators/html-textures",
+        "creators/lua-plugins"
       ]
     },
     {
