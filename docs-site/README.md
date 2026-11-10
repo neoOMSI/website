@@ -1,6 +1,6 @@
 # neoOMSI documentation site
 
-This is the public documentation site at `docs.neoomsi.com`. Content is English Markdown; Docusaurus builds stable 0.2.3 by default and the current 0.4.0 development docs under `/next/`. Search is generated locally at build time and does not send queries to a third party.
+This is the public documentation site at `docs.neoomsi.com`. Content is English Markdown; Docusaurus builds stable 0.2.3 by default and the 0.3.0 release candidate docs under `/next/`. Search is generated locally at build time and does not send queries to a third party.
 
 ## Local development
 

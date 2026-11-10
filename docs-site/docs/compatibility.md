@@ -15,7 +15,7 @@ The compatibility target is OMSI 2.2.032. This covers the behavior visible throu
 
 Start with a supported release and the content's required OMSI files installed. If the map or vehicle does not appear, check its loading messages for missing dependencies. A successful load does not guarantee that every feature has reached parity.
 
-This guide describes the **0.4.0 Nightly** line, including changes made after `0.3.0-rc.1`. Switch to **0.2.3 Stable** in the version menu to read the stable guide. Release candidates and nightlies may change without notice.
+This guide describes **0.3.0**, currently available as a release candidate. Switch to **0.2.3 Stable** in the version menu to read the stable guide. Release candidates and nightlies may change without notice.
 
 ## How to report a mismatch
 
@@ -51,7 +51,6 @@ neoOMSI also has features that are not present in OMSI 2. These are documented a
 
 <span id="material-led-glow"></span>
 
-The `[led_glow_effect]` material setting was added after 0.2.3 Stable. It lets supported
+The `[led_glow_effect]` material setting was added in 0.3.0. It lets supported
 content scale or disable a material's LED-matrix glow; other buses keep the existing automatic
-light-map detection. See the [0.4.0 Nightly guide](/next/compatibility/#material-led-glow) for
-the current behavior.
+light-map detection.

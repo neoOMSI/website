@@ -26,7 +26,7 @@ const config = {
           lastVersion: "0.2.3",
           versions: {
             current: {
-              label: "0.4.0 Nightly",
+              label: "0.3.0 Release Candidate",
               path: "next",
               banner: "unreleased",
               badge: true,

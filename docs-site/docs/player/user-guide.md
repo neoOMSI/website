@@ -215,9 +215,9 @@ Set `OMSI_NO_SURF=1` before starting neoOMSI to disable OMSI `.surf` height maps
 
 ## Passenger models and movement
 
-> **Since `0.3.0-rc.1`:** the current 0.4.0 nightly makes passengers duck under a path link's
-> `[next_roomheight]` with both movement systems. The release candidate did not include this
-> behavior.
+> **New in 0.3.0:** passengers duck under a path link's `[next_roomheight]` with both
+> movement systems. `0.3.0-rc.1` did not include this behavior, and release candidates before
+> `0.3.0-rc.5` did not cover every case; use the latest release candidate.
 
 **Settings → Gameplay → Passenger movement** selects Natural or OMSI 2 movement.
 **Procedural passenger animation** independently selects the pose system; `pax_ik`
