@@ -49,4 +49,4 @@ neoOMSI also has features that are not present in OMSI 2. These are documented a
 
 ### Material LED glow
 
-The `[led_glow_effect]` material setting was added in 0.3.0. See the [0.3.0 guide](/next/compatibility/#material-led-glow) for details.
+The `[led_glow_effect]` material setting was added in 0.3.0. See the [0.3.0 guide](/0.3.0/compatibility/#material-led-glow) for details.

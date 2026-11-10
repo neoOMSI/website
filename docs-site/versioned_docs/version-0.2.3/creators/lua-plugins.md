@@ -12,7 +12,7 @@ content root:
 Plugins in a mod load only after the player allows them on the Mods page.
 
 This page describes the Lua API of 0.2.3. Later versions add more events and functions;
-see the [0.3.0 guide](/next/creators/lua-plugins/).
+see the [0.3.0 guide](/0.3.0/creators/lua-plugins/).
 
 **Note:** the Lua API is still under development, so breaking changes may occur.
 
