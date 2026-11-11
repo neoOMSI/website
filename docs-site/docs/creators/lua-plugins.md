@@ -37,7 +37,8 @@ omsi.every(60, function()
 end)
 ```
 
-The file runs when the game starts, and again when a new drive starts after the main menu. Then the plugin hears events (see below),
+The file runs when the game starts, before the start menu, and again when the player goes
+back to it (see [The start menu](#the-start-menu)). Then the plugin hears events (see below),
 runs its timers and reads and writes the bus. A changed `.lua` file is loaded again while
 the game runs (the `stop` event, then a fresh start). The game looks for changes once a
 second; the saved data file (`*.save.lua`) and files in the plugin's data folder do not
@@ -57,8 +58,10 @@ A call into a plugin that runs longer than one second is stopped. A plugin whose
 fail ten times is switched off until it changes or the game restarts. Errors go to the
 log and appear on screen.
 
-Lua plugins run while the game runs, not while it is paused. Game events that happen
-during a pause wait for the next frame; keys pressed during a pause are not passed on.
+Lua plugins run while the game runs, not while it is paused. In the start menu they only
+start, stop and hear `menu_vehicle` and `menu_map` (see [The start menu](#the-start-menu)).
+Game events that happen during a pause wait for the next frame; keys pressed during a pause
+are not passed on.
 
 ## Events
 
@@ -72,7 +75,7 @@ function included. A plugin can use it for events of its own; it reaches no othe
 | `start` | | The plugin was loaded. |
 | `vehicle` | `name` | The player's vehicle changed; `nil` without one. Also right after `start` when the player already has a vehicle. |
 | `frame` | `dt` | Every frame, after timers and watches; seconds since the last. |
-| `stop` | | The plugin is unloaded: the drive ends (back to the main menu or the game exits) or the file changed. |
+| `stop` | | The plugin is unloaded: the drive ends (back to the main menu or the game exits), the file changed, or the Mods page changed the plugins (see [The start menu](#the-start-menu)). |
 | `key` | `key, down` | A key went down (`true`) or up. Keys by their code name: `KeyA`, `F5`, `Digit1`, `Space`. |
 | `next_stop` | `new, old` | The next stop of the duty changed: another name, or the same name at another stop number. |
 | `view` | `new, old` | The camera changed: `driver`, `pax`, `outside`, `free`, `foot`. |
@@ -85,6 +88,8 @@ function included. A plugin can use it for events of its own; it reaches no othe
 | `ticket_sold` | `name, price` | A ticket was sold at the cash desk. |
 | `service` | `kind, by, amount` | `refuel` (litres), `wash`, `repair` (minutes), `reset` or `teleport` (metres), by `player`, `plugin`, `host` or `game`. |
 | `red_light` | `speed_kmh` | The player's bus went over a stop line at red (see [Traffic lights](#traffic-lights)). |
+| `menu_vehicle` | `file, repaint, choice` | The vehicle chosen in the start menu changed (`nil`s once none is), or the plugin started in the menu with one chosen (see [The start menu](#the-start-menu)). |
+| `menu_map` | `name, map_path, choice` | The map chosen in the start menu, or its duty, entry point, date or time, changed (`nil`s once none is), or the plugin started in the menu with a map chosen (see [The start menu](#the-start-menu)). |
 
 Within a frame `vehicle` comes first, then the game's events (`crash` to `red_light`),
 timers, watches, `key`, `next_stop`, `view`, `duty` and `frame`. A failing handler of a
@@ -112,6 +117,7 @@ between two Lua frames, for instance during a pause; later ones are dropped.
 | `omsi.vehicle()` | Its name (manufacturer and model), or `nil`. |
 | `omsi.vehicle_manufacturer()`, `omsi.vehicle_model()` | The two halves of its `[friendlyname]`. |
 | `omsi.bus.file()` | Its file, relative to the game folder: `Vehicles/MAN_SD202/SD202.bus`. |
+| `omsi.bus.repaint()` | Its repaint's name, or `nil` for the model's own textures. |
 | `omsi.var(name)`, `omsi.set_var(name, value)` | A script variable of the bus. `set_var` returns `false` for a name the bus does not have. |
 | `omsi.str(name)`, `omsi.set_str(name, text)` | A string variable. |
 | `omsi.vars()`, `omsi.vars("str")` | The names of its variables, or of its string variables. |
@@ -154,6 +160,71 @@ eight commands are waiting in the same frame.
 `omsi.message(text, seconds)` shows a line on the screen (5 s by default).
 `omsi.log(...)`, `omsi.warn(...)` and `print(...)` write to the game's log.
 `omsi.version` and `omsi.name` are the game's version and the plugin's name.
+
+## The start menu
+
+> **New in 0.4.0:** the start-menu events and `omsi.menu`.
+
+Plugins load before the start menu, and again when the player goes back to it, so `start`
+and `stop` come while it is open: also for a changed file, and when the player allows or
+blocks a mod's plugins or uninstalls a mod on the Mods page. Besides those a plugin hears only
+the `menu_vehicle` and `menu_map` events there: `frame`, `key` and the other events, timers
+and watches wait until a game runs. In their handlers `omsi.has_vehicle()` is `false`,
+`omsi.command`, `omsi.duty.start` and `omsi.message` do nothing, and `omsi.send` and
+`omsi.data` work as in the game. Errors go to the log only, and do not count towards
+switching a plugin off.
+
+### The vehicle
+
+`omsi.menu.vehicle()` returns the vehicle chosen in the start menu while the menu is open,
+else `nil`; also `nil` in `start` (except when a changed file is loaded again in the menu),
+and when the player starts on foot. A table:
+
+| Field | |
+|---|---|
+| `file` | Its file, as the menu lists it and the settings keep it: `Vehicles/MAN_SD202/SD202.bus`. |
+| `manufacturer`, `model` | As the menu shows them: its `[friendlyname]`, the model else its name. |
+| `repaint` | The repaint chosen; while it is automatic, the one the map's depot line gives the bus, else `nil`. |
+| `repaint_auto` | Whether the repaint is left to the game. |
+| `depot`, `number`, `plate` | The depot file, fleet number and plate chosen; `nil` while automatic. |
+
+The repaint, depot, number and plate are known once the menu has read the bus, on the
+start page; until then the table has the file and names only.
+
+The `menu_vehicle` event comes when any of these changes, and once after each start of the
+plugin in the menu, with the file, the repaint and the whole table; with `nil`s when no
+vehicle is chosen any more (a start on foot):
+
+```lua
+omsi.on("menu_vehicle", function(file, repaint)
+  omsi.send(5005, string.format('{"bus":%q,"repaint":%q}', file, repaint or ""))
+end)
+```
+
+### The map
+
+`omsi.menu.map()` returns the map chosen in the start menu while the menu is open, else `nil`
+(as `omsi.menu.vehicle()`). It tells what the start button will launch. A table:
+
+| Field | |
+|---|---|
+| `name` | The map's name, as the menu shows it. |
+| `map_path` | Its folder relative to the game folder (`maps/Grundorf`), as `omsi.info().map_path` gives it in the game. |
+| `mode` | `duty` for a start on a line's tour, `free` for a free drive (also while no tour is chosen). |
+| `line`, `tour`, `trip` | On a duty: the line and tour, and the trip the drive starts with, counted as `omsi.info().trip` counts it (`nil` when the timetable has no trip leaving then or later). |
+| `entry` | The entry point the drive starts at: on a duty only when one is picked. |
+| `date`, `time` | The moment the drive starts: `2026-03-07`, `07:05` (a duty's trip may move it). |
+
+The `menu_map` event comes when any of these changes, and once after each start of the
+plugin in the menu, with the name, the folder and the whole table; with `nil`s when no map
+is chosen any more:
+
+```lua
+omsi.on("menu_map", function(name, map_path, m)
+  if not m then return end
+  omsi.send(5005, string.format('{"map":%q,"line":%q}', name, m.line or ""))
+end)
+```
 
 ## Duties
 
