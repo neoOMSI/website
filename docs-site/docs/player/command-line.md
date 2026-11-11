@@ -93,7 +93,7 @@ running a server.
 | `--lan-host <port>`    | Host a session on this UDP port. `0` uses port 27015, or the next free one.                                              |
 | `--lan-join <address>` | Join a host at `ip[:port]` (port 27015 when left out), `auto` to find one on the local network, or `neoomsi` for the official server. |
 | `--lan-name <name>`    | Your name as the other players see it. Default: `Driver`.                                                                |
-| `--server <file>`      | Run a dedicated server from this `server.cfg` (created with the defaults when missing), with no window, sound or graphics card. |
+| `--server <file>`      | Run a dedicated server from this `server.toml` (created with the defaults when missing), with no window, sound or graphics card. |
 
 ## Export and automated runs
 
