@@ -77,4 +77,4 @@ LIMIT 20;
 
 Daily scheduled cleanup deletes reports after 30 days. To remove all reports manually, run `DELETE FROM reports;` through `wrangler d1 execute`. Reports intentionally have no per-player identifier, so individual reports cannot be located or deleted on request.
 
-The endpoint accepts only schema version 2, rejects unknown fields and payloads over 32 KiB, and returns no report data to callers. Do not add raw logs, paths, maps, vehicle names, account IDs, or device identifiers to the schema.
+The endpoint accepts schema versions 2 and 3, rejects unknown fields and payloads over 32 KiB, and returns no report data to callers. Do not add raw logs, paths, maps, vehicle names, account IDs, or device identifiers to the schema.
