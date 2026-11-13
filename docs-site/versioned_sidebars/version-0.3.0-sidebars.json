@@ -29,6 +29,7 @@
         "creators/html-textures",
         "creators/trolleybuses",
         "creators/shared-assets",
+        "creators/ticket-functions",
         "creators/lua-plugins"
       ]
     },
