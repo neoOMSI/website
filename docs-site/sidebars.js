@@ -24,6 +24,7 @@ module.exports = {
       type: "category",
       label: "Content creators",
       items: [
+        "creators/map-creators",
         "creators/html-textures",
         "creators/trolleybuses",
         "creators/shared-assets",

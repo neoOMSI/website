@@ -17,6 +17,7 @@ These pages describe **0.4.0 Nightly**. The version menu switches between this d
 - [Troubleshooting](player/troubleshooting.md): log files, bug and performance reports, and common problems.
 - [Linux controller axes](player/linux-controller-axes.md): wheel, pedal, and gamepad axis settings.
 - [Dedicated server](server.md): run a headless server and configure multiplayer.
+- [Map Creators](creators/map-creators.md) covers assigning AI bus drivers by depot.
 - [HTML textures](creators/html-textures.md): create a vehicle or scenery dashboard in HTML, CSS, and JavaScript.
 - [Trolleybuses](creators/trolleybuses.md): configure TrolleyGrid buses, wires, and switches.
 - [Shared assets](creators/shared-assets.md): reuse textures, scripts, and models from other installed content packs.
