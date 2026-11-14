@@ -332,74 +332,138 @@ need a few changes. When something doesn't show up, check this list first.
 
 * Nested elements, `<style>`, `<script>`, inline `style=""`, `id`, `class`, entities such as
   `&amp;`.
-* Block elements: `div`, `p`, `h1`, `h2`, `h3` (with browser-like default sizes and margins).
-* Inline elements: `span`, `b`, `strong`, `i`, `em`, `a`, `small`, `u`, `label`, `code`, and
-  `<br>`.
+* Headings `h1` to `h6`, `p`, `div`, `blockquote`, `pre`, `hr` and the usual inline elements
+  (`span`, `b`, `strong`, `i`, `em`, `a`, `small`, `u`, `s`, `sub`, `sup`, `code`, `<br>` ...),
+  with browser-like default sizes and margins.
+* Lists (`ul`, `ol`, `li`) and tables (`colspan`, `rowspan`, `cellpadding`, `cellspacing`,
+  `border`).
 * `<button>` comes with a default look (grey, rounded, padded). Boxes with
   `display:inline-block` are laid out in rows that wrap, which is what you want for keypads
-  and lists. A box without a `width` is as wide as its content.
-* `<img src width height>` (bmp, dds, tga, jpg, png). The file is looked up next to the page (see
-  `htmlengine/images.rs`). `img.src` can be changed from a script. Pictures are cached,
-  a missing file is cached too.
+  and lists. A box without a `width` is as wide as its content. `input`, `select`, `textarea`,
+  `progress` and `meter` are drawn too.
+* `<img src width height>` (bmp, dds, tga, jpg, png). The file is looked up next to the page.
+  `img.src` can be changed from a script. Pictures are cached, a missing file is cached too.
 * `<head>`, `<title>`, `<meta>`, `<link>` are read and then ignored.
 
-Not available: canvas, tables, lists (`ul`/`li`), forms and `input` fields, iframes, video, svg.
+`canvas`, `video`, `svg` and `iframe` are drawn as empty boxes.
 
 ### CSS
 
-* Selectors: tag, `#id`, `.class`, `*`, combinations like `div.a#b`, descendant chains (`.panel span`) and comma lists.
+* Selectors: tag, `#id`, `.class`, `*`, combinations like `div.a#b`, descendant chains
+  (`.panel span`) and comma lists.
 * Properties: `color`, `background` / `background-color`, `background-image: url()`,
   `background-size`, `background-repeat`, `background-position`, `font-size`, `font-weight`,
   `text-align`, `line-height`, `margin` (and `-top/-right/-bottom/-left`), `padding` (same),
   `width`, `height`, `display` (`none`, `inline`, `inline-block`), `visibility`,
-  `border-radius`.
+  `border` (and its sides, `-width`, `-color`, `-style`), `border-radius`, `border-collapse`,
+  `border-spacing`, `text-decoration`, `text-transform`, `white-space`, `vertical-align`,
+  `list-style`, and for layers `position`, `top`, `right`, `bottom`, `left`, `inset`,
+  `z-index`, `overflow`, `text-overflow` and `opacity`.
 * Units: `px`, `%`, `em`, `rem`, `pt`, `vw`, `vh`.
-* Layout is plain block flow with wrapped inline text.
+* Layout is block flow with wrapped inline text, plus positioned layers (see below).
 
-Not available: flexbox, grid, floats, `position`, borders, gradients, shadows, `opacity`,
-`overflow`, animations and transitions, custom fonts. Text is drawn in Roboto.
+Not available: flexbox, grid, floats, gradients, shadows, transforms, animations and
+transitions, custom fonts. Text is drawn in Roboto.
 
-Since there is no `overflow`, a box doesn't clip its content. If a text is too long for its
-box, shorten it yourself.
+### Layers and exact positions
+
+Most vehicle displays are a background picture with texts and icons at fixed pixel positions
+on top of it. Build them with `position: absolute`:
+
+```html
+<style>
+    html, body { margin: 0; overflow: hidden; }
+    #screen { position: relative; width: 1440px; height: 960px;
+              background: url(img/background.png); }
+    .label  { position: absolute; color: #fff; font-size: 32px; white-space: nowrap; }
+</style>
+<div id="screen">
+    <div class="label" id="line" style="left: 40px; top: 30px;"></div>
+    <div class="label" id="dest" style="left: 200px; top: 30px; width: 600px;
+         overflow: hidden; text-overflow: ellipsis;"></div>
+    <img src="img/door.png" style="position: absolute; right: 40px; bottom: 40px;">
+</div>
+```
+
+* Positions are texture pixels (or `%`), counted from the inside of the border of the nearest
+  ancestor whose `position` is not `static`. Without such an ancestor they count from the
+  top left corner of the texture. `position: fixed` always counts from the texture.
+* An absolute box takes no room in the normal flow. Without a `width` it is as wide as its
+  content. With both `left` and `right` (or `top` and `bottom`) it fills the space between
+  them, and `margin: 0 auto` centres it there.
+* `position: relative` moves a box by its offsets, but what follows stays where it was. On an
+  inline element such as `<span>` only pixel offsets work.
+* Positioned boxes are drawn above the normal content, later ones over earlier ones.
+  `z-index` changes the order of boxes inside the same positioned parent. A negative value
+  puts a box behind the normal content.
+* `overflow: hidden` (also `auto`, `scroll`, `clip`) cuts text and pictures at the edge of the
+  box, and clicks on the cut-off part don't reach it. With `white-space: nowrap` and
+  `text-overflow: ellipsis` a line that is too long ends with `…`.
+* `opacity` fades a box together with everything in it. Up to four faded boxes can sit inside
+  each other; deeper ones are drawn without fading.
+* Setting `element.style.left`, `.top` or `.zIndex` from a script moves a box, and
+  `display: none` hides it.
 
 ### JavaScript
 
-The language is ES5 plus arrow functions.
+The language is ES5 plus arrow functions and a few later additions.
 
-* Language: `var`, `let`, `const`, functions, `if`, `for`, `while`, objects, arrays.
+* Language: `var`, `let` and `const` (all scoped like `var`), functions, `if`, `for`, `while`,
+  `for ... in` (keys in alphabetical order), `for ... of`, `try` / `catch` / `finally`,
+  `throw`, `new`, `this`, objects, arrays, regular expressions like `/\d+/g`.
+* Operators: besides the usual ones also `**`, `??`, the bit operators (`|`, `&`, `^`, `~`,
+  `<<`, `>>`, `>>>`), `instanceof`, `typeof`, `delete`.
 * Globals: `Math` (`round`, `floor`, `ceil`, `abs`, `min`, `max`, `sqrt`, `pow`, `trunc`,
-  `sin`, `cos`, `PI`), `parseInt`, `parseFloat`, `String`, `Number`, `isNaN`, `NaN`,
-  `Infinity`, `Object.keys`, `console.log/warn/error`.
-* Strings: `split`, `replace`, `trim`, `indexOf`, `charAt`, `slice`, `substring`,
-  `startsWith`, `endsWith`, `includes`, `toUpperCase`, `toLowerCase`, `padStart`, `padEnd`,
-  `repeat`. Numbers: `toFixed`, `toString`.
-* Arrays: `push`, `pop`, `shift`, `slice`, `join`, `indexOf`, `includes`, `map`, `filter`,
-  `forEach`.
+  `sin`, `cos`, `PI`), `JSON.parse` and `JSON.stringify` (object keys come out sorted),
+  `RegExp`, `Error`, `TypeError`, `RangeError`, `SyntaxError`, `Array.isArray`, `parseInt`,
+  `parseFloat`, `String`, `Number`, `isNaN`, `NaN`, `Infinity`, `Object.keys`,
+  `console.log/warn/error`.
+* Strings: `split`, `replace`, `replaceAll`, `match`, `search`, `trim`, `trimStart`,
+  `trimEnd`, `indexOf`, `lastIndexOf`, `charAt`, `charCodeAt`, `slice`, `substring`,
+  `startsWith`, `endsWith`, `includes`, `concat`, `localeCompare`, `toUpperCase`,
+  `toLowerCase`, `padStart`, `padEnd`, `repeat`, and `text[i]`. `split`, `replace`,
+  `replaceAll`, `match` and `search` take a string or a regular expression; `replace` knows
+  `$1`, `$&` and a function as the replacement. Numbers: `toFixed`, `toString`.
+* Regular expressions: `test`, `exec`, `lastIndex` and the flags `g`, `i`, `m`, `s`, `y`.
+  Look-ahead and look-behind (`(?=...)`) and back references (`\1`) are not supported; such a
+  pattern throws a `SyntaxError`.
+* Arrays: `push`, `pop`, `shift`, `unshift`, `slice`, `splice`, `concat`, `reverse`, `sort`
+  (stable, with or without a compare function), `join`, `indexOf`, `lastIndexOf`,
+  `includes`, `map`, `filter`, `forEach`, `find`, `findIndex`, `some`, `every`, `reduce`.
+* Errors: a caught error has `name` and `message`. Errors of the engine itself, such as
+  calling something that is not a function or parsing bad JSON, can be caught too.
 * Timers: `setTimeout`, `setInterval`, `clearTimeout`, `clearInterval`. They run while the
   page is being drawn and use real time, not simulation time.
 * DOM: `document.getElementById`, `document.querySelector`, `document.body`,
   `createElement`, `appendChild`, `removeChild`, `remove`, `parentNode`, `getAttribute`,
   `setAttribute`, `classList` (`add`, `remove`, `toggle`, `contains`), `textContent`,
-  `innerText`, `innerHTML` (with markup), `className`, `id`, and `element.style.*`.
+  `innerText`, `innerHTML` (with markup), `className`, `id`, and `element.style.*`. Inside
+  `onclick="..."` and in listeners, `this` is the element.
 
-Not available: `Date` (read the time from `omsi.time` instead), `JSON`, `fetch` and any
-network access, `localStorage`, `Promise`/`async`, classes, `new`, regular expressions, and
-the statements `switch`, `do ... while` and `try/catch`. Use `if/else` chains and `while`
-loops instead. `typeof`, `break` and `continue` do work.
+Not available: `Date` (read the time from `omsi.time` instead), `fetch` and any network
+access, `localStorage`, `Promise`/`async`, `class`, `switch`, `do ... while`, getters and
+prototypes. Use `if/else` chains and `while` loops instead.
 
 At most 64 timers can be active at once. Further `setTimeout`/`setInterval` calls are
 ignored.
 
-Two limits protect the game from runaway pages. A single run of your script may execute about
-400,000 steps, and nesting (function calls, elements) is capped at 48 levels. Normal pages
-never get near either. An endless loop just gets cut off.
+When a script fails, the game log says where, for example
+`htmltexture: script 1 error: line 14, column 23: unexpected character '@'`. Scripts are
+counted from 0 in the order of the page, lines from the start of that `<script>` block.
+
+A few limits protect the game from runaway pages. A single run of your script may take about
+400,000 steps and at most 250 ms. Strings can be up to 16 MB and arrays up to about a million
+values long (beyond that you get a `RangeError`). Scripts can be nested 96 levels deep and
+function calls 48 levels deep, and very deeply nested markup (hundreds of levels) is not
+drawn. Normal pages never get near any of these. An endless loop just gets cut off.
 
 ### Redrawing
 
 A page is redrawn when the DOM or the styles change. The simplest pattern, and the one that
 works best in this engine, is to rebuild a block with `innerHTML` in your `update` function
 and only do that when the data actually changed (compare against the last values you saw).
-Redrawing on every call wastes time on a slow phone.
+Redrawing on every call wastes time on a slow phone. On a screen made of layers, it is
+cheaper to change the text of the positioned elements than to rebuild the whole screen.
 
 ## Tips for beginners
 
