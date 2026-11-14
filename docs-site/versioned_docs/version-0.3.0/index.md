@@ -4,7 +4,7 @@ Guides for playing neoOMSI, hosting multiplayer sessions, and creating content: 
 
 neoOMSI is a 64-bit reimplementation of OMSI 2. It requires an installed copy of OMSI 2 and does not include the game's maps, vehicles, or other content.
 
-These pages describe **0.3.0**, currently available as a release candidate. The version menu switches between this guide, the **0.4.0 Nightly** development guide and **0.2.3 Stable**, which is the default for most visitors. Release candidates and nightlies may change or regress before release.
+These pages describe **0.3.0 Stable**. The version menu also offers the **0.4.0 Nightly** development guide.
 
 ## Choose a guide
 
@@ -20,6 +20,7 @@ These pages describe **0.3.0**, currently available as a release candidate. The 
 - [HTML textures](creators/html-textures.md): create a vehicle or scenery dashboard in HTML, CSS, and JavaScript.
 - [Trolleybuses](creators/trolleybuses.md): configure TrolleyGrid buses, wires, and switches.
 - [Shared assets](creators/shared-assets.md): reuse textures, scripts, and models from other installed content packs.
+- [Ticket validator events](creators/ticket-functions.md) covers reacting to a completed validator interaction.
 - [Lua plugins](creators/lua-plugins.md): script events, timers, duties, and the player's bus with neoOMSI's Lua API.
 - [Compatibility](compatibility.md): what neoOMSI aims to support and how to report a problem.
 

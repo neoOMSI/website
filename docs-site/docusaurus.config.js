@@ -23,7 +23,7 @@ const config = {
           routeBasePath: "/",
           sidebarPath: "./sidebars.js",
           editUrl: "https://github.com/neoOMSI/website/edit/main/docs-site/",
-          lastVersion: "0.2.3",
+          lastVersion: "0.3.0",
           versions: {
             current: {
               label: "0.4.0 Nightly",
@@ -32,13 +32,8 @@ const config = {
               badge: true,
             },
             "0.3.0": {
-              label: "0.3.0 Release Candidate",
-              path: "0.3.0",
-              banner: "unreleased",
-              badge: true,
-            },
-            "0.2.3": {
-              label: "0.2.3 Stable",
+              label: "0.3.0 Stable",
+              path: "",
               banner: "none",
               badge: true,
             },

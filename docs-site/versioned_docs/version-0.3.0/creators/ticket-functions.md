@@ -2,7 +2,7 @@
 
 A vehicle script can respond when a passenger finishes using the ticket validator. Use this event to update a ticket machine, increment a scan counter, or play a confirmation sound. It fires once per completed validator interaction. A passenger walking past the validator or requesting a ticket at the cash desk does not trigger it.
 
-This is a neoOMSI extension. For 0.3.0 release candidates, use a build that includes the passenger validator event.
+This neoOMSI extension is available in 0.3.0 Stable.
 
 ## Set up the vehicle
 
