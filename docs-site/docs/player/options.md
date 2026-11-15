@@ -142,6 +142,53 @@ is a downgrade.
 **Coming from openOMSI** (shown when openOMSI is installed) takes its gamepads, steering wheels
 and key bindings. Mods and plugins are described under [Modding](user-guide.md#modding).
 
+### HOF Organiser
+
+Open **Options → Game & Updates → HOF Organiser** to organise depot files (`.hof`)
+from your OMSI 2 installation. The organiser scans the `Vehicles` folders, suggests which
+maps each HOF belongs to, and copies the reviewed files into neoOMSI's library. You can
+import files from several buses and maps in one batch.
+
+#### Scan and assign HOFs
+
+1. Select **Scan OMSI 2** to find HOF files in your OMSI 2 vehicle folders.
+2. Review each file's suggested map assignment and the destination filename before importing.
+   Exact map-name matches take precedence over depot references found in other maps.
+3. Change an assignment if needed. Choose **All Maps** for a HOF that should be available
+   on every map, or leave a file unassigned to skip it.
+4. Select **Run import plan**, then **Import files** to copy the assigned HOFs. The import
+   processes assignments across all pages, not just the page currently shown.
+
+Identical HOFs can share one imported file; bus-specific variants are retained. Skipped
+and unassigned originals are not removed. Use the **HOF file filter** to review files
+without an assignment, including unreadable files, or return to **Show all HOFs**.
+
+#### Keep, back up or remove originals
+
+After a successful import, choose what to do with the original HOFs in OMSI 2:
+
+- **Keep originals** leaves the source files in their vehicle folders.
+- **Remove originals** removes eligible originals only after the corresponding imports
+  have been verified.
+- **Back up to ZIP and remove** creates and verifies a ZIP backup before removing
+  eligible originals.
+
+Only verified imports are eligible for removal. Files that were skipped or left
+unassigned remain in their original locations.
+
+#### Restore a backup
+
+Choose **Restore HOF backup**, select the ZIP file with **Choose ZIP**, and restore its
+HOFs to their original OMSI 2 vehicle folders. **Existing files are kept**, not
+replaced. Run **Scan OMSI 2** again afterwards to refresh the organiser's results.
+
+#### New maps and updated files
+
+When a new map is installed, neoOMSI can prompt you to scan for its HOFs. After a scan,
+**Show new and updated HOFs** filters for new files, changed files, and files whose
+suggested map assignment has changed since the previous scan. If a bus's imported HOFs
+change, neoOMSI can offer to **Copy updates** into its library.
+
 ## OMSI parity
 
 | Option | What it does | `[parity]` key | Default |
