@@ -417,7 +417,8 @@ need a few changes. When something doesn't show up, check this list first.
   (`(width >= 800px)`, `(400px <= width <= 900px)`); `em` in a query is 16 px. One page can so serve displays of
   different sizes. `@supports` blocks are always used.
 
-Not available: filters, 3D transforms, `clip-path` and `columns`.
+Not available: `backdrop-filter`, masks (`mask-image`), `clip-path: path()` and `url()`, and
+`transform-style: preserve-3d` (3D boxes are flattened into their parent).
 
 ### Floats
 
@@ -482,8 +483,29 @@ the room of a bar between buttons:
   browser draws.
 * `transform`: `translate()`, `translateX/Y()`, `scale()`, `scaleX/Y()`, `rotate()`, `skew()`, `skewX/Y()` and
   `matrix()`, several in a row, with `transform-origin`. A transformed box takes no other room, and clicks reach it
-  where it is drawn. Up to four transformed or faded boxes can sit inside each other; deeper ones are drawn plain. Only
-  what lies on the texture before the transform is drawn.
+  where it is drawn. Up to four transformed, faded, filtered or clipped boxes can sit inside each other; deeper ones
+  are drawn plain. Only what lies on the texture before the transform is drawn.
+* 3D: `rotateX()`, `rotateY()`, `rotateZ()`, `rotate3d()`, `translate3d()`, `translateZ()`, `scale3d()`, `scaleZ()`,
+  `matrix3d()` and `perspective()` in `transform`, and `perspective` on the parent (its vanishing point is taken at the
+  middle of the transformed box). `backface-visibility: hidden` hides a box that turns its back.
+* `filter`: `blur()`, `brightness()`, `contrast()`, `grayscale()`, `sepia()`, `invert()`, `saturate()`,
+  `hue-rotate()`, `opacity()` and `drop-shadow()`, several in a row. They work on the box and everything in it.
+* `clip-path`: `inset()` (with `round`), `circle()`, `ellipse()` (with `at`) and `polygon()` on the border box. What is
+  cut off is not drawn and takes no clicks.
+
+### Columns
+
+`column-count`, `column-width` or `columns` share the content of a box out over columns of the same height, with
+`column-gap` (1em by default) and `column-rule` between them:
+
+```css
+.stops { column-count: 2; column-gap: 24px; column-rule: 1px solid #555; }
+```
+
+* A paragraph may break between its lines; other boxes go to a column whole.
+* With a `height` the columns are that tall, and what does not fit goes into further columns to the right; without
+  one the columns are balanced.
+* `column-span`, `column-fill` and breaks (`break-inside` ...) are not read.
 
 ### Animations and transitions
 
@@ -570,7 +592,18 @@ The language is ES5 plus most of the later everyday additions.
   `while`, `do ... while`, `for ... in` (keys in alphabetical order), `for ... of`, `try` / `catch` / `finally`,
   `throw`, `new`, `this`, objects (with `{ a, b }`, methods `{ draw() {} }` and `get`/`set`), arrays, regular
   expressions like `/\d+/g`.
-* Template strings: `` `Linie ${line} in ${minutes} min` ``, nested too.
+* Template strings: `` `Linie ${line} in ${minutes} min` ``, nested too, and tagged templates
+  (`` tag`text ${x}` `` calls `tag(strings, x)`; `` String.raw`C:\new` `` keeps the backslashes). The `strings` a tag
+  gets are a plain array, without `strings.raw`.
+* Objects: computed keys (`{ [key]: value }`, `{ [Symbol.iterator]() {} }`, also in classes).
+* `Symbol()`, `Symbol.for()`, `Symbol.iterator` and `description`; symbol keys are not listed by `Object.keys`,
+  `for ... in` or `JSON.stringify`.
+* Iterators: arrays, strings, `Map` and `Set` have `[Symbol.iterator]()`, and `keys()`, `values()`, `entries()` give
+  iterator objects with `next()`. Your own objects become iterable with a `[Symbol.iterator]()` that returns
+  `{ next() { return { value, done }; } }`; `for ... of`, `...`, `Array.from` and destructuring take them.
+* Generators: `function*`, `*method()` in classes and objects, `yield`, `yield*`, and `next(v)`, `return(v)`,
+  `throw(e)` on the generator. `for ... of` asks for one value at a time, so an endless generator with a `break` is
+  fine. At most 256 generators can be running at once.
 * Optional chaining: `omsi.vehicle?.route?.current?.name`, `list?.[0]`, `callback?.()`. When the left side is `null`
   or `undefined` the whole chain is `undefined`.
 * Spread and rest: `[...a, ...b]`, `{ ...defaults, ...options }`, `f(...args)`, `Math.max(...list)`,
@@ -579,11 +612,13 @@ The language is ES5 plus most of the later everyday additions.
   `const { line, stops: [first] = [] } = route;`, `for (const [key, value] of map)`, and swapping with
   `[a, b] = [b, a]`. Default parameter values (`function f(a = 1)`) too.
 * `Map` and `Set` (`get`, `set`, `add`, `has`, `delete`, `clear`, `size`, `forEach`, `keys`, `values`, `entries`, and
-  `new Map([[k, v]])` / `new Set(list)`), in insertion order; objects as keys compare by identity. `keys()`,
-  `values()` and `entries()` give arrays, which `for ... of`, `...` and `Array.from` take.
+  `new Map([[k, v]])` / `new Set(list)`), in insertion order; objects as keys compare by identity. `WeakMap` and
+  `WeakSet` take objects as keys only and cannot be counted or listed.
 * Classes: `class`, `constructor`, methods, fields (`count = 0;`), `static` methods and fields, `get`/`set`,
   `extends` (also `extends Error`), `super(...)`, `super.method()` and `instanceof`. Methods are not listed by
-  `Object.keys`, `for ... in` or `JSON.stringify`. Private names (`#x`) are not supported.
+  `Object.keys`, `for ... in` or `JSON.stringify`. Private fields and methods (`#count`, `#bump()`, also `static`) are
+  kept out of `Object.keys`, `for ... in` and `JSON.stringify` (the engine does not stop code outside the class from
+  reading them).
 * Asynchronous code: `Promise` (`then`, `catch`, `finally`, `Promise.resolve`, `reject`, `all`, `allSettled`, `race`,
   `any`), `async function`, `async` arrows and methods, and `await`. Promise reactions run right after the script,
   update, event or timer that caused them. A rejection nobody handles is written to the log as
@@ -642,9 +677,9 @@ The language is ES5 plus most of the later everyday additions.
 * After `innerHTML` replaces some elements, `getElementById` and `querySelector` find the new ones; the old ones are
   gone from the page (`isConnected` is `false`).
 
-Not available: `fetch` beyond the page's files and any network access, `XMLHttpRequest`, generators (`function*`),
-`Symbol`, `WeakMap`/`WeakSet`, iterator objects (`map.keys().next()`), tagged templates, private class names and
-prototypes (`Foo.prototype`).
+Not available: `fetch` beyond the page's files and any network access, `XMLHttpRequest`, async generators
+(`async function*`, `for await`), iterator helpers (`iterator.map()`), `Proxy`, `Reflect`, and prototypes
+(`Foo.prototype`, `Object.create`).
 
 At most 64 timers can be active at once. Further `setTimeout`/`setInterval` calls are
 ignored. At most 64 async calls can wait at an `await` at the same time; further ones are rejected with a
