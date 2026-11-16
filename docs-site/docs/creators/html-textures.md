@@ -339,8 +339,15 @@ document.addEventListener('click', function (e) {
 ```
 
 * Adding the same function twice for the same event keeps it once, as in a browser; `removeEventListener` takes it
-  away. `el.onclick = f` replaces an `onclick="..."` attribute but leaves the `addEventListener` listeners alone, and
-  `el.onclick = null` clears it.
+  away, and `{ once: true }` removes it after its first call. `el.onclick = f` replaces an `onclick="..."` attribute
+  but leaves the `addEventListener` listeners alone, and `el.onclick = null` clears it.
+* `e.stopPropagation()` stops the bubbling, `e.stopImmediatePropagation()` also the other listeners of the same
+  element; `e.preventDefault()` sets `e.defaultPrevented`. `e.offsetX`/`offsetY` are inside the target's box,
+  `clientX`/`clientY` on the texture.
+* `pointerdown`, `pointerup` and `pointermove` come before their `mouse...` events. A `click` goes to the nearest
+  element that holds both the press and the release.
+* `DOMContentLoaded` (on `document` and `window`) and `load` (on `window`, also `<body onload="...">`) fire once after
+  all scripts of the page ran.
 
 There is no keyboard input, no hover and no drag and drop. Build keypads and lists from
 buttons or boxes and react to `click`. `mousemove` arrives while the pointer moves over the page, which is enough for
@@ -658,7 +665,8 @@ The language is ES5 plus most of the later everyday additions.
   `new Map([[k, v]])` / `new Set(list)`), in insertion order; objects as keys compare by identity. `WeakMap` and
   `WeakSet` take objects as keys only and cannot be counted or listed.
 * Classes: `class`, `constructor`, methods, fields (`count = 0;`), `static` methods and fields, `get`/`set`,
-  `extends` (also `extends Error`), `super(...)`, `super.method()` and `instanceof`. Methods are not listed by
+  `extends` (also `extends Error` and a plain constructor function), `super(...)`, `super.method()` (also in a
+  `static` method), `this.constructor` and `instanceof`. Methods are not listed by
   `Object.keys`, `for ... in` or `JSON.stringify`. Private fields and methods (`#count`, `#bump()`, also `static`) are
   kept out of `Object.keys`, `for ... in` and `JSON.stringify` (the engine does not stop code outside the class from
   reading them).
@@ -669,15 +677,21 @@ The language is ES5 plus most of the later everyday additions.
 * Operators: besides the usual ones also `**`, `??`, the bit operators (`|`, `&`, `^`, `~`,
   `<<`, `>>`, `>>>`), `instanceof`, `typeof`, `delete`.
 * Globals: `Math` (`round`, `floor`, `ceil`, `abs`, `min`, `max`, `sqrt`, `pow`, `trunc`,
-  `sin`, `cos`, `random`, `PI`), `JSON.parse` and `JSON.stringify` (object keys come out sorted),
+  `sin`, `cos`, `random`, `PI`), `JSON.parse` (also with a reviver) and `JSON.stringify` (with getters, `toJSON()`, a replacer function or key list,
+  and indentation),
   `RegExp`, `Error`, `TypeError`, `RangeError`, `SyntaxError`, `Array.isArray`, `parseInt`,
   `parseFloat`, `String`, `Number`, `isNaN`, `NaN`, `Infinity`, `Object.keys`,
-  `Object.entries`, `Object.values`, `Object.assign`, `Object.fromEntries`, `Array.from` (also `Array.from({ length: n }, f)`),
-  `console.log/warn/error`, `performance.now()`, `window.innerWidth`/`innerHeight` (the texture size).
+  `Object.entries`, `Object.values`, `Object.assign`, `Object.fromEntries`, `Object.hasOwn`, `Object.is`, `Array.from` (also `Array.from({ length: n }, f)`),
+  `console.log/warn/error`, `performance.now()`, `window.innerWidth`/`innerHeight` (the texture size), and `window`
+  as `globalThis`, `self` and `this` at the top of a script.
 * `Date` runs on the **simulation clock**: `new Date()` and `Date.now()` are `omsi.timestamp`, with the getters and
-  setters (`getHours()`, `setMinutes()` ...), `toISOString()`, `toLocaleTimeString()`, `toLocaleDateString()` (English
-  or the European order, by `omsi.locale` or the argument), `Date.UTC()` and `Date.parse()` for ISO dates
-  (`2026-11-15T08:30:00`). The simulation has no time zone, so local time and UTC are the same. Before the page's
+  setters (`getHours()`, `setMinutes()` ...), `toISOString()`, `toLocaleTimeString()`, `toLocaleDateString()` and
+  `toLocaleString()` (by `omsi.locale` or the argument: `3/5/2026` in American English, `05/03/2026` in British
+  English and French, `5.3.2026` in German, `5-3-2026` in Dutch, `2026-03-05` in Swedish ...; with the options
+  `weekday`, `day`, `month`, `year`, `hour`, `minute`, `second` and `hour12`; month and weekday names in English,
+  German, French, Spanish, Italian, Dutch and Portuguese, other languages get the English ones), `Date.UTC()` and
+  `Date.parse()` for ISO dates (`2026-11-15T08:30:00`), `11/15/2026`, `Nov 15, 2026 08:30` and what `toString()` and
+  `toUTCString()` write. The simulation has no time zone, so local time and UTC are the same. Before the page's
   first `update`, the clock reads 1 January 1970.
 * `localStorage` (`getItem`, `setItem`, `removeItem`, `clear`, `key`, `length`) keeps texts between game sessions.
   Pages in the same folder share it; it holds up to 5 MB (beyond that `setItem` throws a `QuotaExceededError`). It is
@@ -691,10 +705,13 @@ The language is ES5 plus most of the later everyday additions.
   `startsWith`, `endsWith`, `includes`, `concat`, `localeCompare`, `toUpperCase`,
   `toLowerCase`, `padStart`, `padEnd`, `repeat`, and `text[i]`. `split`, `replace`,
   `replaceAll`, `match` and `search` take a string or a regular expression; `replace` knows
-  `$1`, `$&` and a function as the replacement. Also `at`, `substr`, `codePointAt`, `matchAll`, `normalize`,
-  `String.fromCharCode`. Numbers: `toFixed`, `toPrecision`, `toString` (also with a radix, `(255).toString(16)`),
-  `valueOf` and `toLocaleString` (with `minimumFractionDigits`, `maximumFractionDigits`, `useGrouping`; English,
-  Japanese, Chinese and Korean write `1,234.5`, French, Polish, Russian, Swedish ... `1 234,5`, the others `1.234,5`).
+  `$1`, `$&` and a function as the replacement. Also `at`, `substr`, `codePointAt`, `matchAll`, `normalize` (`NFC`,
+  `NFD`, `NFKC`, `NFKD`), `toLocaleUpperCase`, `toLocaleLowerCase`, `String.fromCharCode`. Numbers: `toFixed`,
+  `toPrecision`, `toExponential`, `toString` (also with a radix, `(255).toString(16)`), `valueOf` and
+  `toLocaleString` (with `minimumFractionDigits`, `maximumFractionDigits`, `minimumIntegerDigits`,
+  `maximumSignificantDigits`, `useGrouping` and `style: 'percent'` or `'currency'` with `currency: 'EUR'` ...;
+  English, Japanese, Chinese and Korean write `1,234.5`, French, Polish, Russian, Swedish ... `1 234,5`, the others
+  `1.234,5`; Spanish and Polish group from five digits on).
   `Number.isFinite`, `isInteger`, `isNaN`, `MAX_SAFE_INTEGER`, `EPSILON` ..., the global `isFinite`, and `Math`
   with `atan2`, `tan`, `log`, `log10`, `exp`, `sign`, `hypot`, `cbrt` and the other functions and constants.
 * Regular expressions: `test`, `exec`, `lastIndex` and the flags `g`, `i`, `m`, `s`, `y`.
@@ -702,7 +719,8 @@ The language is ES5 plus most of the later everyday additions.
   pattern throws a `SyntaxError`.
 * Arrays: `push`, `pop`, `shift`, `unshift`, `slice`, `splice`, `concat`, `reverse`, `sort`
   (stable, with or without a compare function), `join`, `indexOf`, `lastIndexOf`,
-  `includes`, `map`, `filter`, `forEach`, `find`, `findIndex`, `some`, `every`, `reduce`.
+  `includes`, `map`, `filter`, `forEach`, `find`, `findIndex`, `some`, `every`, `reduce`, and the copying `toSorted`,
+  `toReversed`, `toSpliced` and `with`.
 * Errors: a caught error has `name` and `message`. Errors of the engine itself, such as
   calling something that is not a function or parsing bad JSON, can be caught too.
 * Timers: `setTimeout` (with extra arguments for the function), `setInterval`, `clearTimeout`, `clearInterval`,
@@ -710,12 +728,17 @@ The language is ES5 plus most of the later everyday additions.
   run while the page is being drawn and use real time, not simulation time. Due timers run earliest first.
 * DOM: `document.getElementById`, `document.querySelector`, `document.querySelectorAll`, `document.body`,
   `document.documentElement`, `createElement`, `appendChild`, `removeChild`, `remove`, `getAttribute`,
-  `setAttribute`, `hasAttribute`, `removeAttribute`, `classList` (`add`, `remove`, `toggle`, `contains`),
-  `textContent`, `innerText`, `innerHTML` (with markup), `className`, `id`, `element.style.*`, `dataset`
+  `setAttribute`, `hasAttribute`, `removeAttribute`, `classList` (`add` and `remove` with several names, `toggle`,
+  `contains`, `replace`, `item`, `length`, `value`), `textContent`, `innerText`, `innerHTML` and `outerHTML` (read
+  and written as markup), `className`, `id`, `hidden`, `title`, `value`, `element.style.*` (`''` removes a
+  declaration; also `cssText`, `setProperty`, `getPropertyValue`, `removeProperty`), `dataset`
   (`data-line-number` is `dataset.lineNumber`), `tagName`, `nodeName`, `nodeType`, `parentNode`, `parentElement`,
   `children`, `childNodes`, `firstChild`, `lastChild`, `firstElementChild`, `lastElementChild`,
   `nextElementSibling`, `previousElementSibling`, `childElementCount`, `isConnected`, and on elements `closest()`,
-  `matches()`, `contains()`, `querySelector()` and `querySelectorAll()` (they take the selectors listed under CSS).
+  `matches()`, `contains()`, `querySelector()` and `querySelectorAll()` (they take the selectors listed under CSS),
+  `insertBefore`, `replaceChild`, `cloneNode`, `append`, `prepend`, `before`, `after`, `replaceWith`,
+  `insertAdjacentHTML`, `getElementsByClassName`, `getElementsByTagName`, and `document.createTextNode` (a text node's
+  `data` and `nodeValue`). Other properties a script sets on an element (`el.state = 1`) stay on it.
   Inside `onclick="..."` and in listeners, `this` is the element.
 * Sizes: `getBoundingClientRect()` (`x`, `y`, `width`, `height`, `left`, `top`, `right`, `bottom`), `offsetWidth`,
   `offsetHeight`, `offsetLeft`, `offsetTop`, `clientWidth`, `clientHeight`, `scrollWidth` and `scrollHeight` give the
@@ -726,8 +749,8 @@ The language is ES5 plus most of the later everyday additions.
 
 Not available: `fetch` beyond the page's files and any network access, `XMLHttpRequest`, `Boolean.prototype`,
 `with`, read-only properties (`writable: false` and `Object.freeze` are ignored; `Object.defineProperty` without
-`enumerable: true` does hide a property from `Object.keys`), and the insertion order of object keys (`Object.keys`,
-`for ... in` and `JSON.stringify` give integer keys by number first, then the others by name).
+`enumerable: true` does hide a property from `Object.keys`). Object keys come in the order of a browser: integer keys
+by number first, then the others in the order they were added.
 
 Limits that keep a broken page from stalling the game: a run (a script, an `update`, an event, the timers of one
 frame) stops after 2 000 000 steps or 250 ms; calls nest at most 48 deep, expressions 1000; elements nest at most 512
