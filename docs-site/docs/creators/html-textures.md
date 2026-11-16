@@ -433,6 +433,10 @@ need a few changes. When something doesn't show up, check this list first.
 * `box-sizing: border-box` makes `width` and `height` include the padding and the border. Without it (`content-box`)
   they are the size of the content, and padding and border come on top.
 * Layout is block flow with wrapped inline text, floats, flexbox, grid and positioned layers (see below).
+* Not available: `letter-spacing`, `word-spacing`, `text-indent`, `text-shadow`, `object-fit`,
+  `table-layout: fixed`, `text-align: justify`. Inline-blocks, pictures and form fields do not share a line with text
+  (each row of them is laid out apart), and inside a `<span>` they are not drawn. `visibility` and `opacity` work on a
+  `<span>` too (a blinking colon of a clock). A `transform` does not keep its absolute children inside it.
 * `@media` works against the texture: its width and height are the viewport. A texture is a `screen`, `landscape`
   or `portrait` by its size, has a fine pointer that cannot hover (`(hover: none)`) and the light colour scheme.
   Width, height, aspect ratio and orientation can be asked with `min-`/`max-` or as ranges
@@ -724,7 +728,10 @@ The language is ES5 plus most of the later everyday additions.
   `parseFloat`, `String`, `Number`, `isNaN`, `NaN`, `Infinity`, `Object.keys`,
   `Object.entries`, `Object.values`, `Object.assign`, `Object.fromEntries`, `Object.hasOwn`, `Object.is`, `Array.from` (also `Array.from({ length: n }, f)`),
   `console.log/warn/error`, `performance.now()`, `window.innerWidth`/`innerHeight` (the texture size), and `window`
-  as `globalThis`, `self` and `this` at the top of a script.
+  as `globalThis`, `self` and `this` at the top of a script. Also `Boolean` (`list.filter(Boolean)`),
+  `encodeURIComponent`, `decodeURIComponent`, `encodeURI`, `decodeURI`, `queueMicrotask`, `structuredClone` (of what
+  JSON can hold), and `Intl.DateTimeFormat` / `Intl.NumberFormat` with `format()` (on top of `toLocale...String`,
+  also `timeStyle` and `dateStyle`).
 * `Date` runs on the **simulation clock**: `new Date()` and `Date.now()` are `omsi.timestamp`, with the getters and
   setters (`getHours()`, `setMinutes()` ...), `toISOString()`, `toLocaleTimeString()`, `toLocaleDateString()` and
   `toLocaleString()` (by `omsi.locale` or the argument: `3/5/2026` in American English, `05/03/2026` in British
@@ -799,9 +806,9 @@ deep; generators and async functions each run on a thread of their own, so start
 every frame. `localStorage.key = value` and `localStorage.key` work like `setItem`/`getItem`. Variable writes with
 `omsi.setVar` keep the last value per name in each frame.
 
-At most 64 timers can be active at once. Further `setTimeout`/`setInterval` calls are
-ignored. At most 64 async calls can wait at an `await` at the same time; further ones are rejected with a
-`RangeError`.
+At most 1024 timers can be active at once; further `setTimeout`/`setInterval` calls are ignored (the log says so
+once). `setTimeout("update()", 1000)` with a text runs that text. At most 64 async calls can wait at an `await` at the
+same time; further ones are rejected with a `RangeError`.
 
 When a script fails, the game log says where, for example
 `htmltexture: script 1 error: line 14, column 23: unexpected character '@'`. Scripts are
