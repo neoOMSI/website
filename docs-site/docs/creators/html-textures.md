@@ -417,8 +417,8 @@ need a few changes. When something doesn't show up, check this list first.
   (`(width >= 800px)`, `(400px <= width <= 900px)`); `em` in a query is 16 px. One page can so serve displays of
   different sizes. `@supports` blocks are always used.
 
-Not available: `mix-blend-mode`, `clip-path` boxes other than the border box (`content-box` ...), and the
-z-sorting of 3D boxes that cut through each other.
+Not available: `background-blend-mode`, `isolation`, `clip-path` boxes other than the border box (`content-box` ...),
+and the z-sorting of 3D boxes that cut through each other.
 
 ### Floats
 
@@ -494,6 +494,9 @@ the room of a bar between buttons:
   `hue-rotate()`, `opacity()` and `drop-shadow()`, several in a row. They work on the box and everything in it.
 * `backdrop-filter`: the same functions on what is already drawn behind the box (inside its rounded corners), for
   frosted-glass panels.
+* `mix-blend-mode`: `multiply`, `screen`, `overlay`, `darken`, `lighten`, `color-dodge`, `color-burn`, `hard-light`,
+  `soft-light`, `difference`, `exclusion`, `hue`, `saturation`, `color`, `luminosity` and `plus-lighter` mix the box
+  with what is already drawn behind it.
 * `clip-path`: `inset()` (with `round`), `circle()`, `ellipse()` (with `at`), `polygon()`, `path('M 0 0 L ...')`
   (SVG path data with curves and arcs) and `url(#id)` of an inline `<svg><clipPath id=...>` with `path`, `polygon`,
   `polyline`, `rect`, `circle` and `ellipse` (also `clipPathUnits="objectBoundingBox"` and `clip-rule`), on the border
@@ -600,13 +603,20 @@ The language is ES5 plus most of the later everyday additions.
 * Language: `var`, `let` and `const` (all scoped like `var`), functions, arrow functions, `if`, `switch`, `for`,
   `while`, `do ... while`, `for ... in` (keys in alphabetical order), `for ... of`, `try` / `catch` / `finally`,
   `throw`, `new`, `this`, objects (with `{ a, b }`, methods `{ draw() {} }` and `get`/`set`), arrays, regular
-  expressions like `/\d+/g`.
+  expressions like `/\d+/g`. Labels: `outer: for (...) { ... break outer; }` and `continue outer`, also on a block
+  (`skip: { ... break skip; }`).
 * Template strings: `` `Linie ${line} in ${minutes} min` ``, nested too, and tagged templates
   (`` tag`text ${x}` `` calls `tag(strings, x)`; `` String.raw`C:\new` `` keeps the backslashes). The `strings` a tag
   gets are a plain array, without `strings.raw`.
 * Objects: computed keys (`{ [key]: value }`, `{ [Symbol.iterator]() {} }`, also in classes).
-* `Symbol()`, `Symbol.for()`, `Symbol.iterator` and `description`; symbol keys are not listed by `Object.keys`,
-  `for ... in` or `JSON.stringify`.
+* `Symbol()`, `Symbol.for()` and `description`; symbol keys are not listed by `Object.keys`, `for ... in` or
+  `JSON.stringify`. The well-known symbols: `Symbol.iterator`, `asyncIterator`, `toPrimitive` (`hint` is `'number'`,
+  `'string'` or `'default'`), `toStringTag`, `hasInstance` (`static [Symbol.hasInstance](x)` decides `instanceof`),
+  `isConcatSpreadable`, and `match`, `matchAll`, `replace`, `search`, `split` (an object with one of them can be given
+  to the string method of that name). `species` and `unscopables` exist but change nothing.
+* Conversions: `+obj`, `obj * 2`, `obj < 3` and `Number(obj)` use the object's own `valueOf()`, `String(obj)` and
+  `` `${obj}` `` its own `toString()`, and `[Symbol.toPrimitive]` before both.
+  `Object.prototype.toString.call(x)` gives `[object Array]`, `[object Null]` ... (and the `Symbol.toStringTag`).
 * Iterators: arrays, strings, `Map` and `Set` have `[Symbol.iterator]()`, and `keys()`, `values()`, `entries()` give
   iterator objects with `next()`. Your own objects become iterable with a `[Symbol.iterator]()` that returns
   `{ next() { return { value, done }; } }`; `for ... of`, `...`, `Array.from` and destructuring take them.
@@ -621,12 +631,15 @@ The language is ES5 plus most of the later everyday additions.
   `Iterator.from()`.
 * Prototypes: `F.prototype` of functions and classes, `new F()` inheriting from it, `Object.create(proto, descriptors)`,
   `Object.getPrototypeOf` / `setPrototypeOf`, `isPrototypeOf`, `instanceof` along the chain, `Object.defineProperty`
-  (values, getters and setters), and additions to `Object.prototype`, `Array.prototype`, `String.prototype` and
-  `Function.prototype`. `Array.prototype.slice.call(arguments)` and friends work.
+  (values, getters and setters), `Object.getOwnPropertyDescriptor` / `getOwnPropertyDescriptors`, and additions to
+  `Object.prototype`, `Array.prototype`, `String.prototype`, `Number.prototype` and `Function.prototype`.
+  `Array.prototype.slice.call(arguments)` and friends work. Properties are always writable and configurable:
+  `Object.freeze` and `seal` give the object back unchanged, and a descriptor's `writable` says `true`.
 * Functions: `call`, `apply`, `bind` and `arguments`.
-* `Proxy` with the traps `get`, `set`, `has`, `deleteProperty`, `ownKeys`, `apply` and `construct`, and `Reflect`
+* `Proxy` with the traps `get`, `set`, `has`, `deleteProperty`, `ownKeys`, `getOwnPropertyDescriptor`, `apply` and
+  `construct`, `Proxy.revocable()` (after `revoke()` every use of the proxy throws a `TypeError`), and `Reflect`
   (`get`, `set`, `has`, `deleteProperty`, `ownKeys`, `apply`, `construct`, `getPrototypeOf`, `setPrototypeOf`,
-  `defineProperty`).
+  `defineProperty`, `getOwnPropertyDescriptor`).
 * Optional chaining: `omsi.vehicle?.route?.current?.name`, `list?.[0]`, `callback?.()`. When the left side is `null`
   or `undefined` the whole chain is `undefined`.
 * Spread and rest: `[...a, ...b]`, `{ ...defaults, ...options }`, `f(...args)`, `Math.max(...list)`,
@@ -671,7 +684,8 @@ The language is ES5 plus most of the later everyday additions.
   `startsWith`, `endsWith`, `includes`, `concat`, `localeCompare`, `toUpperCase`,
   `toLowerCase`, `padStart`, `padEnd`, `repeat`, and `text[i]`. `split`, `replace`,
   `replaceAll`, `match` and `search` take a string or a regular expression; `replace` knows
-  `$1`, `$&` and a function as the replacement. Numbers: `toFixed`, `toString`.
+  `$1`, `$&` and a function as the replacement. Numbers: `toFixed`, `toPrecision`, `toString` (also with a radix,
+  `(255).toString(16)`) and `valueOf`.
 * Regular expressions: `test`, `exec`, `lastIndex` and the flags `g`, `i`, `m`, `s`, `y`.
   Look-ahead and look-behind (`(?=...)`) and back references (`\1`) are not supported; such a
   pattern throws a `SyntaxError`.
@@ -679,8 +693,7 @@ The language is ES5 plus most of the later everyday additions.
   (stable, with or without a compare function), `join`, `indexOf`, `lastIndexOf`,
   `includes`, `map`, `filter`, `forEach`, `find`, `findIndex`, `some`, `every`, `reduce`.
 * Errors: a caught error has `name` and `message`. Errors of the engine itself, such as
-  calling something that is not a function or parsing bad JSON, can be caught too. `String(obj)` and `'' + obj` use
-  the object's own `toString()`.
+  calling something that is not a function or parsing bad JSON, can be caught too.
 * Timers: `setTimeout` (with extra arguments for the function), `setInterval`, `clearTimeout`, `clearInterval`,
   `requestAnimationFrame` (about 60 times a second, with the time in milliseconds) and `cancelAnimationFrame`. They
   run while the page is being drawn and use real time, not simulation time. Due timers run earliest first.
@@ -700,9 +713,8 @@ The language is ES5 plus most of the later everyday additions.
 * After `innerHTML` replaces some elements, `getElementById` and `querySelector` find the new ones; the old ones are
   gone from the page (`isConnected` is `false`).
 
-Not available: `fetch` beyond the page's files and any network access, `XMLHttpRequest`, labels
-(`outer: for ... break outer`), `Object.getOwnPropertyDescriptor`, `Proxy.revocable`, prototypes of numbers and
-booleans (`Number.prototype`), and the well-known symbols other than `Symbol.iterator` and `Symbol.asyncIterator`.
+Not available: `fetch` beyond the page's files and any network access, `XMLHttpRequest`, `Boolean.prototype`,
+`with`, and read-only or hidden properties (`writable: false`, `enumerable: false` and `Object.freeze` are ignored).
 
 At most 64 timers can be active at once. Further `setTimeout`/`setInterval` calls are
 ignored. At most 64 async calls can wait at an `await` at the same time; further ones are rejected with a
