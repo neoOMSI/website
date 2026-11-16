@@ -394,7 +394,8 @@ need a few changes. When something doesn't show up, check this list first.
 
 ### CSS
 
-* Selectors: tag, `#id`, `.class`, `*`, attributes (`[data-on]`, `[data-on="1"]`), combinations like `div.a#b`,
+* Selectors: tag, `#id`, `.class`, `*`, attributes (`[data-on]`, `[data-on="1"]`, `^=`, `$=`, `*=`, `~=`, `|=`, and
+  `i` for any letter case: `[data-k^="ab" i]`), combinations like `div.a#b`,
   descendant chains (`.panel span`), children (`ul > li`), siblings (`h2 + p`, `h2 ~ p`) and comma lists.
 * Pseudo-classes: `:root`, `:first-child`, `:last-child`, `:only-child`, `:nth-child(2n+1)` (also `odd`, `even`),
   `:nth-last-child()`, `:first-of-type`, `:last-of-type`, `:nth-of-type()`, `:only-of-type`, `:empty`, `:not()`,
@@ -402,33 +403,57 @@ need a few changes. When something doesn't show up, check this list first.
   never match, so such a rule is ignored.
 * Properties: `color`, `background` / `background-color`, `background-image: url()`,
   `background-size`, `background-repeat`, `background-position`, `font-size`, `font-weight`,
-  `font-family`, `text-align`, `line-height`, `margin` (and `-top/-right/-bottom/-left`), `padding` (same),
+  `font-family`, `font` (`bold 20px/1.5 Arial`), `text-align`, `line-height`, `margin` (and
+  `-top/-right/-bottom/-left`), `padding` (same),
   `width`, `height`, `min-width`, `max-width`, `min-height`, `max-height`, `box-sizing`,
   `display` (`none`, `inline`, `inline-block`, `block`, `flex`, `inline-flex`, `grid`, `inline-grid`,
-  `flow-root`), `visibility`, `float`, `clear`,
+  `flow-root`, also the two-word forms such as `inline flex`), `visibility`, `float`, `clear`,
   `border` (and its sides, `-width`, `-color`, `-style`), `border-radius`, `border-collapse`,
   `border-spacing`, `text-decoration`, `text-transform`, `white-space`, `vertical-align`,
   `list-style`, for layers `position`, `top`, `right`, `bottom`, `left`, `inset`,
   `z-index`, `overflow`, `text-overflow` and `opacity`, and the ones in the sections below
   (flexbox, grid, effects, animations).
-* Values: `px`, `%`, `em`, `rem`, `pt`, `vw`, `vh`, `in`, `cm`, `mm`; `calc()` (for example
-  `calc(100% - 20px)`), and `min()`, `max()`, `clamp()` with pixel values. Custom properties work as in a browser:
-  `--accent: #ffcc00` on an element (or `:root`) and `color: var(--accent)` on it or its children, with a fallback as
-  in `var(--accent, white)`.
+* Values: `px`, `%`, `em` (of the element's own font size, the parent's for `font-size`), `rem` (of the `<html>`
+  element), `pt`, `pc`, `vw`, `vh` (also `dvh`, `svh` ...), `vmin`, `vmax`, `in`, `cm`, `mm`, `q`, and `ch`/`ex` as
+  half an `em`; `calc()` (for example `calc(100% - 20px)`), and `min()`, `max()`, `clamp()` with pixel values.
+  Colours as `#rgb`, `#rrggbb` (with alpha too), `rgb()`/`rgba()`, `hsl()`/`hsla()` (also with spaces and `/ alpha`),
+  the 148 CSS colour names, `transparent` and `currentColor`. `inherit`, `initial` and `unset` work for the
+  properties above. Keywords may be written in any letter case. A value the engine cannot read is dropped and the
+  one before stays, as in a browser.
+* Custom properties work as in a browser: `--accent: #ffcc00` on an element (or `:root`) and `color: var(--accent)`
+  on it or its children, with a fallback as in `var(--accent, white)`. They may refer to each other in any order;
+  properties that refer to each other in a circle are invalid, and a `var()` of one takes its fallback.
+* Borders: `border: 1px solid red`; a border without a style (`border: 1px red`) is not drawn, and
+  `border-style: solid` alone draws a 3 px (`medium`) border in the text colour.
 * `box-sizing: border-box` makes `width` and `height` include the padding and the border. Without it (`content-box`)
   they are the size of the content, and padding and border come on top.
 * Layout is block flow with wrapped inline text, floats, flexbox, grid and positioned layers (see below).
 * `@media` works against the texture: its width and height are the viewport. A texture is a `screen`, `landscape`
   or `portrait` by its size, has a fine pointer that cannot hover (`(hover: none)`) and the light colour scheme.
   Width, height, aspect ratio and orientation can be asked with `min-`/`max-` or as ranges
-  (`(width >= 800px)`, `(400px <= width <= 900px)`); `em` in a query is 16 px. One page can so serve displays of
-  different sizes. `@supports` blocks are always used.
+  (`(width >= 800px)`, `(400px <= width <= 900px)`), and joined with `and`, `,` or `or`; `em` in a query is
+  16 px. One page can so serve displays of different sizes. `@supports` blocks are always used.
 
 Not available: `background-blend-mode`, `isolation`, `perspective-origin`, `clip-path` boxes other than the border
 box (`content-box` ...), and the z-sorting of 3D boxes that cut through each other. A transformed box is drawn from
 where it is laid out: the part that starts left of or above the texture is lost, even when the transform moves it into
 view (lay a slide-in panel out inside the texture and move it out with the transform instead). `backdrop-filter` inside
 a faded or transformed box sees nothing behind it.
+
+Differences from a browser to keep in mind:
+
+* The top margin of a first child does not pass through its parent (and the bottom margin of the last one neither):
+  give the parent a `padding-top` of `1px`, or set `margin-top: 0` on the child, to get the same picture in both.
+* `padding`, `border` and side margins of inline elements (`<span>`) take no room in the line; use
+  `display: inline-block` for a padded badge.
+* `white-space: pre`/`pre-wrap` keeps spaces and line breaks only in `<pre>` and `<textarea>`; elsewhere they are
+  already joined when the page is read.
+* A float narrows every line of the paragraph next to it, also those below its end.
+* Percentages in `margin`, `padding`, `gap` and `border-radius` are of the texture width; `min()`, `max()` and
+  `clamp()` take no percentages.
+* `border-radius` has one radius for all corners (the first one given), and a box has one border colour for all its
+  sides.
+* `@layer` blocks count as ordinary rules; `:nth-child(... of S)` and escaped characters in class names are not read.
 
 A page that is too costly to lay out (more than about 250 ms, or very deeply nested flex and grid boxes) has the rest
 of it left out; such a layout is tried again a few times and then kept.
