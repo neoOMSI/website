@@ -389,6 +389,11 @@ need a few changes. When something doesn't show up, check this list first.
 * `<img src width height>` (bmp, dds, tga, jpg, png). The file is looked up next to the page.
   `img.src` can be changed from a script. Pictures are cached, a missing file is cached too.
 * `<head>`, `<title>`, `<meta>`, `<link>` are read and then ignored.
+* A page may be saved in UTF-8, in UTF-16 (with its byte order mark), in what its `<meta charset>` names, or in
+  Windows-1252 as old OMSI files are; umlauts come out right in all of them.
+* `<style media="...">` applies as its media query says. A `<script>` of another `type` than JavaScript
+  (`application/json`, `text/template`) does not run, but its text can be read (`textContent`); nothing inside
+  `<template>` or `<noscript>` runs or applies. Old pages that wrap a script or a style sheet in `<!-- ... -->` work.
 
 `canvas`, `video`, `svg` and `iframe` are drawn as empty boxes.
 
