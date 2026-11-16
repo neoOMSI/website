@@ -744,6 +744,8 @@ The language is ES5 plus most of the later everyday additions.
 * `localStorage` (`getItem`, `setItem`, `removeItem`, `clear`, `key`, `length`) keeps texts between game sessions.
   Pages in the same folder share it; it holds up to 5 MB (beyond that `setItem` throws a `QuotaExceededError`). It is
   saved in the game's settings folder (`html-storage`) at most every 2 seconds and when the page closes.
+  Of the vehicles, only the bus you drive saves it: AI and network buses keep their items in memory, so they never
+  overwrite yours. When you take over an AI bus, its pages read your saved items.
 * `fetch(path)` reads a file of the page's folders (the page's own folder, the model folder, the vehicle or object
   folder): `const data = await (await fetch('data/lines.json')).json();`. The response has `ok`, `status`, `text()` and
   `json()`; a missing file gives `ok: false` and `status: 404`. The network, absolute paths and `..` are refused with
