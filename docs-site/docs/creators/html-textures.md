@@ -811,6 +811,20 @@ drawn. Normal pages never get near any of these. An endless loop just gets cut o
 hundreds of names on every update, keep the results (in a variable or `localStorage`) instead of working them out
 again each time.
 
+More limits, for pages that go too far:
+
+* All the scripts and load events of a page share 1 second; all the listeners and promise reactions of one click or
+  one `update` share 250 ms. One event on one element takes at most 256 listeners.
+* A page holds at most about a million elements in all, also those its scripts made and threw away; making more
+  throws a `RangeError`.
+* `console.log` writes at most 20 lines a second, each cut after 1 KB.
+* A page looks for at most 256 new files a second, and paths are at most 260 bytes and 32 parts long.
+* Every `localStorage` item counts 32 bytes on top of its texts against the 5 MB.
+* The drawing of one frame has a budget of a few dozen times the texture's area: past it, effects (layers, filters,
+  shadows, gradients) are left out and text stops. A texture is at most 4096 pixels wide and high.
+* Generators and async calls of all pages together run on at most 1024 threads.
+* A page that makes the HTML engine fail is switched off (the log says so) and stays blank; the game goes on.
+
 ### Redrawing
 
 A page is redrawn when the DOM or the styles change. The simplest pattern, and the one that
