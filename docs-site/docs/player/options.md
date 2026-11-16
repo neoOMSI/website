@@ -41,6 +41,10 @@ changes. If a switch's script turns it back after three clicks, it is left to th
 for 30 seconds. A switch that a vehicle stands on, or that an AI train is setting, is not
 changed.
 
+On a map without `[realrail]`, whose switch objects do not steer the vehicle, the tram takes
+the branch of its route at a fork, unless your indicator picks a branch whose path has a
+matching `[blinker]`.
+
 To set the next switch yourself, use the keys in [Trams and trains](controls.md#trams-and-trains).
 That works with **Switches by route** off too. OMSI 2 itself has neither: there, only AI
 trains set switches and the driver clicks them.
