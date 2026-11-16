@@ -417,8 +417,8 @@ need a few changes. When something doesn't show up, check this list first.
   (`(width >= 800px)`, `(400px <= width <= 900px)`); `em` in a query is 16 px. One page can so serve displays of
   different sizes. `@supports` blocks are always used.
 
-Not available: `backdrop-filter`, masks (`mask-image`), `clip-path: path()` and `url()`, and
-`transform-style: preserve-3d` (3D boxes are flattened into their parent).
+Not available: `mix-blend-mode`, `clip-path` boxes other than the border box (`content-box` ...), and the
+z-sorting of 3D boxes that cut through each other.
 
 ### Floats
 
@@ -488,10 +488,19 @@ the room of a bar between buttons:
 * 3D: `rotateX()`, `rotateY()`, `rotateZ()`, `rotate3d()`, `translate3d()`, `translateZ()`, `scale3d()`, `scaleZ()`,
   `matrix3d()` and `perspective()` in `transform`, and `perspective` on the parent (its vanishing point is taken at the
   middle of the transformed box). `backface-visibility: hidden` hides a box that turns its back.
+  `transform-style: preserve-3d` keeps the transformed children of a box in its 3D space (a flip card's back shows when
+  it is turned), drawn from the farthest to the nearest; without it they are flattened into the box.
 * `filter`: `blur()`, `brightness()`, `contrast()`, `grayscale()`, `sepia()`, `invert()`, `saturate()`,
   `hue-rotate()`, `opacity()` and `drop-shadow()`, several in a row. They work on the box and everything in it.
-* `clip-path`: `inset()` (with `round`), `circle()`, `ellipse()` (with `at`) and `polygon()` on the border box. What is
-  cut off is not drawn and takes no clicks.
+* `backdrop-filter`: the same functions on what is already drawn behind the box (inside its rounded corners), for
+  frosted-glass panels.
+* `clip-path`: `inset()` (with `round`), `circle()`, `ellipse()` (with `at`), `polygon()`, `path('M 0 0 L ...')`
+  (SVG path data with curves and arcs) and `url(#id)` of an inline `<svg><clipPath id=...>` with `path`, `polygon`,
+  `polyline`, `rect`, `circle` and `ellipse` (also `clipPathUnits="objectBoundingBox"` and `clip-rule`), on the border
+  box. What is cut off is not drawn and takes no clicks.
+* Masks: `mask-image` (a picture or a gradient), `mask-size`, `mask-position`, `mask-repeat`, `mask-mode`
+  (`alpha`, `luminance`) and the `mask` shorthand, also with the `-webkit-` prefix. The mask's alpha (or brightness)
+  fades the box and everything in it.
 
 ### Columns
 
@@ -604,6 +613,20 @@ The language is ES5 plus most of the later everyday additions.
 * Generators: `function*`, `*method()` in classes and objects, `yield`, `yield*`, and `next(v)`, `return(v)`,
   `throw(e)` on the generator. `for ... of` asks for one value at a time, so an endless generator with a `break` is
   fine. At most 256 generators can be running at once.
+* Async generators and `for await`: `async function*`, `async *method()`, `await` and `yield` in them, `next()`
+  giving promises, `Symbol.asyncIterator`, and `for await (const x of ...)` over async iterators and over plain
+  iterables of promises.
+* Iterator helpers on iterators and generators: `map`, `filter`, `take`, `drop`, `flatMap` (they pull one value at a
+  time, so `naturals().filter(even).take(5)` works), `toArray`, `forEach`, `reduce`, `some`, `every`, `find`, and
+  `Iterator.from()`.
+* Prototypes: `F.prototype` of functions and classes, `new F()` inheriting from it, `Object.create(proto, descriptors)`,
+  `Object.getPrototypeOf` / `setPrototypeOf`, `isPrototypeOf`, `instanceof` along the chain, `Object.defineProperty`
+  (values, getters and setters), and additions to `Object.prototype`, `Array.prototype`, `String.prototype` and
+  `Function.prototype`. `Array.prototype.slice.call(arguments)` and friends work.
+* Functions: `call`, `apply`, `bind` and `arguments`.
+* `Proxy` with the traps `get`, `set`, `has`, `deleteProperty`, `ownKeys`, `apply` and `construct`, and `Reflect`
+  (`get`, `set`, `has`, `deleteProperty`, `ownKeys`, `apply`, `construct`, `getPrototypeOf`, `setPrototypeOf`,
+  `defineProperty`).
 * Optional chaining: `omsi.vehicle?.route?.current?.name`, `list?.[0]`, `callback?.()`. When the left side is `null`
   or `undefined` the whole chain is `undefined`.
 * Spread and rest: `[...a, ...b]`, `{ ...defaults, ...options }`, `f(...args)`, `Math.max(...list)`,
@@ -677,9 +700,9 @@ The language is ES5 plus most of the later everyday additions.
 * After `innerHTML` replaces some elements, `getElementById` and `querySelector` find the new ones; the old ones are
   gone from the page (`isConnected` is `false`).
 
-Not available: `fetch` beyond the page's files and any network access, `XMLHttpRequest`, async generators
-(`async function*`, `for await`), iterator helpers (`iterator.map()`), `Proxy`, `Reflect`, and prototypes
-(`Foo.prototype`, `Object.create`).
+Not available: `fetch` beyond the page's files and any network access, `XMLHttpRequest`, labels
+(`outer: for ... break outer`), `Object.getOwnPropertyDescriptor`, `Proxy.revocable`, prototypes of numbers and
+booleans (`Number.prototype`), and the well-known symbols other than `Symbol.iterator` and `Symbol.asyncIterator`.
 
 At most 64 timers can be active at once. Further `setTimeout`/`setInterval` calls are
 ignored. At most 64 async calls can wait at an `await` at the same time; further ones are rejected with a
