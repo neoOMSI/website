@@ -515,9 +515,13 @@ the room of a bar between buttons:
 
 * Gradients: `background: linear-gradient(to right, #003 0%, #06c 100%)` (an angle such as `45deg`, or `to top`,
   `to bottom right` ...) and `radial-gradient(circle at 50% 50%, white, black)`. Colour stops may carry a position.
-  `repeating-` gradients are drawn once.
-* `box-shadow`: one or more shadows, `x y blur spread colour`, also `inset`. The blur is a smooth fade, close to what a
-  browser draws.
+  `repeating-` gradients are drawn once. A gradient takes `background-size`, `background-position` and
+  `background-repeat` like a picture (`... 0 0 / 20px 20px` gives stripes). Not available: `conic-gradient`, the size
+  keywords of `radial-gradient` (`closest-side`, `circle 20px` ...: it always reaches the farthest corner), colour
+  hints (`red, 20%, blue`), and more than one gradient in one `background`.
+* `box-shadow`: one or more shadows, `x y blur spread colour`, also `inset`; without a colour it is the text colour.
+  The blur is a smooth fade, close to what a browser draws. `text-shadow` is not drawn, and `drop-shadow()` without a
+  colour is black.
 * `transform`: `translate()`, `translateX/Y()`, `scale()`, `scaleX/Y()`, `rotate()`, `skew()`, `skewX/Y()` and
   `matrix()`, several in a row, with `transform-origin`. A transformed box takes no other room, and clicks reach it
   where it is drawn. Up to four transformed, faded, filtered or clipped boxes can sit inside each other; deeper ones
@@ -565,15 +569,22 @@ the room of a bar between buttons:
 .door.open { background-color: #2a2; transform: translateX(40px); }
 ```
 
-* `@keyframes` with `from`, `to` and percentages; `animation` and its parts (`animation-name`, `-duration`, `-delay`,
-  `-iteration-count`, `-direction`, `-fill-mode`, `-timing-function`, `-play-state`); several animations separated by
-  commas.
+* `@keyframes` with `from`, `to` and percentages (also an `animation-timing-function` inside a keyframe, for the
+  way to the next one); `animation` and its parts (`animation-name`, `-duration`, `-delay`, `-iteration-count`,
+  `-direction`, `-fill-mode`, `-timing-function`, `-play-state`), in any order and from different rules; several
+  animations separated by commas. A paused animation goes on from where it stopped.
 * `transition` and its parts (`transition-property`, `-duration`, `-delay`, `-timing-function`). A transition starts
   when a script changes what the style sheet gives an element, for example by changing its classes.
-* Timing: `linear`, `ease`, `ease-in`, `ease-out`, `ease-in-out`, `cubic-bezier()`, `steps()`.
+* Timing: `linear`, `ease`, `ease-in`, `ease-out`, `ease-in-out`, `cubic-bezier()`, `steps()` (with `jump-start`,
+  `jump-end`, `jump-none`, `jump-both`), `step-start`, `step-end`. A `steps()` animation is only drawn again when it
+  steps.
 * What moves: `opacity`, `color`, `background-color`, `border-color`, `transform`, `top`/`right`/`bottom`/`left`,
   `width`, `height`, `margin`, `padding`, `border-width`, `border-radius`, `font-size`, `line-height` and
-  `box-shadow`. Other properties switch halfway.
+  `box-shadow` (also from `none`: the shadow fades in). Other properties switch halfway, and so do transforms made of
+  different functions (`translateX()` to `translateX() rotate()`).
+* To start an animation again, give it another name or take it away for one frame (`setTimeout`); taking the class
+  away and adding it back in the same script, even with a read of `offsetWidth` between, does not restart it. An
+  animation also wins over an `!important` declaration of the same property.
 * Animations run on the page's own clock (real time, like the timers). While something moves the page is drawn up to
   30 times a second, so keep animations to the parts that need them.
 
