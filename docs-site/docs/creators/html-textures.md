@@ -417,8 +417,14 @@ need a few changes. When something doesn't show up, check this list first.
   (`(width >= 800px)`, `(400px <= width <= 900px)`); `em` in a query is 16 px. One page can so serve displays of
   different sizes. `@supports` blocks are always used.
 
-Not available: `background-blend-mode`, `isolation`, `clip-path` boxes other than the border box (`content-box` ...),
-and the z-sorting of 3D boxes that cut through each other.
+Not available: `background-blend-mode`, `isolation`, `perspective-origin`, `clip-path` boxes other than the border
+box (`content-box` ...), and the z-sorting of 3D boxes that cut through each other. A transformed box is drawn from
+where it is laid out: the part that starts left of or above the texture is lost, even when the transform moves it into
+view (lay a slide-in panel out inside the texture and move it out with the transform instead). `backdrop-filter` inside
+a faded or transformed box sees nothing behind it.
+
+A page that is too costly to lay out (more than about 250 ms, or very deeply nested flex and grid boxes) has the rest
+of it left out; such a layout is tried again a few times and then kept.
 
 ### Floats
 
@@ -428,9 +434,8 @@ below. A float without a `width` is as wide as its content.
 * Floats line up side by side as long as there is room, else they go below the earlier ones.
 * Text that starts beside a float wraps in the room next to it, for its whole paragraph. A block beside a float takes
   the room next to it (as if it had `overflow: hidden`).
-* As in a browser, a box does not grow round its floats, unless it has `overflow` other than `visible`,
-  `display: flow-root` or `inline-block`, or it is a flex or grid item or the body. Add a `clear: both` element at
-  the end or `display: flow-root` to keep floats inside.
+* Unlike a browser, every box grows round its own floats (as with `display: flow-root`): what follows a row of floats
+  starts below them.
 
 ### Flexbox
 
@@ -600,14 +605,16 @@ on top of it. Build them with `position: absolute`:
 
 The language is ES5 plus most of the later everyday additions.
 
-* Language: `var`, `let` and `const` (all scoped like `var`), functions, arrow functions, `if`, `switch`, `for`,
-  `while`, `do ... while`, `for ... in` (keys in alphabetical order), `for ... of`, `try` / `catch` / `finally`,
+* Language: `var`, `let` and `const` (`let`/`const` belong to their block, and each round of a loop has its own, so
+  closures made in a loop keep that round's values), functions, arrow functions, the comma operator, `&&=`, `||=`,
+  `??=`, `if`, `switch`, `for`,
+  `while`, `do ... while`, `for ... in` (integer keys by number, then the others by name), `for ... of`, `try` / `catch` / `finally`,
   `throw`, `new`, `this`, objects (with `{ a, b }`, methods `{ draw() {} }` and `get`/`set`), arrays, regular
   expressions like `/\d+/g`. Labels: `outer: for (...) { ... break outer; }` and `continue outer`, also on a block
   (`skip: { ... break skip; }`).
 * Template strings: `` `Linie ${line} in ${minutes} min` ``, nested too, and tagged templates
   (`` tag`text ${x}` `` calls `tag(strings, x)`; `` String.raw`C:\new` `` keeps the backslashes). The `strings` a tag
-  gets are a plain array, without `strings.raw`.
+  gets have `strings.raw`.
 * Objects: computed keys (`{ [key]: value }`, `{ [Symbol.iterator]() {} }`, also in classes).
 * `Symbol()`, `Symbol.for()` and `description`; symbol keys are not listed by `Object.keys`, `for ... in` or
   `JSON.stringify`. The well-known symbols: `Symbol.iterator`, `asyncIterator`, `toPrimitive` (`hint` is `'number'`,
@@ -684,8 +691,12 @@ The language is ES5 plus most of the later everyday additions.
   `startsWith`, `endsWith`, `includes`, `concat`, `localeCompare`, `toUpperCase`,
   `toLowerCase`, `padStart`, `padEnd`, `repeat`, and `text[i]`. `split`, `replace`,
   `replaceAll`, `match` and `search` take a string or a regular expression; `replace` knows
-  `$1`, `$&` and a function as the replacement. Numbers: `toFixed`, `toPrecision`, `toString` (also with a radix,
-  `(255).toString(16)`) and `valueOf`.
+  `$1`, `$&` and a function as the replacement. Also `at`, `substr`, `codePointAt`, `matchAll`, `normalize`,
+  `String.fromCharCode`. Numbers: `toFixed`, `toPrecision`, `toString` (also with a radix, `(255).toString(16)`),
+  `valueOf` and `toLocaleString` (with `minimumFractionDigits`, `maximumFractionDigits`, `useGrouping`; English,
+  Japanese, Chinese and Korean write `1,234.5`, French, Polish, Russian, Swedish ... `1 234,5`, the others `1.234,5`).
+  `Number.isFinite`, `isInteger`, `isNaN`, `MAX_SAFE_INTEGER`, `EPSILON` ..., the global `isFinite`, and `Math`
+  with `atan2`, `tan`, `log`, `log10`, `exp`, `sign`, `hypot`, `cbrt` and the other functions and constants.
 * Regular expressions: `test`, `exec`, `lastIndex` and the flags `g`, `i`, `m`, `s`, `y`.
   Look-ahead and look-behind (`(?=...)`) and back references (`\1`) are not supported; such a
   pattern throws a `SyntaxError`.
@@ -714,7 +725,15 @@ The language is ES5 plus most of the later everyday additions.
   gone from the page (`isConnected` is `false`).
 
 Not available: `fetch` beyond the page's files and any network access, `XMLHttpRequest`, `Boolean.prototype`,
-`with`, and read-only or hidden properties (`writable: false`, `enumerable: false` and `Object.freeze` are ignored).
+`with`, read-only properties (`writable: false` and `Object.freeze` are ignored; `Object.defineProperty` without
+`enumerable: true` does hide a property from `Object.keys`), and the insertion order of object keys (`Object.keys`,
+`for ... in` and `JSON.stringify` give integer keys by number first, then the others by name).
+
+Limits that keep a broken page from stalling the game: a run (a script, an `update`, an event, the timers of one
+frame) stops after 2 000 000 steps or 250 ms; calls nest at most 48 deep, expressions 1000; elements nest at most 512
+deep; generators and async functions each run on a thread of their own, so start them sparingly in code that runs
+every frame. `localStorage.key = value` and `localStorage.key` work like `setItem`/`getItem`. Variable writes with
+`omsi.setVar` keep the last value per name in each frame.
 
 At most 64 timers can be active at once. Further `setTimeout`/`setInterval` calls are
 ignored. At most 64 async calls can wait at an `await` at the same time; further ones are rejected with a
