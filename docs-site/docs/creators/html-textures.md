@@ -397,22 +397,39 @@ need a few changes. When something doesn't show up, check this list first.
   `background-size`, `background-repeat`, `background-position`, `font-size`, `font-weight`,
   `font-family`, `text-align`, `line-height`, `margin` (and `-top/-right/-bottom/-left`), `padding` (same),
   `width`, `height`, `min-width`, `max-width`, `min-height`, `max-height`, `box-sizing`,
-  `display` (`none`, `inline`, `inline-block`, `block`, `flex`, `inline-flex`), `visibility`,
+  `display` (`none`, `inline`, `inline-block`, `block`, `flex`, `inline-flex`, `grid`, `inline-grid`,
+  `flow-root`), `visibility`, `float`, `clear`,
   `border` (and its sides, `-width`, `-color`, `-style`), `border-radius`, `border-collapse`,
   `border-spacing`, `text-decoration`, `text-transform`, `white-space`, `vertical-align`,
   `list-style`, for layers `position`, `top`, `right`, `bottom`, `left`, `inset`,
   `z-index`, `overflow`, `text-overflow` and `opacity`, and the ones in the sections below
-  (flexbox, effects, animations).
+  (flexbox, grid, effects, animations).
 * Values: `px`, `%`, `em`, `rem`, `pt`, `vw`, `vh`, `in`, `cm`, `mm`; `calc()` (for example
   `calc(100% - 20px)`), and `min()`, `max()`, `clamp()` with pixel values. Custom properties work as in a browser:
   `--accent: #ffcc00` on an element (or `:root`) and `color: var(--accent)` on it or its children, with a fallback as
   in `var(--accent, white)`.
 * `box-sizing: border-box` makes `width` and `height` include the padding and the border. Without it (`content-box`)
   they are the size of the content, and padding and border come on top.
-* Layout is block flow with wrapped inline text, flexbox and positioned layers (see below).
+* Layout is block flow with wrapped inline text, floats, flexbox, grid and positioned layers (see below).
+* `@media` works against the texture: its width and height are the viewport. A texture is a `screen`, `landscape`
+  or `portrait` by its size, has a fine pointer that cannot hover (`(hover: none)`) and the light colour scheme.
+  Width, height, aspect ratio and orientation can be asked with `min-`/`max-` or as ranges
+  (`(width >= 800px)`, `(400px <= width <= 900px)`); `em` in a query is 16 px. One page can so serve displays of
+  different sizes. `@supports` blocks are always used.
 
-Not available: grid, floats, `@media` queries, filters, 3D transforms and `clip-path`. Rules inside `@media` are
-skipped.
+Not available: filters, 3D transforms, `clip-path` and `columns`.
+
+### Floats
+
+`float: left` or `right` puts a box at that side; what follows flows beside it, and `clear: left | right | both` goes
+below. A float without a `width` is as wide as its content.
+
+* Floats line up side by side as long as there is room, else they go below the earlier ones.
+* Text that starts beside a float wraps in the room next to it, for its whole paragraph. A block beside a float takes
+  the room next to it (as if it had `overflow: hidden`).
+* As in a browser, a box does not grow round its floats, unless it has `overflow` other than `visible`,
+  `display: flow-root` or `inline-block`, or it is a flex or grid item or the body. Add a `clear: both` element at
+  the end or `display: flow-root` to keep floats inside.
 
 ### Flexbox
 
@@ -435,6 +452,26 @@ the room of a bar between buttons:
 * An item does not shrink below its longest word unless it has a `min-width`. A column only uses `justify-content`
   when it has a height.
 * `display: inline-flex` is a flex container that is only as wide as its items.
+
+### Grid
+
+```css
+.screen { display: grid; grid-template-columns: 120px 1fr 1fr; grid-template-rows: 60px auto 40px; gap: 6px;
+          grid-template-areas: "line dest dest" "list list list" "foot foot foot"; height: 100%; }
+.line   { grid-area: line; }
+.tiles  { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+```
+
+* Tracks: `grid-template-columns`, `grid-template-rows` with `px`, `%`, `fr`, `auto`, `min-content`,
+  `max-content`, `minmax()`, `fit-content()` and `repeat()` (also `auto-fill` / `auto-fit`, which fit as many
+  tracks as the room holds); line names in `[...]` are skipped. `grid-template-areas`, `grid-template` and `grid`
+  (rows `/` columns, or areas), `grid-auto-rows`, `grid-auto-columns`, `grid-auto-flow` (`row`, `column`, `dense`).
+* Items: `grid-column`, `grid-row` (`1 / 3`, `span 2`, `2 / -1`, an area name), their `-start`/`-end` parts and
+  `grid-area` (a name or `row / column / row / column`). Items without a place are put in the next free cells.
+* Alignment: `justify-items`, `align-items`, `place-items`, `justify-self`, `align-self`, `place-self` (items stretch
+  by default) and `justify-content`, `align-content` for the tracks. `gap`, `row-gap`, `column-gap`.
+* `auto` tracks are as wide as their content and share the room that is left; `fr` tracks share the rest after
+  that. A row only uses `fr` when the grid has a height.
 
 ### Effects
 
@@ -533,6 +570,17 @@ The language is ES5 plus most of the later everyday additions.
   `while`, `do ... while`, `for ... in` (keys in alphabetical order), `for ... of`, `try` / `catch` / `finally`,
   `throw`, `new`, `this`, objects (with `{ a, b }`, methods `{ draw() {} }` and `get`/`set`), arrays, regular
   expressions like `/\d+/g`.
+* Template strings: `` `Linie ${line} in ${minutes} min` ``, nested too.
+* Optional chaining: `omsi.vehicle?.route?.current?.name`, `list?.[0]`, `callback?.()`. When the left side is `null`
+  or `undefined` the whole chain is `undefined`.
+* Spread and rest: `[...a, ...b]`, `{ ...defaults, ...options }`, `f(...args)`, `Math.max(...list)`,
+  `function f(first, ...rest)`.
+* Destructuring in `var`/`let`/`const`, parameters and `for ... of`, with defaults and rest:
+  `const { line, stops: [first] = [] } = route;`, `for (const [key, value] of map)`, and swapping with
+  `[a, b] = [b, a]`. Default parameter values (`function f(a = 1)`) too.
+* `Map` and `Set` (`get`, `set`, `add`, `has`, `delete`, `clear`, `size`, `forEach`, `keys`, `values`, `entries`, and
+  `new Map([[k, v]])` / `new Set(list)`), in insertion order; objects as keys compare by identity. `keys()`,
+  `values()` and `entries()` give arrays, which `for ... of`, `...` and `Array.from` take.
 * Classes: `class`, `constructor`, methods, fields (`count = 0;`), `static` methods and fields, `get`/`set`,
   `extends` (also `extends Error`), `super(...)`, `super.method()` and `instanceof`. Methods are not listed by
   `Object.keys`, `for ... in` or `JSON.stringify`. Private names (`#x`) are not supported.
@@ -546,6 +594,7 @@ The language is ES5 plus most of the later everyday additions.
   `sin`, `cos`, `random`, `PI`), `JSON.parse` and `JSON.stringify` (object keys come out sorted),
   `RegExp`, `Error`, `TypeError`, `RangeError`, `SyntaxError`, `Array.isArray`, `parseInt`,
   `parseFloat`, `String`, `Number`, `isNaN`, `NaN`, `Infinity`, `Object.keys`,
+  `Object.entries`, `Object.values`, `Object.assign`, `Object.fromEntries`, `Array.from` (also `Array.from({ length: n }, f)`),
   `console.log/warn/error`, `performance.now()`, `window.innerWidth`/`innerHeight` (the texture size).
 * `Date` runs on the **simulation clock**: `new Date()` and `Date.now()` are `omsi.timestamp`, with the getters and
   setters (`getHours()`, `setMinutes()` ...), `toISOString()`, `toLocaleTimeString()`, `toLocaleDateString()` (English
@@ -594,9 +643,8 @@ The language is ES5 plus most of the later everyday additions.
   gone from the page (`isConnected` is `false`).
 
 Not available: `fetch` beyond the page's files and any network access, `XMLHttpRequest`, generators (`function*`),
-`Symbol`, `Map`/`Set`, spread and rest (`...`), destructuring, default parameter values (`function f(a = 1)`),
-optional chaining (`?.`), private class names and prototypes (`Foo.prototype`). Strings in backticks are plain
-strings: `${...}` in them is not filled in, so join texts with `+`.
+`Symbol`, `WeakMap`/`WeakSet`, iterator objects (`map.keys().next()`), tagged templates, private class names and
+prototypes (`Foo.prototype`).
 
 At most 64 timers can be active at once. Further `setTimeout`/`setInterval` calls are
 ignored. At most 64 async calls can wait at an `await` at the same time; further ones are rejected with a
