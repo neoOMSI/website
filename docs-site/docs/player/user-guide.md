@@ -104,6 +104,12 @@ the puddles (see [Graphics and frame rate](#graphics-and-frame-rate)).
 Puddle reflections remain visible from inside the bus through its windows and rain
 films. Glass tint and raindrops affect the view, including the reflections outside.
 
+The same reflections also show on glossy paint and chrome, in any weather: a bus or car
+mirrors the street and the vehicles around it, not only the sky. **Options → Graphics →
+Paint reflections** (`paint_reflections`, on by default) turns this off. It shows only what
+is on screen; elsewhere the paint keeps the sky's reflection. Paint that shows an envmap
+picture keeps that picture (see [Envmap pictures](options.md#graphics)).
+
 ## Graphics and frame rate
 
 neoOMSI draws one picture: physically based lighting with a computed sky and automatic
@@ -126,6 +132,7 @@ tune further, change these first, roughly by what they save:
 | **Ambient occlusion**                   | A depth-based pass over the whole picture              |
 | **Cloud detail**, **Clouds**            | The clouds' ray march (*Automatic* lowers it by itself) |
 | **Puddle reflections**                  | A second look at the scene in rain                     |
+| **Paint reflections**                   | Street reflections on glossy paint, also when dry      |
 | **Rain on the windows**                 | Redrawing the street behind the drops in rain          |
 | **Mirrors**, **Dynamic window reflections** | Drawing the scene again for each mirror or pane    |
 | **Bloom**, **Soft smoke**, **Road spray**, **Indirect light** | Smaller costs, on the graphics card or the processor |

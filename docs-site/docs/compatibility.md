@@ -188,6 +188,37 @@ light map or night map when it has one. Materials without the setting keep the a
 detection used before: a script-masked material (`\S:n`) with a white light map is treated
 as an LED.
 
+### PBR maps
+
+<span id="pbr-maps"></span>
+
+Any texture can bring PBR maps: files beside it with the texture's name and a suffix. For
+`bus.dds`:
+
+| Map | Suffixes |
+| :-- | :-- |
+| Normal map (Direct3D, green down) | `bus_nn`, `bus_normal`, `bus_nrm` |
+| Normal map (OpenGL, green up) | `bus_nn_gl`, `bus_normal_gl`, `bus_nrm_gl` |
+| Roughness | `bus_rr`, `bus_rough`, `bus_roughness` |
+| Gloss (inverted roughness) | `bus_gg`, `bus_gloss`, `bus_glossiness` |
+| Metalness | `bus_mm`, `bus_metal`, `bus_metallic`, `bus_metalness` |
+| Ambient occlusion | `bus_aa`, `bus_ao`, `bus_occlusion` |
+| Packed maps (the letters give the red, green and blue channel) | `bus_orm`, `bus_arm`, `bus_mra`, `bus_rma` |
+
+- Each can be `.png`, `.tga`, `.dds`, `.bmp` or `.jpg`, and `-` works in place of `_`.
+- Single-letter suffixes such as `_n` or `_r` are not read: OMSI mods use them for night
+  maps and other textures.
+- A roughness, metalness or occlusion map must be grey. A normal map must look like one.
+  Other files are left alone.
+- Roughness and metalness maps give the surface a real-time reflection. With **Envmap
+  pictures** on, a material's `[matl_envmap]` picture is shown instead.
+
+A repaint that brings only its colour texture uses the PBR maps of the model's texture it
+replaces. This works for a file of the same name in the repaint's folder and for a
+differently named file in a `.cti`. As soon as the repaint has one map of its own, it uses
+only its own maps. A repaint that moves paint, chrome or stickers to other places should
+bring its own roughness and metalness maps.
+
 ### Shared texture references
 
 `[neo_texturepath]` and `[neo_texture]` are opt-in neoOMSI extensions for sharing texture
