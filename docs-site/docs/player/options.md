@@ -72,6 +72,19 @@ Seating, rear-door boarding, passenger models and movement are described in the
 | **Classic keyboard steering** | The wheel stays where the keys left it; you steer back yourself | `[controls]` `old_steering` | off |
 | **Speed-dependent keyboard steering** | The steering keys act more slowly at higher speeds | `[controls]` `red_steer_spd` | off |
 
+### Tram overhead wires
+
+Trams with pantograph data touch the map's overhead wires: they have power only while a
+raised pantograph touches a wire. A tram without such data keeps power everywhere, as in
+OMSI 2. Both options apply when a map is loaded. Available from the 0.4.0 Nightly line on;
+how it works and how to build vehicles and maps for it is on
+[Trams](../creators/trams.md).
+
+| Option | What it does | `[gameplay]` key | Default |
+| --- | --- | --- | --- |
+| **Tram pantographs touch the wires** | Off, a raised pantograph always has power | `catenary` | on |
+| **Staggered tram wires** | The wires run from side to side above the track, as on real lines. OMSI 2 maps lay them straight | `catenary_zigzag` | off |
+
 ## Camera
 
 Most camera options are self-explanatory in the game. Head tracking and free look are
