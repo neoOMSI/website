@@ -121,7 +121,6 @@ set when it cannot be:
 | **Switch … asked …** | The switch has not turned yet: it is still moving, or in a multiplayer session the host has not set it yet. |
 | **No switch ahead** | There is no fork within 150 m. |
 | **The switch ahead has no branch …** | The fork ahead is not a switch object, for example on a map without `[realrail]`. The tram takes the branch of its route or of its indicator there. |
-| **This switch cannot be set from here** | In a multiplayer session, a switch without a `[mouseevent]` can only be set by the host. |
 
 The keys only get these defaults when the key combinations are free. If your `keyboard.cfg`
 already uses one, that action has no key: give it one in the **Key bindings** list. In the
