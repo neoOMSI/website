@@ -27,6 +27,7 @@ module.exports = {
         "creators/map-creators",
         "creators/html-textures",
         "creators/trolleybuses",
+        "creators/trams",
         "creators/shared-assets",
         "creators/lua-plugins",
         "creators/spotlight-cookies",
