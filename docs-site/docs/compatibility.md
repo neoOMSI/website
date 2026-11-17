@@ -83,6 +83,31 @@ default. It is stored as `ai_strict_stops` under `[gameplay]` in
 Either way, a bus within 5 m of the stop object has arrived. Maps are built around the
 OMSI 2 behavior.
 
+### Track switches
+
+As in OMSI 2.2.032, an AI train sets the `Switch` variable of a switch object for the
+lanes just ahead of it, and the player can click a switch in the free camera or on foot.
+
+The player's tram or train also sets switches, by its route or by key. This is the neoOMSI
+setting **Options → Gameplay → Switches by route** (`tram_points_by_route` under
+`[gameplay]` in [`settings.toml`](player/user-guide.md#settings-file), on by default; see
+[Switches by route](player/options.md#switches-by-route)). How a switch object is set by
+the player's vehicle:
+
+| Switch object | What the player's vehicle does |
+| :-- | :-- |
+| Has a `[mouseevent]` | Runs that event, as a click does, so the script's `{trigger:...}` runs (a spring-back timer restarts, an interlocking locks itself). |
+| Its script reads `TrafficLightPhase` | Leaves `Switch` alone and asks for the traffic light of its branch, as an AI train asks for the lights on its route. |
+| Has no `[mouseevent]`, or a `[switchdir]` other than 0 and 1 | Writes `Switch` directly, as an AI train does. |
+| Its script turns it back after three clicks in a row | Leaves it to the script for 30 seconds. |
+
+A switch is found by its tile and its map id. Objects on other tiles with the same id are
+separate switches, for AI trains too. In a multiplayer session, where switches are sent by
+id, the switch with that id nearest the player is meant.
+
+A rail vehicle put onto a two-way track (two lanes on one line) stands on the lane that
+runs its way, so it asks for the traffic lights of its own direction.
+
 ### Vehicle draw order
 
 A vehicle is drawn in the `[mesh]` order of the first LOD in its `model.cfg`. Inside one
