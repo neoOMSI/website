@@ -62,6 +62,21 @@ is not `htmlTexture 7`.
 `html\index.html` is the relative path from the bus path. Example: `Data\Vehicles\MAN_NewLionsCity\html\index.html` =
 `html\index.html`
 
+### Lit or unlit
+
+By default a page shines by itself, like a real screen: it stays bright at night and glows a little. You can say so
+explicitly with `lit`, or turn it off with `unlit`, either after the path or on the line below it:
+
+```
+[htmltexture]
+1024
+512
+html\index.html unlit
+```
+
+An `unlit` page is drawn like an ordinary `[scriptTexture]`: the light of the scene and the model's `[matl_lightmap]`
+decide how bright it is, so it goes dark at night. Use it for printed signs or paper timetables made with HTML.
+
 ## The basic idea
 
 Your page is normal HTML with a `<script>`. The game gives it one global object, `window.omsi`
@@ -129,6 +144,8 @@ standardised by OMSI. Read those with `omsi.getVar("their_variable_name")`.
 
 These are set before `omsi.update` runs and change with the simulation clock, once per second.
 Use `omsi.locale` to pick your texts, and fall back to English for languages you didn't write.
+`new Date()` reads the same simulation clock (see [JavaScript](#javascript)), which is handy for
+formatting and for working out minutes until a departure.
 
 ## `omsi.vehicle` (version 1)
 
@@ -216,7 +233,7 @@ omsi.update = function () {
 
 |                              |                                                                                                                                                           |
 |------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `omsi.setVar(name, value)`   | Write a script variable.                                                                                                                                  |
+| `omsi.setVar(name, value)`   | Write a script variable. A number (or `true`/`false`) sets a number variable; a text sets the string variable of that name, or a number variable when the text is a number (`"1"`). |
 | `omsi.trigger(name)`         | Press a trigger of the bus's scripts, like a button in the cab does.                                                                                      |
 | `omsi.setRoute(index)`       | Type route `omsi.depot.routes[index]` into the IBIS: line, route and destination, the way a driver would.                                                 |
 | `omsi.setLine(text)`         | Set a line by its text. The game takes the first route of that line in the depot file. It matches the whole text (any letter case) or the leading digits. |
@@ -289,6 +306,8 @@ They turn into events on the element under the pointer and bubble up through its
 
 * `pointerdown`, `pointerup`, `mousedown`, `mouseup`, `click`, `mousemove`
 
+One press gives one `pointerdown`/`mousedown`, and its release one `pointerup`/`mouseup` and one `click`.
+
 You can listen in three ways:
 
 ```html
@@ -302,11 +321,37 @@ el.addEventListener('click', function (event) { ...
 });
 ```
 
-The event object has `type`, `x`, `y` (in texture pixels), `target`, `stopPropagation()` and
+The event object has `type`, `x`, `y` (in texture pixels, also as `clientX`/`clientY`, `offsetX`/`offsetY` and
+`pageX`/`pageY`), `button`, `buttons`, `pointerType` (`"mouse"`), `target`, `currentTarget`, `stopPropagation()` and
 `preventDefault()`. A click needs both the press and the release on the page.
 
+* `target` is the element that was pressed. A press on text gives the element the text is in (a `<span>`, a
+  `<button>`), never a text node. `currentTarget` (and `this` in a `function` listener) is the element whose listener
+  runs.
+* Events bubble from the target up to `document.body`, then to `document` and `window`. That makes one listener for a
+  whole keypad easy:
+
+```js
+document.addEventListener('click', function (e) {
+    var key = e.target.closest('[data-key]');
+    if (key) omsi.setVar('Taste', Number(key.dataset.key));
+});
+```
+
+* Adding the same function twice for the same event keeps it once, as in a browser; `removeEventListener` takes it
+  away, and `{ once: true }` removes it after its first call. `el.onclick = f` replaces an `onclick="..."` attribute
+  but leaves the `addEventListener` listeners alone, and `el.onclick = null` clears it.
+* `e.stopPropagation()` stops the bubbling, `e.stopImmediatePropagation()` also the other listeners of the same
+  element; `e.preventDefault()` sets `e.defaultPrevented`. `e.offsetX`/`offsetY` are inside the target's box,
+  `clientX`/`clientY` on the texture.
+* `pointerdown`, `pointerup` and `pointermove` come before their `mouse...` events. A `click` goes to the nearest
+  element that holds both the press and the release.
+* `DOMContentLoaded` (on `document` and `window`) and `load` (on `window`, also `<body onload="...">`) fire once after
+  all scripts of the page ran.
+
 There is no keyboard input, no hover and no drag and drop. Build keypads and lists from
-buttons or boxes and react to `click`.
+buttons or boxes and react to `click`. `mousemove` arrives while the pointer moves over the page, which is enough for
+sliders.
 
 ## Scenery objects
 
@@ -344,26 +389,230 @@ need a few changes. When something doesn't show up, check this list first.
 * `<img src width height>` (bmp, dds, tga, jpg, png). The file is looked up next to the page.
   `img.src` can be changed from a script. Pictures are cached, a missing file is cached too.
 * `<head>`, `<title>`, `<meta>`, `<link>` are read and then ignored.
+* A page may be saved in UTF-8, in UTF-16 (with its byte order mark), in what its `<meta charset>` names, or in
+  Windows-1252 as old OMSI files are; umlauts come out right in all of them.
+* `<style media="...">` applies as its media query says. A `<script>` of another `type` than JavaScript
+  (`application/json`, `text/template`) does not run, but its text can be read (`textContent`); nothing inside
+  `<template>` or `<noscript>` runs or applies. Old pages that wrap a script or a style sheet in `<!-- ... -->` work.
 
 `canvas`, `video`, `svg` and `iframe` are drawn as empty boxes.
 
 ### CSS
 
-* Selectors: tag, `#id`, `.class`, `*`, combinations like `div.a#b`, descendant chains
-  (`.panel span`) and comma lists.
+* Selectors: tag, `#id`, `.class`, `*`, attributes (`[data-on]`, `[data-on="1"]`, `^=`, `$=`, `*=`, `~=`, `|=`, and
+  `i` for any letter case: `[data-k^="ab" i]`), combinations like `div.a#b`,
+  descendant chains (`.panel span`), children (`ul > li`), siblings (`h2 + p`, `h2 ~ p`) and comma lists.
+* Pseudo-classes: `:root`, `:first-child`, `:last-child`, `:only-child`, `:nth-child(2n+1)` (also `odd`, `even`),
+  `:nth-last-child()`, `:first-of-type`, `:last-of-type`, `:nth-of-type()`, `:only-of-type`, `:empty`, `:not()`,
+  `:is()` and `:where()`. State pseudo-classes (`:hover`, `:active`, `:focus` ...) and pseudo-elements (`::before`)
+  never match, so such a rule is ignored.
 * Properties: `color`, `background` / `background-color`, `background-image: url()`,
   `background-size`, `background-repeat`, `background-position`, `font-size`, `font-weight`,
-  `text-align`, `line-height`, `margin` (and `-top/-right/-bottom/-left`), `padding` (same),
-  `width`, `height`, `display` (`none`, `inline`, `inline-block`), `visibility`,
+  `font-family`, `font` (`bold 20px/1.5 Arial`), `text-align`, `line-height`, `margin` (and
+  `-top/-right/-bottom/-left`), `padding` (same),
+  `width`, `height`, `min-width`, `max-width`, `min-height`, `max-height`, `box-sizing`,
+  `display` (`none`, `inline`, `inline-block`, `block`, `flex`, `inline-flex`, `grid`, `inline-grid`,
+  `flow-root`, also the two-word forms such as `inline flex`), `visibility`, `float`, `clear`,
   `border` (and its sides, `-width`, `-color`, `-style`), `border-radius`, `border-collapse`,
   `border-spacing`, `text-decoration`, `text-transform`, `white-space`, `vertical-align`,
-  `list-style`, and for layers `position`, `top`, `right`, `bottom`, `left`, `inset`,
-  `z-index`, `overflow`, `text-overflow` and `opacity`.
-* Units: `px`, `%`, `em`, `rem`, `pt`, `vw`, `vh`.
-* Layout is block flow with wrapped inline text, plus positioned layers (see below).
+  `list-style`, for layers `position`, `top`, `right`, `bottom`, `left`, `inset`,
+  `z-index`, `overflow`, `text-overflow` and `opacity`, and the ones in the sections below
+  (flexbox, grid, effects, animations).
+* Values: `px`, `%`, `em` (of the element's own font size, the parent's for `font-size`), `rem` (of the `<html>`
+  element), `pt`, `pc`, `vw`, `vh` (also `dvh`, `svh` ...), `vmin`, `vmax`, `in`, `cm`, `mm`, `q`, and `ch`/`ex` as
+  half an `em`; `calc()` (for example `calc(100% - 20px)`), and `min()`, `max()`, `clamp()` with pixel values.
+  Colours as `#rgb`, `#rrggbb` (with alpha too), `rgb()`/`rgba()`, `hsl()`/`hsla()` (also with spaces and `/ alpha`),
+  the 148 CSS colour names, `transparent` and `currentColor`. `inherit`, `initial` and `unset` work for the
+  properties above. Keywords may be written in any letter case. A value the engine cannot read is dropped and the
+  one before stays, as in a browser.
+* Custom properties work as in a browser: `--accent: #ffcc00` on an element (or `:root`) and `color: var(--accent)`
+  on it or its children, with a fallback as in `var(--accent, white)`. They may refer to each other in any order;
+  properties that refer to each other in a circle are invalid, and a `var()` of one takes its fallback.
+* Borders: `border: 1px solid red`; a border without a style (`border: 1px red`) is not drawn, and
+  `border-style: solid` alone draws a 3 px (`medium`) border in the text colour.
+* `box-sizing: border-box` makes `width` and `height` include the padding and the border. Without it (`content-box`)
+  they are the size of the content, and padding and border come on top.
+* Layout is block flow with wrapped inline text, floats, flexbox, grid and positioned layers (see below).
+* Not available: `letter-spacing`, `word-spacing`, `text-indent`, `text-shadow`, `object-fit`,
+  `table-layout: fixed`, `text-align: justify`. Inline-blocks, pictures and form fields do not share a line with text
+  (each row of them is laid out apart), and inside a `<span>` they are not drawn. `visibility` and `opacity` work on a
+  `<span>` too (a blinking colon of a clock). A `transform` does not keep its absolute children inside it.
+* `@media` works against the texture: its width and height are the viewport. A texture is a `screen`, `landscape`
+  or `portrait` by its size, has a fine pointer that cannot hover (`(hover: none)`) and the light colour scheme.
+  Width, height, aspect ratio and orientation can be asked with `min-`/`max-` or as ranges
+  (`(width >= 800px)`, `(400px <= width <= 900px)`), and joined with `and`, `,` or `or`; `em` in a query is
+  16 px. One page can so serve displays of different sizes. `@supports` blocks are always used.
 
-Not available: flexbox, grid, floats, gradients, shadows, transforms, animations and
-transitions, custom fonts. Text is drawn in Roboto.
+Not available: `background-blend-mode`, `isolation`, `perspective-origin`, `clip-path` boxes other than the border
+box (`content-box` ...), and the z-sorting of 3D boxes that cut through each other. A transformed box is drawn from
+where it is laid out: the part that starts left of or above the texture is lost, even when the transform moves it into
+view (lay a slide-in panel out inside the texture and move it out with the transform instead). `backdrop-filter` inside
+a faded or transformed box sees nothing behind it.
+
+Differences from a browser to keep in mind:
+
+* The top margin of a first child does not pass through its parent (and the bottom margin of the last one neither):
+  give the parent a `padding-top` of `1px`, or set `margin-top: 0` on the child, to get the same picture in both.
+* `padding`, `border` and side margins of inline elements (`<span>`) take no room in the line; use
+  `display: inline-block` for a padded badge.
+* `white-space: pre`/`pre-wrap` keeps spaces and line breaks only in `<pre>` and `<textarea>`; elsewhere they are
+  already joined when the page is read.
+* A float narrows every line of the paragraph next to it, also those below its end.
+* Percentages in `margin`, `padding`, `gap` and `border-radius` are of the texture width; `min()`, `max()` and
+  `clamp()` take no percentages.
+* `border-radius` has one radius for all corners (the first one given), and a box has one border colour for all its
+  sides.
+* `@layer` blocks count as ordinary rules; `:nth-child(... of S)` and escaped characters in class names are not read.
+
+A page that is too costly to lay out (more than about 250 ms, or very deeply nested flex and grid boxes) has the rest
+of it left out; such a layout is tried again a few times and then kept.
+
+### Floats
+
+`float: left` or `right` puts a box at that side; what follows flows beside it, and `clear: left | right | both` goes
+below. A float without a `width` is as wide as its content.
+
+* Floats line up side by side as long as there is room, else they go below the earlier ones.
+* Text that starts beside a float wraps in the room next to it, for its whole paragraph. A block beside a float takes
+  the room next to it (as if it had `overflow: hidden`).
+* Unlike a browser, every box grows round its own floats (as with `display: flow-root`): what follows a row of floats
+  starts below them.
+
+### Flexbox
+
+`display: flex` lays the children out in a row (or a column), which is the easiest way to centre things or to share
+the room of a bar between buttons:
+
+```css
+.bar    { display: flex; gap: 8px; align-items: center; height: 80px; }
+.bar .grow { flex: 1; }               /* takes the room that is left */
+.centre { display: flex; justify-content: center; align-items: center; }
+```
+
+* Container: `flex-direction` (`row`, `row-reverse`, `column`, `column-reverse`), `flex-wrap` (`nowrap`, `wrap`,
+  `wrap-reverse`), `flex-flow`, `justify-content` (`flex-start`, `flex-end`, `center`, `space-between`,
+  `space-around`, `space-evenly`), `align-items` and `align-content` (`stretch`, `flex-start`, `flex-end`, `center`,
+  and the `space-*` values for lines), `gap`, `row-gap`, `column-gap`, `place-content`, `place-items`.
+* Items: `flex` (`flex: 1`, `flex: 0 0 120px`, `none`, `auto`), `flex-grow`, `flex-shrink`, `flex-basis`,
+  `align-self` and `order`. Items stretch across the line unless they have their own height (in a row) or width (in a
+  column). Text right inside a flex container becomes an item of its own.
+* An item does not shrink below its longest word unless it has a `min-width`. A column only uses `justify-content`
+  when it has a height.
+* `display: inline-flex` is a flex container that is only as wide as its items.
+
+### Grid
+
+```css
+.screen { display: grid; grid-template-columns: 120px 1fr 1fr; grid-template-rows: 60px auto 40px; gap: 6px;
+          grid-template-areas: "line dest dest" "list list list" "foot foot foot"; height: 100%; }
+.line   { grid-area: line; }
+.tiles  { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+```
+
+* Tracks: `grid-template-columns`, `grid-template-rows` with `px`, `%`, `fr`, `auto`, `min-content`,
+  `max-content`, `minmax()`, `fit-content()` and `repeat()` (also `auto-fill` / `auto-fit`, which fit as many
+  tracks as the room holds); line names in `[...]` are skipped. `grid-template-areas`, `grid-template` and `grid`
+  (rows `/` columns, or areas), `grid-auto-rows`, `grid-auto-columns`, `grid-auto-flow` (`row`, `column`, `dense`).
+* Items: `grid-column`, `grid-row` (`1 / 3`, `span 2`, `2 / -1`, an area name), their `-start`/`-end` parts and
+  `grid-area` (a name or `row / column / row / column`). Items without a place are put in the next free cells.
+* Alignment: `justify-items`, `align-items`, `place-items`, `justify-self`, `align-self`, `place-self` (items stretch
+  by default) and `justify-content`, `align-content` for the tracks. `gap`, `row-gap`, `column-gap`.
+* `auto` tracks are as wide as their content and share the room that is left; `fr` tracks share the rest after
+  that. A row only uses `fr` when the grid has a height.
+
+### Effects
+
+* Gradients: `background: linear-gradient(to right, #003 0%, #06c 100%)` (an angle such as `45deg`, or `to top`,
+  `to bottom right` ...) and `radial-gradient(circle at 50% 50%, white, black)`. Colour stops may carry a position.
+  `repeating-` gradients are drawn once. A gradient takes `background-size`, `background-position` and
+  `background-repeat` like a picture (`... 0 0 / 20px 20px` gives stripes). Not available: `conic-gradient`, the size
+  keywords of `radial-gradient` (`closest-side`, `circle 20px` ...: it always reaches the farthest corner), colour
+  hints (`red, 20%, blue`), and more than one gradient in one `background`.
+* `box-shadow`: one or more shadows, `x y blur spread colour`, also `inset`; without a colour it is the text colour.
+  The blur is a smooth fade, close to what a browser draws. `text-shadow` is not drawn, and `drop-shadow()` without a
+  colour is black.
+* `transform`: `translate()`, `translateX/Y()`, `scale()`, `scaleX/Y()`, `rotate()`, `skew()`, `skewX/Y()` and
+  `matrix()`, several in a row, with `transform-origin`. A transformed box takes no other room, and clicks reach it
+  where it is drawn. Up to four transformed, faded, filtered or clipped boxes can sit inside each other; deeper ones
+  are drawn plain. Only what lies on the texture before the transform is drawn.
+* 3D: `rotateX()`, `rotateY()`, `rotateZ()`, `rotate3d()`, `translate3d()`, `translateZ()`, `scale3d()`, `scaleZ()`,
+  `matrix3d()` and `perspective()` in `transform`, and `perspective` on the parent (its vanishing point is taken at the
+  middle of the transformed box). `backface-visibility: hidden` hides a box that turns its back.
+  `transform-style: preserve-3d` keeps the transformed children of a box in its 3D space (a flip card's back shows when
+  it is turned), drawn from the farthest to the nearest; without it they are flattened into the box.
+* `filter`: `blur()`, `brightness()`, `contrast()`, `grayscale()`, `sepia()`, `invert()`, `saturate()`,
+  `hue-rotate()`, `opacity()` and `drop-shadow()`, several in a row. They work on the box and everything in it.
+* `backdrop-filter`: the same functions on what is already drawn behind the box (inside its rounded corners), for
+  frosted-glass panels.
+* `mix-blend-mode`: `multiply`, `screen`, `overlay`, `darken`, `lighten`, `color-dodge`, `color-burn`, `hard-light`,
+  `soft-light`, `difference`, `exclusion`, `hue`, `saturation`, `color`, `luminosity` and `plus-lighter` mix the box
+  with what is already drawn behind it.
+* `clip-path`: `inset()` (with `round`), `circle()`, `ellipse()` (with `at`), `polygon()`, `path('M 0 0 L ...')`
+  (SVG path data with curves and arcs) and `url(#id)` of an inline `<svg><clipPath id=...>` with `path`, `polygon`,
+  `polyline`, `rect`, `circle` and `ellipse` (also `clipPathUnits="objectBoundingBox"` and `clip-rule`), on the border
+  box. What is cut off is not drawn and takes no clicks.
+* Masks: `mask-image` (a picture or a gradient), `mask-size`, `mask-position`, `mask-repeat`, `mask-mode`
+  (`alpha`, `luminance`) and the `mask` shorthand, also with the `-webkit-` prefix. The mask's alpha (or brightness)
+  fades the box and everything in it.
+
+### Columns
+
+`column-count`, `column-width` or `columns` share the content of a box out over columns of the same height, with
+`column-gap` (1em by default) and `column-rule` between them:
+
+```css
+.stops { column-count: 2; column-gap: 24px; column-rule: 1px solid #555; }
+```
+
+* A paragraph may break between its lines; other boxes go to a column whole.
+* With a `height` the columns are that tall, and what does not fit goes into further columns to the right; without
+  one the columns are balanced.
+* `column-span`, `column-fill` and breaks (`break-inside` ...) are not read.
+
+### Animations and transitions
+
+```css
+@keyframes blink { 0%, 100% { opacity: 1 } 50% { opacity: 0.2 } }
+.warning { animation: blink 1s ease-in-out infinite; }
+.door    { transition: background-color 300ms, transform 0.5s ease-out; }
+.door.open { background-color: #2a2; transform: translateX(40px); }
+```
+
+* `@keyframes` with `from`, `to` and percentages (also an `animation-timing-function` inside a keyframe, for the
+  way to the next one); `animation` and its parts (`animation-name`, `-duration`, `-delay`, `-iteration-count`,
+  `-direction`, `-fill-mode`, `-timing-function`, `-play-state`), in any order and from different rules; several
+  animations separated by commas. A paused animation goes on from where it stopped.
+* `transition` and its parts (`transition-property`, `-duration`, `-delay`, `-timing-function`). A transition starts
+  when a script changes what the style sheet gives an element, for example by changing its classes.
+* Timing: `linear`, `ease`, `ease-in`, `ease-out`, `ease-in-out`, `cubic-bezier()`, `steps()` (with `jump-start`,
+  `jump-end`, `jump-none`, `jump-both`), `step-start`, `step-end`. A `steps()` animation is only drawn again when it
+  steps.
+* What moves: `opacity`, `color`, `background-color`, `border-color`, `transform`, `top`/`right`/`bottom`/`left`,
+  `width`, `height`, `margin`, `padding`, `border-width`, `border-radius`, `font-size`, `line-height` and
+  `box-shadow` (also from `none`: the shadow fades in). Other properties switch halfway, and so do transforms made of
+  different functions (`translateX()` to `translateX() rotate()`).
+* To start an animation again, give it another name or take it away for one frame (`setTimeout`); taking the class
+  away and adding it back in the same script, even with a read of `offsetWidth` between, does not restart it. An
+  animation also wins over an `!important` declaration of the same property.
+* Animations run on the page's own clock (real time, like the timers). While something moves the page is drawn up to
+  30 times a second, so keep animations to the parts that need them.
+
+### Fonts
+
+Text is drawn in Roboto unless the page brings its own font:
+
+```css
+@font-face { font-family: "Display"; src: url("fonts/display.ttf"); }
+@font-face { font-family: "Display"; src: url("fonts/display-bold.ttf"); font-weight: bold; }
+.line { font-family: "Display", sans-serif; }
+```
+
+* TrueType and OpenType files (`.ttf`, `.otf`) are looked up next to the page, like pictures. Each file is read once
+  for the whole game, up to 32 MB.
+* The first name in `font-family` that has an `@font-face` is used, else Roboto. Generic names (`sans-serif`,
+  `monospace` ...) and fonts installed on the computer are not used.
+* A bold text uses the `@font-face` with `font-weight: bold` (or 600 and more) when there is one, else the regular
+  file. There is no slanted or synthetic bold version of a page font.
 
 ### Layers and exact positions
 
@@ -406,56 +655,189 @@ on top of it. Build them with `position: absolute`:
 
 ### JavaScript
 
-The language is ES5 plus arrow functions and a few later additions.
+The language is ES5 plus most of the later everyday additions.
 
-* Language: `var`, `let` and `const` (all scoped like `var`), functions, `if`, `for`, `while`,
-  `for ... in` (keys in alphabetical order), `for ... of`, `try` / `catch` / `finally`,
-  `throw`, `new`, `this`, objects, arrays, regular expressions like `/\d+/g`.
+* Language: `var`, `let` and `const` (`let`/`const` belong to their block, and each round of a loop has its own, so
+  closures made in a loop keep that round's values), functions, arrow functions, the comma operator, `&&=`, `||=`,
+  `??=`, `if`, `switch`, `for`,
+  `while`, `do ... while`, `for ... in` (integer keys by number, then the others by name), `for ... of`, `try` / `catch` / `finally`,
+  `throw`, `new`, `this`, objects (with `{ a, b }`, methods `{ draw() {} }` and `get`/`set`), arrays, regular
+  expressions like `/\d+/g`. Labels: `outer: for (...) { ... break outer; }` and `continue outer`, also on a block
+  (`skip: { ... break skip; }`).
+* Template strings: `` `Linie ${line} in ${minutes} min` ``, nested too, and tagged templates
+  (`` tag`text ${x}` `` calls `tag(strings, x)`; `` String.raw`C:\new` `` keeps the backslashes). The `strings` a tag
+  gets have `strings.raw`.
+* Objects: computed keys (`{ [key]: value }`, `{ [Symbol.iterator]() {} }`, also in classes).
+* `Symbol()`, `Symbol.for()` and `description`; symbol keys are not listed by `Object.keys`, `for ... in` or
+  `JSON.stringify`. The well-known symbols: `Symbol.iterator`, `asyncIterator`, `toPrimitive` (`hint` is `'number'`,
+  `'string'` or `'default'`), `toStringTag`, `hasInstance` (`static [Symbol.hasInstance](x)` decides `instanceof`),
+  `isConcatSpreadable`, and `match`, `matchAll`, `replace`, `search`, `split` (an object with one of them can be given
+  to the string method of that name). `species` and `unscopables` exist but change nothing.
+* Conversions: `+obj`, `obj * 2`, `obj < 3` and `Number(obj)` use the object's own `valueOf()`, `String(obj)` and
+  `` `${obj}` `` its own `toString()`, and `[Symbol.toPrimitive]` before both.
+  `Object.prototype.toString.call(x)` gives `[object Array]`, `[object Null]` ... (and the `Symbol.toStringTag`).
+* Iterators: arrays, strings, `Map` and `Set` have `[Symbol.iterator]()`, and `keys()`, `values()`, `entries()` give
+  iterator objects with `next()`. Your own objects become iterable with a `[Symbol.iterator]()` that returns
+  `{ next() { return { value, done }; } }`; `for ... of`, `...`, `Array.from` and destructuring take them.
+* Generators: `function*`, `*method()` in classes and objects, `yield`, `yield*`, and `next(v)`, `return(v)`,
+  `throw(e)` on the generator. `for ... of` asks for one value at a time, so an endless generator with a `break` is
+  fine. At most 256 generators can be running at once.
+* Async generators and `for await`: `async function*`, `async *method()`, `await` and `yield` in them, `next()`
+  giving promises, `Symbol.asyncIterator`, and `for await (const x of ...)` over async iterators and over plain
+  iterables of promises.
+* Iterator helpers on iterators and generators: `map`, `filter`, `take`, `drop`, `flatMap` (they pull one value at a
+  time, so `naturals().filter(even).take(5)` works), `toArray`, `forEach`, `reduce`, `some`, `every`, `find`, and
+  `Iterator.from()`.
+* Prototypes: `F.prototype` of functions and classes, `new F()` inheriting from it, `Object.create(proto, descriptors)`,
+  `Object.getPrototypeOf` / `setPrototypeOf`, `isPrototypeOf`, `instanceof` along the chain, `Object.defineProperty`
+  (values, getters and setters), `Object.getOwnPropertyDescriptor` / `getOwnPropertyDescriptors`, and additions to
+  `Object.prototype`, `Array.prototype`, `String.prototype`, `Number.prototype` and `Function.prototype`.
+  `Array.prototype.slice.call(arguments)` and friends work. Properties are always writable and configurable:
+  `Object.freeze` and `seal` give the object back unchanged, and a descriptor's `writable` says `true`.
+* Functions: `call`, `apply`, `bind` and `arguments`.
+* `Proxy` with the traps `get`, `set`, `has`, `deleteProperty`, `ownKeys`, `getOwnPropertyDescriptor`, `apply` and
+  `construct`, `Proxy.revocable()` (after `revoke()` every use of the proxy throws a `TypeError`), and `Reflect`
+  (`get`, `set`, `has`, `deleteProperty`, `ownKeys`, `apply`, `construct`, `getPrototypeOf`, `setPrototypeOf`,
+  `defineProperty`, `getOwnPropertyDescriptor`).
+* Optional chaining: `omsi.vehicle?.route?.current?.name`, `list?.[0]`, `callback?.()`. When the left side is `null`
+  or `undefined` the whole chain is `undefined`.
+* Spread and rest: `[...a, ...b]`, `{ ...defaults, ...options }`, `f(...args)`, `Math.max(...list)`,
+  `function f(first, ...rest)`.
+* Destructuring in `var`/`let`/`const`, parameters and `for ... of`, with defaults and rest:
+  `const { line, stops: [first] = [] } = route;`, `for (const [key, value] of map)`, and swapping with
+  `[a, b] = [b, a]`. Default parameter values (`function f(a = 1)`) too.
+* `Map` and `Set` (`get`, `set`, `add`, `has`, `delete`, `clear`, `size`, `forEach`, `keys`, `values`, `entries`, and
+  `new Map([[k, v]])` / `new Set(list)`), in insertion order; objects as keys compare by identity. `WeakMap` and
+  `WeakSet` take objects as keys only and cannot be counted or listed.
+* Classes: `class`, `constructor`, methods, fields (`count = 0;`), `static` methods and fields, `get`/`set`,
+  `extends` (also `extends Error` and a plain constructor function), `super(...)`, `super.method()` (also in a
+  `static` method), `this.constructor` and `instanceof`. Methods are not listed by
+  `Object.keys`, `for ... in` or `JSON.stringify`. Private fields and methods (`#count`, `#bump()`, also `static`) are
+  kept out of `Object.keys`, `for ... in` and `JSON.stringify` (the engine does not stop code outside the class from
+  reading them).
+* Asynchronous code: `Promise` (`then`, `catch`, `finally`, `Promise.resolve`, `reject`, `all`, `allSettled`, `race`,
+  `any`), `async function`, `async` arrows and methods, and `await`. Promise reactions run right after the script,
+  update, event or timer that caused them. A rejection nobody handles is written to the log as
+  `htmltexture: uncaught (in promise) ...`.
 * Operators: besides the usual ones also `**`, `??`, the bit operators (`|`, `&`, `^`, `~`,
   `<<`, `>>`, `>>>`), `instanceof`, `typeof`, `delete`.
 * Globals: `Math` (`round`, `floor`, `ceil`, `abs`, `min`, `max`, `sqrt`, `pow`, `trunc`,
-  `sin`, `cos`, `PI`), `JSON.parse` and `JSON.stringify` (object keys come out sorted),
+  `sin`, `cos`, `random`, `PI`), `JSON.parse` (also with a reviver) and `JSON.stringify` (with getters, `toJSON()`, a replacer function or key list,
+  and indentation),
   `RegExp`, `Error`, `TypeError`, `RangeError`, `SyntaxError`, `Array.isArray`, `parseInt`,
   `parseFloat`, `String`, `Number`, `isNaN`, `NaN`, `Infinity`, `Object.keys`,
-  `console.log/warn/error`.
+  `Object.entries`, `Object.values`, `Object.assign`, `Object.fromEntries`, `Object.hasOwn`, `Object.is`, `Array.from` (also `Array.from({ length: n }, f)`),
+  `console.log/warn/error`, `performance.now()`, `window.innerWidth`/`innerHeight` (the texture size), and `window`
+  as `globalThis`, `self` and `this` at the top of a script. Also `Boolean` (`list.filter(Boolean)`),
+  `encodeURIComponent`, `decodeURIComponent`, `encodeURI`, `decodeURI`, `queueMicrotask`, `structuredClone` (of what
+  JSON can hold), and `Intl.DateTimeFormat` / `Intl.NumberFormat` with `format()` (on top of `toLocale...String`,
+  also `timeStyle` and `dateStyle`).
+* `Date` runs on the **simulation clock**: `new Date()` and `Date.now()` are `omsi.timestamp`, with the getters and
+  setters (`getHours()`, `setMinutes()` ...), `toISOString()`, `toLocaleTimeString()`, `toLocaleDateString()` and
+  `toLocaleString()` (by `omsi.locale` or the argument: `3/5/2026` in American English, `05/03/2026` in British
+  English and French, `5.3.2026` in German, `5-3-2026` in Dutch, `2026-03-05` in Swedish ...; with the options
+  `weekday`, `day`, `month`, `year`, `hour`, `minute`, `second` and `hour12`; month and weekday names in English,
+  German, French, Spanish, Italian, Dutch and Portuguese, other languages get the English ones), `Date.UTC()` and
+  `Date.parse()` for ISO dates (`2026-11-15T08:30:00`), `11/15/2026`, `Nov 15, 2026 08:30` and what `toString()` and
+  `toUTCString()` write. The simulation has no time zone, so local time and UTC are the same. Before the page's
+  first `update`, the clock reads 1 January 1970.
+* `localStorage` (`getItem`, `setItem`, `removeItem`, `clear`, `key`, `length`) keeps texts between game sessions.
+  Pages in the same folder share it; it holds up to 5 MB (beyond that `setItem` throws a `QuotaExceededError`). It is
+  saved in the game's settings folder (`html-storage`) at most every 2 seconds and when the page closes.
+  Of the vehicles, only the bus you drive saves it: AI and network buses keep their items in memory, so they never
+  overwrite yours. When you take over an AI bus, its pages read your saved items.
+* `fetch(path)` reads a file of the page's folders (the page's own folder, the model folder, the vehicle or object
+  folder): `const data = await (await fetch('data/lines.json')).json();`. The response has `ok`, `status`, `text()` and
+  `json()`; a missing file gives `ok: false` and `status: 404`. The network, absolute paths and `..` are refused with
+  a `TypeError`.
 * Strings: `split`, `replace`, `replaceAll`, `match`, `search`, `trim`, `trimStart`,
   `trimEnd`, `indexOf`, `lastIndexOf`, `charAt`, `charCodeAt`, `slice`, `substring`,
   `startsWith`, `endsWith`, `includes`, `concat`, `localeCompare`, `toUpperCase`,
   `toLowerCase`, `padStart`, `padEnd`, `repeat`, and `text[i]`. `split`, `replace`,
   `replaceAll`, `match` and `search` take a string or a regular expression; `replace` knows
-  `$1`, `$&` and a function as the replacement. Numbers: `toFixed`, `toString`.
+  `$1`, `$&` and a function as the replacement. Also `at`, `substr`, `codePointAt`, `matchAll`, `normalize` (`NFC`,
+  `NFD`, `NFKC`, `NFKD`), `toLocaleUpperCase`, `toLocaleLowerCase`, `String.fromCharCode`. Numbers: `toFixed`,
+  `toPrecision`, `toExponential`, `toString` (also with a radix, `(255).toString(16)`), `valueOf` and
+  `toLocaleString` (with `minimumFractionDigits`, `maximumFractionDigits`, `minimumIntegerDigits`,
+  `maximumSignificantDigits`, `useGrouping` and `style: 'percent'` or `'currency'` with `currency: 'EUR'` ...;
+  English, Japanese, Chinese and Korean write `1,234.5`, French, Polish, Russian, Swedish ... `1 234,5`, the others
+  `1.234,5`; Spanish and Polish group from five digits on).
+  `Number.isFinite`, `isInteger`, `isNaN`, `MAX_SAFE_INTEGER`, `EPSILON` ..., the global `isFinite`, and `Math`
+  with `atan2`, `tan`, `log`, `log10`, `exp`, `sign`, `hypot`, `cbrt` and the other functions and constants.
 * Regular expressions: `test`, `exec`, `lastIndex` and the flags `g`, `i`, `m`, `s`, `y`.
   Look-ahead and look-behind (`(?=...)`) and back references (`\1`) are not supported; such a
   pattern throws a `SyntaxError`.
 * Arrays: `push`, `pop`, `shift`, `unshift`, `slice`, `splice`, `concat`, `reverse`, `sort`
   (stable, with or without a compare function), `join`, `indexOf`, `lastIndexOf`,
-  `includes`, `map`, `filter`, `forEach`, `find`, `findIndex`, `some`, `every`, `reduce`.
+  `includes`, `map`, `filter`, `forEach`, `find`, `findIndex`, `some`, `every`, `reduce`, and the copying `toSorted`,
+  `toReversed`, `toSpliced` and `with`.
 * Errors: a caught error has `name` and `message`. Errors of the engine itself, such as
   calling something that is not a function or parsing bad JSON, can be caught too.
-* Timers: `setTimeout`, `setInterval`, `clearTimeout`, `clearInterval`. They run while the
-  page is being drawn and use real time, not simulation time.
-* DOM: `document.getElementById`, `document.querySelector`, `document.body`,
-  `createElement`, `appendChild`, `removeChild`, `remove`, `parentNode`, `getAttribute`,
-  `setAttribute`, `classList` (`add`, `remove`, `toggle`, `contains`), `textContent`,
-  `innerText`, `innerHTML` (with markup), `className`, `id`, and `element.style.*`. Inside
-  `onclick="..."` and in listeners, `this` is the element.
+* Timers: `setTimeout` (with extra arguments for the function), `setInterval`, `clearTimeout`, `clearInterval`,
+  `requestAnimationFrame` (about 60 times a second, with the time in milliseconds) and `cancelAnimationFrame`. They
+  run while the page is being drawn and use real time, not simulation time. Due timers run earliest first.
+* DOM: `document.getElementById`, `document.querySelector`, `document.querySelectorAll`, `document.body`,
+  `document.documentElement`, `createElement`, `appendChild`, `removeChild`, `remove`, `getAttribute`,
+  `setAttribute`, `hasAttribute`, `removeAttribute`, `classList` (`add` and `remove` with several names, `toggle`,
+  `contains`, `replace`, `item`, `length`, `value`), `textContent`, `innerText`, `innerHTML` and `outerHTML` (read
+  and written as markup), `className`, `id`, `hidden`, `title`, `value`, `element.style.*` (`''` removes a
+  declaration; also `cssText`, `setProperty`, `getPropertyValue`, `removeProperty`), `dataset`
+  (`data-line-number` is `dataset.lineNumber`), `tagName`, `nodeName`, `nodeType`, `parentNode`, `parentElement`,
+  `children`, `childNodes`, `firstChild`, `lastChild`, `firstElementChild`, `lastElementChild`,
+  `nextElementSibling`, `previousElementSibling`, `childElementCount`, `isConnected`, and on elements `closest()`,
+  `matches()`, `contains()`, `querySelector()` and `querySelectorAll()` (they take the selectors listed under CSS),
+  `insertBefore`, `replaceChild`, `cloneNode`, `append`, `prepend`, `before`, `after`, `replaceWith`,
+  `insertAdjacentHTML`, `getElementsByClassName`, `getElementsByTagName`, and `document.createTextNode` (a text node's
+  `data` and `nodeValue`). Other properties a script sets on an element (`el.state = 1`) stay on it.
+  Inside `onclick="..."` and in listeners, `this` is the element.
+* Sizes: `getBoundingClientRect()` (`x`, `y`, `width`, `height`, `left`, `top`, `right`, `bottom`), `offsetWidth`,
+  `offsetHeight`, `offsetLeft`, `offsetTop`, `clientWidth`, `clientHeight`, `scrollWidth` and `scrollHeight` give the
+  box of an element on the texture, in pixels, laid out as it is at that moment. Each call after a change lays the
+  page out again, so read what you need in one go.
+* After `innerHTML` replaces some elements, `getElementById` and `querySelector` find the new ones; the old ones are
+  gone from the page (`isConnected` is `false`).
 
-Not available: `Date` (read the time from `omsi.time` instead), `fetch` and any network
-access, `localStorage`, `Promise`/`async`, `class`, `switch`, `do ... while`, getters and
-prototypes. Use `if/else` chains and `while` loops instead.
+Not available: `fetch` beyond the page's files and any network access, `XMLHttpRequest`, `Boolean.prototype`,
+`with`, read-only properties (`writable: false` and `Object.freeze` are ignored; `Object.defineProperty` without
+`enumerable: true` does hide a property from `Object.keys`). Object keys come in the order of a browser: integer keys
+by number first, then the others in the order they were added.
 
-At most 64 timers can be active at once. Further `setTimeout`/`setInterval` calls are
-ignored.
+Limits that keep a broken page from stalling the game: a run (a script, an `update`, an event, the timers of one
+frame) stops after 2 000 000 steps or 250 ms; calls nest at most 48 deep, expressions 1000; elements nest at most 512
+deep; generators and async functions each run on a thread of their own, so start them sparingly in code that runs
+every frame. `localStorage.key = value` and `localStorage.key` work like `setItem`/`getItem`. Variable writes with
+`omsi.setVar` keep the last value per name in each frame.
+
+At most 1024 timers can be active at once; further `setTimeout`/`setInterval` calls are ignored (the log says so
+once). `setTimeout("update()", 1000)` with a text runs that text. At most 64 async calls can wait at an `await` at the
+same time; further ones are rejected with a `RangeError`.
 
 When a script fails, the game log says where, for example
 `htmltexture: script 1 error: line 14, column 23: unexpected character '@'`. Scripts are
 counted from 0 in the order of the page, lines from the start of that `<script>` block.
 
-A few limits protect the game from runaway pages. A single run of your script may take about
-400,000 steps and at most 250 ms. Strings can be up to 16 MB and arrays up to about a million
+A few limits protect the game from runaway pages. Each run (a script of the page, one `update`, one event listener,
+one timer, one promise reaction) may take about 2,000,000 steps and at most 250 ms; work that is split over several
+timers or `await`s gets a new budget for each part. Strings can be up to 16 MB and arrays up to about a million
 values long (beyond that you get a `RangeError`). Scripts can be nested 96 levels deep and
 function calls 48 levels deep, and very deeply nested markup (hundreds of levels) is not
-drawn. Normal pages never get near any of these. An endless loop just gets cut off.
+drawn. Normal pages never get near any of these. An endless loop just gets cut off. If a page has to compare
+hundreds of names on every update, keep the results (in a variable or `localStorage`) instead of working them out
+again each time.
+
+More limits, for pages that go too far:
+
+* All the scripts and load events of a page share 1 second; all the listeners and promise reactions of one click or
+  one `update` share 250 ms. One event on one element takes at most 256 listeners.
+* A page holds at most about a million elements in all, also those its scripts made and threw away; making more
+  throws a `RangeError`.
+* `console.log` writes at most 20 lines a second, each cut after 1 KB.
+* A page looks for at most 256 new files a second, and paths are at most 260 bytes and 32 parts long.
+* Every `localStorage` item counts 32 bytes on top of its texts against the 5 MB.
+* The drawing of one frame has a budget of a few dozen times the texture's area: past it, effects (layers, filters,
+  shadows, gradients) are left out and text stops. A texture is at most 4096 pixels wide and high.
+* Generators and async calls of all pages together run on at most 1024 threads.
+* A page that makes the HTML engine fail is switched off (the log says so) and stays blank; the game goes on.
 
 ### Redrawing
 
