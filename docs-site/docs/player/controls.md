@@ -178,10 +178,17 @@ Coins for the change, by amount:
 | **Reset view direction** | `C` |
 | **Reset all view directions** | `Space` |
 | **View: timetable** | `Insert` |
+| **Show/hide timetable window** | not bound |
 | **View: ticket sales** | `Home` |
 | **Outside camera: zoom in** / **zoom out** (zoom in the cockpit, closer or further in the outside view) | `=` / `-` (hold) |
 | Look around in the bus | `Alt + J`, `Alt + L`, `Alt + I`, `Alt + K` |
 | Adjust the mirror you look at (driver view) | `Ctrl + Alt + arrow keys` |
+
+**Reset view direction** and **Reset all view directions** glide back to the default view in
+the driver's, passenger and outside views. They put back the direction and the zoom, and in the
+outside view also the camera's distance. **Reset all view directions** does this for every
+camera of the bus. The field of view set in [Seat and mirrors](options.md#seat-and-mirrors) is
+a setting and stays.
 
 A mirror adjusted with `Ctrl + Alt + arrow keys` keeps its position for that vehicle. It is
 saved under `[mirrors]` in [`settings.toml`](user-guide.md#settings-file). **Seat and mirrors**
@@ -235,6 +242,9 @@ applies when voice chat is set to **Push-to-talk (hold the key)**.
 Tap `Alt` on its own (press and release it without another key) to open or close Quick
 Access. It is a grid of buttons; a button is greyed out when it does not apply.
 
+**Hold** a button to open the editor: drag buttons into your own order, hide the ones you do
+not need, or reset the menu. **Done** closes it, and the order is kept.
+
 | Button | What it does |
 | --- | --- |
 | **Spawn new bus** | Place another vehicle in the world. |
@@ -247,9 +257,12 @@ Access. It is a grid of buttons; a button is greyed out when it does not apply.
 | **Set bus display** | Choose the destination shown on the bus. |
 | **Open navigator map** | Opens the full navigator map. |
 | **Route arrows** | Shows OMSI 2's route arrows on the road. |
+| **Side mirrors** | Opens the page for the [mirrors on screen](options.md#side-mirrors-on-screen). |
 | **Move bus to entry point** | Moves your bus to one of the map's start points. |
 | **Change time** | Set the time (`HH:MM:SS`) and date (`YYYY-MM-DD`). |
+| **Timetable** | Shows or hides the timetable window. |
 | **Change weather** | Pick a weather preset, switch live weather on or off, change the METAR station or refresh it. |
+| **Radio** | Opens the [radio page](#radio). |
 | **Toggle torch** | Switches the torch on or off. See [Torch](options.md#torch). |
 | **Delete current bus** | Removes the bus you are driving. |
 
@@ -258,6 +271,16 @@ Clearing traffic is in the in-game menu: **Clear traffic...** offers **Clear gen
 timetable buses for the current time). Your bus and occupied buses are kept. To take over a bus
 anywhere on the map, use the map's right-click menu (see
 [Map and navigator](options.md#map-and-navigator)).
+
+### Radio
+
+The **Radio** page shows what plays and has a power button, a volume slider and your stations.
+Pick a station to play it, even in a bus without a radio. **Add station** takes a stream address
+(MP3, AAC, Ogg, `.m3u` or `.pls`); your stations are saved in `~/.neoomsi/radio.cfg`
+(`%USERPROFILE%\.neoomsi\radio.cfg` on Windows).
+
+A station picked here, or the power button, overrides the bus's own radio. **Bus radio** hands
+control back to the cockpit's radio; it is lit while the bus decides.
 
 ## On foot
 
@@ -278,8 +301,8 @@ Get out with **Get out of the vehicle** on the in-game menu's **Vehicle** page, 
 
 ## Change a key
 
-1. Open **Options**, then **Controls → Key bindings**. **Options** is a tab of the start menu
-   and of the in-game menu (`Esc`).
+1. Open **Options**, then **Controls → Key bindings**. **Options** is in the start menu's
+   navigation rail and in the in-game menu (`Esc`).
 2. Select an action and press the new key, with `Shift`, `Ctrl` or `Alt` if you want a
    combination. You can also press a button on a game controller to bind it.
 3. `Esc` leaves the binding as it was. To remove a binding, including its controller

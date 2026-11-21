@@ -52,8 +52,10 @@ With neoOMSI's rules, these points also apply:
 - **Giving up.** A waiting passenger gives up once 1.25 times the gap between their own
   call and the line's next comparable call has passed since their call, or an hour after
   their call if there is none, but never before their own call is 40 minutes late.
-- **Out of sight.** Instead of appearing at a stop in view, people walk in along the
-  footpath from out of sight, and pedestrians within 40 m may join the stop.
+- **Out of sight.** Nobody appears at a waiting place you can see from close by. People walk
+  in along the footpath, and **Passers-by who wait** sets how many of them stop to wait while
+  the others walk past. Pedestrians within 40 m who go by bus may join the stop. How many wait
+  in all still comes from the stop's demand: the rest arrive out of sight.
 - **Weather.** Rain and snow keep pedestrians indoors: in the heaviest rain or snow only the
   share set by **Pedestrians out in heavy rain** stays out, lighter rain keeps fewer
   indoors.
@@ -70,6 +72,7 @@ in the table are what the file accepts; the sliders in the game cover less (for 
 | **Passengers as in OMSI** | **Options → OMSI parity** | `[parity] passengers` | `false` | Uses OMSI 2's rules instead of neoOMSI's |
 | **Boarders per bus** | **Options → OMSI parity → neoOMSI passenger rules** | `own_bus_load` | `97` | The most people one bus takes on at a stop (a 12 m city bus with 33 seats and 64 standing places). 1 to 400 |
 | **Riders changing lines** | **Options → OMSI parity → neoOMSI passenger rules** | `own_transfer_share` | `0.4` | Share of riders getting off at an interchange who stay to change lines. 0 to 1 |
+| **Passers-by who wait** | **Options → OMSI parity → neoOMSI passenger rules** | `own_passer_share` | `0.15` | Share of the people walking up to a stop in view who stop there to wait. It does not change how many wait in all; use **Passengers** for that. 0 to 1 |
 | **Pedestrians out in heavy rain** | **Options → OMSI parity → neoOMSI passenger rules** | `own_rain_out` | `0.5` | Share of pedestrians still out in the heaviest rain or snow. 0 to 1 |
 | **Longest arrival time** | **Options → OMSI parity → neoOMSI passenger rules** | `own_arrival_minutes` | `10` | How many minutes before a bus its passengers start coming to the stop. Shorter intervals between buses shorten it. 2 to 60 |
 | **Passenger simulation distance** | **Options → Gameplay** | `simulation_distance` | `medium` | How far stops and running buses carry passenger demand (neoOMSI rules only) |
@@ -78,7 +81,7 @@ in the table are what the file accepts; the sliders in the game cover less (for 
 | **Passengers hail buses** | **Options → Gameplay** | `hail_buses` | `true` | Passengers near the kerb turn towards a suitable approaching bus and hold an arm out until they board or the bus passes |
 | **Pedestrians and passengers** | **Options → Gameplay** | `humans` | `installed` | `installed` uses all installed people, `map` only those listed in the map's `humans.txt` |
 
-The four **neoOMSI passenger rules** values have no effect while **Passengers as in OMSI** is
+The five **neoOMSI passenger rules** values have no effect while **Passengers as in OMSI** is
 on.
 
 **Passenger simulation distance** has these values:

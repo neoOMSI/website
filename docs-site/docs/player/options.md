@@ -1,8 +1,9 @@
 # Options and features
 
-This page describes neoOMSI's own options and features, grouped as in **Options**. **Options**
-is a tab of the start menu and of the in-game menu (`Esc`). Most changes apply at once; options
-marked "next start" apply the next time the game starts.
+This page describes neoOMSI's own options and features, grouped as in **Options**. Open
+**Options** from the navigation rail on the left of the start menu, or from the in-game menu
+(`Esc`). Most changes apply at once; options marked "next start" apply the next time the game
+starts. Each option's description also shows its default.
 
 Each option is saved in [`settings.toml`](user-guide.md#settings-file). The tables give the
 TOML section and key, so you can also set an option by hand. Keys and controllers are on
@@ -118,9 +119,22 @@ how it works and how to build vehicles and maps for it is on
 Most camera options are self-explanatory in the game. Head tracking and free look are
 described on [Controls](controls.md#head-tracking).
 
+### Seat and mirrors
+
 **Adjust the seat in the cockpit...** (also **Seat and mirrors** in the in-game menu) sets the
 seat, the mirrors and the field of view of the current vehicle with a live preview. You can
 save the result for this vehicle only or as a named preset.
+
+- **Seat**, **Mirrors** and **Presets** are the panel's three tabs.
+- Click a slider's track to move it there, or drag from its name to move it from where it is.
+  The mouse wheel and the arrow keys change it in steps, finer with `Shift`.
+- A changed value gets a small reset button at the end of its row. It puts that value back to
+  the default.
+- The round reset button at the top (or `R`) goes back to your **saved** seat and mirrors for
+  the open tab.
+
+The field of view set here is a setting of the seat. It is separate from the zoom of the mouse
+wheel, which [the camera reset](controls.md#views-and-camera) puts back.
 
 ## Graphics
 
@@ -152,6 +166,11 @@ restart.
 | --- | --- | --- | --- |
 | **Language** | The language of the game interface | `language` | English |
 | **Units** | **Metric (km/h, km, °C)**, **UK (mph, miles, °C)** or **Imperial (mph, miles, °F)** | `units` | `metric` |
+| **Game interface size** | The size of the texts, the menu, the timetable and the navigator | `scale` | `1.0` (100 %) |
+| **Interface opacity** | How opaque the backgrounds of the interface are | `opacity` | `0.85` (85 %) |
+| **Corner rounding** | How round the corners of menus, panels and buttons are. 0 % makes them square | `corners` | `0.8` (80 %) |
+| **Panel spacing** | The space between the menu panels and the edge of the window. 0 % puts them edge to edge | `spacing` | `1.0` (100 %) |
+| **Background blur** | How much of the blurred picture behind the menus shows through. 0 % makes them solid | `see_through` | `1.0` (100 %) |
 | **Discord status** | Shows on Discord what you are playing: the map, line or tour, and the bus | `[discord]` `status` | on |
 
 neoOMSI comes with ten languages: English, Deutsch, Français, Čeština, Türkçe, Polski,
@@ -159,8 +178,23 @@ Nederlands, Português (Portugal), Português (Brasil) and 简体中文. The lis
 each is translated; untranslated texts appear in English. In the file, a language is stored by
 its code: `en`, `de`, `fr`, `cs`, `tr`, `pl`, `nl`, `pt-pt`, `pt-br` or `zh-cn`.
 
-Under **Info bar**, **Tour** shows the number or name of the tour you are driving
-(`info_tour`, on by default).
+### Info bar and timetable window
+
+The info bar along the top shows the time with seconds, your delay, the next stop and its
+departure, a stop request, the line and destination, the tour, speed, passengers, fuel and
+temperature. Each can be switched off under **Info bar**; for example **Tour** (`info_tour`, on
+by default) shows the number or name of the tour you are driving.
+
+The timetable window lists the stops of your trip with the next one marked, and the next trip
+at its foot. It has its own options under **Info bar**:
+
+| Option | What it does | `[ui]` key | Default |
+| --- | --- | --- | --- |
+| **Timetable window with the timetable view** | The timetable view key (`Insert`) also opens the window. Off, the key only switches to the bus's timetable camera; the window then opens with **Show/hide timetable window** or the **Timetable** button in Quick Access | `timetable_with_view` | on |
+| **IBIS codes in the timetable window** | Shows what to type into the IBIS for this trip and the next: the line and its route, or the destination | `timetable_ibis` | off |
+
+The IBIS codes come from the bus's depot file (`.hof`), so a special IBIS may want them typed
+differently. Nothing is shown when the depot file has no match for the trip.
 
 ## Game & Updates
 
@@ -237,7 +271,8 @@ change, neoOMSI can offer to **Copy updates** into its library.
 | **Passengers as in OMSI** | Fills stops and pavements exactly as OMSI 2 does. Off uses neoOMSI's own rules: people gather over each line's interval, interchanges fill with every line due, running buses already carry riders, and nobody appears in view | `passengers` | off |
 
 With it off, **neoOMSI passenger rules** fine-tune those rules: **Boarders per bus**, **Riders
-changing lines**, **Pedestrians out in heavy rain** and **Longest arrival time**.
+changing lines**, **Passers-by who wait**, **Pedestrians out in heavy rain** and **Longest
+arrival time**.
 
 ## Privacy and diagnostics
 
@@ -267,7 +302,7 @@ updates (every 10 minutes)**.
 Your driver profile records your drives: level and XP, **Hours driven**, **Distance**, **Stops
 served** and **On time**, ratings for **Driving**, **Comfort** and **Ticket selling**, and a
 **Trip history** with details for each trip. Choose
-the profile from the driver button at the top of the start menu, or with **Driver** on the
+the profile from the driver button at the bottom of the start menu's navigation rail, or with **Driver** on the
 in-game menu's **Vehicle** page. The chosen profile stays selected.
 
 - **New driver** creates a profile.
@@ -279,6 +314,16 @@ folder and saves to the `Drivers` folder of its content folder; OMSI 2's own fil
 changed.
 
 ## Start menu
+
+The navigation rail on the left leads to **Start**, **Multiplayer** and **Options**, and holds
+the update button, your driver and **Quit**. A waiting update also shows as a banner at the top
+right.
+
+The **Start** page shows your drive on one card: the destination, then **Route**, **Vehicle**
+and **Time & weather** as rows that each open their step, then **Drive** and **Continue where
+you left off**. Beside it stands the bus, with its name above it and **Driver**, **Passenger**
+and **External** at the foot to look at it from inside or outside. From inside the bus, the card
+gets smaller and moves to the bottom left to leave the view free.
 
 Choose a map, a vehicle and how the drive starts:
 
@@ -302,6 +347,22 @@ Quick Access. The map, minimap and navigator also work on foot without a bus, fo
 
 Buttons on the map show your position, zoom, switch the AI bus and bus-stop markers, and
 search streets: type a name and pick a result to centre the map on that street.
+
+The minimap has these options under **Options → Interface → Map**. The defaults keep its
+usual look:
+
+| Option | What it does | `[navigator]` key | Default |
+| --- | --- | --- | --- |
+| **Minimap background blur** | Blurs the picture behind the minimap. Off, the picture shows through as the interface opacity lets it, so a mirror behind stays readable | `blur` | on |
+| **Buildings on the minimap** | Shows the buildings on the minimap | `buildings` | on |
+| **More road ahead** | Places your bus lower on the minimap, so more of the road ahead shows | `ahead` | off |
+
+### Side mirrors on screen
+
+**Side mirrors on screen** (**Options → Interface → Map**, off by default) shows your bus's
+outside mirrors at the sides of the screen, wherever you look. The **Side mirrors** button in
+Quick Access switches the left and right mirror separately and sets their **Opacity**, **Size**
+and **Height on screen**.
 
 Right-click on the map for:
 
@@ -345,6 +406,8 @@ The panels offer:
   **Focus distance**, **Depth of field**, camera roll and movement speed, and three
   **Positions** to save and restore a camera position during the session.
 - **Time & weather**: time of day, **Weather preset**, **Visibility** and **Cloud cover**.
+  **Street lights**, **Other vehicles' lights** and **Your bus's lights** can each be **Auto**
+  (following the photo's time of day), **On** or **Off**.
 - **Image** and **Colour**: exposure, **Brightness**, **Contrast**, **Saturation**, **White
   balance**, **Tint**, **Vignette**, and a **Filter** (**Monochrome**, **Warm**, **Cool**,
   **Vintage**).
