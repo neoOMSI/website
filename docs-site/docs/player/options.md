@@ -145,6 +145,7 @@ upscaling. These options are neoOMSI's own:
 | --- | --- | --- | --- |
 | **Smoke** | **All vehicles**, **Own vehicle only** or **Off**. As in OMSI, *Own vehicle only* also hides the smoke of map objects | `smoke` | `all` |
 | **Envmap pictures** | Shows the reflection pictures that vehicles and objects bring (OMSI's envmaps). Off: paint, chrome and glass reflect only the real-time surroundings | `envmaps` | on |
+| **Paint reflections** | Glossy paint and chrome mirror the street and nearby vehicles, not only the sky. Not where an envmap picture is shown instead (see **Envmap pictures**). Off in the *Low* preset | `paint_reflections` | on |
 | **Texture memory** | How much memory textures may use: **Automatic**, or 500 MB to 24 GB. *Automatic* takes a share of the system and graphics memory | `texture_memory` | `0` (Automatic) |
 
 ### Mirrors
