@@ -139,6 +139,21 @@ All other settings keep their names and moved into the sections below.
 
 The server passes voices on to the players; it does not record them. Voice packets are not encrypted, so anyone who can see the network traffic between players and server could listen in.
 
+### `[update]`: automatic updates
+
+| Setting | Default | Purpose |
+| --- | --- | --- |
+| `check` | `true` | Checks GitHub releases and logs when a newer version is available. |
+| `auto` | `false` | Automatically downloads, verifies SHA-256 checksums, installs the update, and restarts. |
+| `channel` | `"auto"` | Release channel: `"auto"` follows the running build's channel (`stable`, `rc`, or `nightly`), or set `"stable"`, `"rc"`, or `"nightly"` explicitly. Automatic updates do not downgrade; explicit channel downgrades require `update now`. |
+| `interval_minutes` | `60` | Polling interval in minutes, clamped from `15` to `1440`. Uses HTTP ETag caching (`304 Not Modified`) and optional `GITHUB_TOKEN` or `GH_TOKEN` for higher GitHub API limits (the Bearer token is only sent to `api.github.com`). |
+| `when` | `"empty"` | When to install and restart once downloaded: `"empty"` waits until no players are connected, `"countdown"` warns players in chat then restarts, and `"now"` restarts immediately. |
+| `countdown_seconds` | `300` | Warning countdown in seconds in chat before restarting with connected players, clamped from `0` to `3600`. |
+| `max_wait_minutes` | `0` | Maximum time in minutes to wait for an empty server before starting the countdown, clamped from `0` to `10080` (`0` waits indefinitely). |
+| `restart` | `"self"` | Restart method: `"self"` restarts in place (`exec` on Linux/Unix preserving PID, systemd/Docker supervision, and the `start.sh` log pipe; spawns the updated binary and exits on Windows), while `"exit"` stops cleanly after installing so an external supervisor (systemd, Docker, or Windows service) restarts the updated binary. |
+
+Set `OMSI_NO_UPDATE=1` in the environment to disable all update checks. Development builds under `target/` never self-replace, and loop protection stops repeated automatic restarts if a build version mismatches after restarting. Dedicated server archives are published for Windows (x64, ARM64) and Linux (x64, ARM64), while servers launched from a desktop installation update as desktop packages.
+
 ## Ports and firewall
 
 The server needs three ports:
@@ -206,7 +221,15 @@ curl -X POST http://127.0.0.1:27025/admin \
   --data-binary 'say Server restart in 10 minutes'
 ```
 
-Commands include `say <text>`, `kick <id>`, `ban <id>`, `clock <seconds of the day>`, `speed <factor>`, and `weather next`. With `share_positions = true`, `GET /players` lists the player ids.
+Commands include `say <text>`, `kick <id>`, `ban <id>`, `clock <seconds of the day>`, `speed <factor>`, `weather next`, and the update commands `update status`, `update check`, `update install`, `update now`, and `update cancel`. With `share_positions = true`, `GET /players` lists the player ids. `POST /admin` returns `202 Accepted` and writes `update status` and `update check` output to the server log (`server.log`) rather than the HTTP response body.
+
+For example, to check for or install an update from the server machine:
+
+```sh
+curl -X POST http://127.0.0.1:27025/admin \
+  -H "X-Admin-Password: your-password" \
+  --data-binary 'update install'
+```
 
 This door only accepts connections from the server machine itself. Requests that arrive through the quick tunnel are refused, even with the right password. Requests through other proxies are only recognised by their forwarding headers (`X-Forwarded-For`, `Forwarded`, `X-Real-IP`), so a proxy that does not add them looks like a local request. If you run a reverse proxy on the same machine, do not forward `/admin` through it. Five wrong passwords within two minutes close the door for a while.
 

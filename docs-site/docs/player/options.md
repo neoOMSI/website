@@ -17,9 +17,37 @@ evaluation are in the [User guide](user-guide.md).
 | **Passengers pay the exact fare** | Passengers pay the exact amount, so you give no change at the cash desk | `exact_fare` | on |
 | **Boarding** | How passengers get their tickets: **Pay and take the ticket**, **The driver sells the ticket** or **Just walk in** | `boarding` | `auto` |
 | **Automatic IBIS** | Enters the selected tour into the IBIS for you | `auto_ibis` | off |
+| **Switches by route** | A tram sets the switches ahead for the route its IBIS is set to. You can still set them by key or with the mouse (see [Switches by route](#switches-by-route)) | `tram_points_by_route` | on |
 | **Strict AI stop positions** | AI buses held short of a stop by a red light or traffic wait until they reach the stop before opening their doors. Behind another bus at a stop they may still open up to 10 m short. Off is the OMSI 2 behaviour that maps are built around | `ai_strict_stops` | off |
 | **Torch** | **Head torch** or **Portable torch** (see [Torch](#torch)) | `torch_mode` | `head` |
 | **Collisions with objects**, **Collisions with vehicles**, **Collisions with pedestrians** | Switch each kind of collision on or off | `collision_objects`, `collision_vehicles`, `collision_pedestrians` | on |
+
+### Switches by route
+
+With **Switches by route** on, a tram or train sets the switches ahead of it, about 30 m
+before its front reaches them, for its route:
+
+- The route is the one typed into the IBIS (the route of the bus's depot file). The switches
+  follow a timetable trip of that line that runs this route to its destination.
+- Without a route in the IBIS, or when no trip of the timetable runs it, the switches
+  follow the trip of your duty. On a duty, a route of another line than your duty's does
+  not count.
+- Without a duty and without a route the timetable knows, nothing is set for you.
+
+Each switch is set the way you would set it, by clicking it, so the map's switch scripts
+treat it as the driver's choice. A switch whose script sets it from a traffic light is not
+touched: your vehicle asks for the light of its branch, and the switch turns when the light
+changes. If a switch's script turns it back after three clicks, it is left to the script
+for 30 seconds. A switch that a vehicle stands on, or that an AI train is setting, is not
+changed.
+
+On a map without `[realrail]`, whose switch objects do not steer the vehicle, the tram takes
+the branch of its route at a fork, unless your indicator picks a branch whose path has a
+matching `[blinker]`.
+
+To set the next switch yourself, use the keys in [Trams and trains](controls.md#trams-and-trains).
+That works with **Switches by route** off too. OMSI 2 itself has neither: there, only AI
+trains set switches and the driver clicks them.
 
 ### Torch
 
@@ -71,6 +99,19 @@ Seating, rear-door boarding, passenger models and movement are described in the
 | **Linear keyboard steering** | Keyboard steering turns at a constant rate, as in OMSI | `[controls]` `steering_linear` | off |
 | **Classic keyboard steering** | The wheel stays where the keys left it; you steer back yourself | `[controls]` `old_steering` | off |
 | **Speed-dependent keyboard steering** | The steering keys act more slowly at higher speeds | `[controls]` `red_steer_spd` | off |
+
+### Tram overhead wires
+
+Trams with pantograph data touch the map's overhead wires: they have power only while a
+raised pantograph touches a wire. A tram without such data keeps power everywhere, as in
+OMSI 2. Both options apply when a map is loaded. Available from the 0.4.0 Nightly line on;
+how it works and how to build vehicles and maps for it is on
+[Trams](../creators/trams.md).
+
+| Option | What it does | `[gameplay]` key | Default |
+| --- | --- | --- | --- |
+| **Tram pantographs touch the wires** | Off, a raised pantograph always has power | `catenary` | on |
+| **Staggered tram wires** | The wires run from side to side above the track, as on real lines. OMSI 2 maps lay them straight | `catenary_zigzag` | off |
 
 ## Camera
 

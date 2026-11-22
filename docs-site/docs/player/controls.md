@@ -95,6 +95,37 @@ can stop in time.
 `Shift` + a number works the doors of the bus in order from the front, whatever the bus's
 script calls them. If you gave `Shift` + that number to another action, your binding wins.
 
+## Trams and trains
+
+| Action | Key |
+| --- | --- |
+| **Tram: next switch left** (`points_left`) | `Shift + Ctrl + Left` |
+| **Tram: next switch straight** (`points_straight`) | `Shift + Ctrl + Up` |
+| **Tram: next switch right** (`points_right`) | `Shift + Ctrl + Right` |
+
+A tram or train sets the switches ahead of it for the route its IBIS is set to (see
+[Switches by route](options.md#switches-by-route)). These keys set the next switch ahead by
+hand, up to 150 m beyond the front of the vehicle. A switch set by hand stays so, whatever
+the route says, until the vehicle has run over it. Driven from the rear cab, the next switch
+is the one behind the vehicle, the way it runs.
+
+The message shown names the branch that was set. At a fork of straight on and right,
+**next switch left** sets the straight branch, and the message says so. A switch is not
+set when it cannot be:
+
+| Message | Why |
+| --- | --- |
+| **The switch ahead is occupied** | A vehicle stands on it (your own, an AI train or another player's), or an AI train is setting it. |
+| **…: it turns with its traffic light** | The switch's script sets it from a traffic light. Your vehicle asks for that light, and the switch turns when the light changes. Wait at the signal. |
+| **…: its own control keeps it** | The switch's script turned it back after every click. |
+| **Switch … asked …** | The switch has not turned yet: it is still moving, or in a multiplayer session the host has not set it yet. |
+| **No switch ahead** | There is no fork within 150 m. |
+| **The switch ahead has no branch …** | The fork ahead is not a switch object, for example on a map without `[realrail]`. The tram takes the branch of its route or of its indicator there. |
+
+The keys only get these defaults when the key combinations are free. If your `keyboard.cfg`
+already uses one, that action has no key: give it one in the **Key bindings** list. In the
+free camera (`F4`) or on foot you can also click a switch to change it, as in OMSI.
+
 ## Destination display and IBIS
 
 | Action | Key |

@@ -111,6 +111,7 @@ Select **Missing assets** in the game menu (`Esc`) to see which content of the s
 - The host sets the clock and the weather. Your own time and weather settings do not apply.
 - Traffic and timetable buses follow the host's game. Only the host can take over an AI bus from the map; for other players, **Take over bus** is unavailable.
 - The trip evaluation does not pause the session.
+- The host sets the track switches. A switch you click, or that your tram sets, is asked of the host. The host refuses it while a vehicle stands on it or an AI train is setting it.
 
 ## Chat
 
