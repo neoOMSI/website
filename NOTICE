@@ -1,0 +1,12 @@
+neoOMSI Website
+Copyright (c) 2026 the neoOMSI website contributors.
+
+See README.md for the licenses applicable to website material.
+
+Google Material Symbols (Rounded, filled, 48 px) in assets/icons/material
+were downloaded from fonts.gstatic.com and are licensed under the Apache
+License, Version 2.0. See assets/icons/material/LICENSE.txt.
+
+For attribution and third-party notices for the neoOMSI simulator,
+including its origin in openOMSI, see the engine and releases notice:
+https://github.com/neoOMSI/neoOMSI/blob/main/NOTICE

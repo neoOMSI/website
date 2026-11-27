@@ -1,0 +1,56 @@
+:root {
+  --ifm-color-primary: #d95b00;
+  --ifm-color-primary-dark: #c45100;
+  --ifm-color-primary-darker: #b94d00;
+  --ifm-color-primary-darkest: #983f00;
+  --ifm-color-primary-light: #ee6400;
+  --ifm-color-primary-lighter: #ff6b00;
+  --ifm-color-primary-lightest: #ff8733;
+  --ifm-font-family-base: Inter, ui-sans-serif, system-ui, sans-serif;
+  --ifm-heading-font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  --ifm-code-font-size: 92%;
+  --ifm-footer-background-color: #101010;
+}
+
+[data-theme="dark"] {
+  --ifm-color-primary: #ff7626;
+  --ifm-color-primary-dark: #ff6410;
+  --ifm-color-primary-darker: #fb5b00;
+  --ifm-color-primary-darkest: #d84d00;
+  --ifm-color-primary-light: #ff8840;
+  --ifm-color-primary-lighter: #ff9454;
+  --ifm-color-primary-lightest: #ffb27f;
+  --ifm-background-color: #111111;
+  --ifm-background-surface-color: #191919;
+  --ifm-navbar-background-color: #0f0f0f;
+  --ifm-footer-background-color: #0f0f0f;
+  --ifm-toc-border-color: #343434;
+  --ifm-hr-border-color: #343434;
+}
+
+.navbar__logo {
+  height: 2rem;
+}
+
+.theme-doc-markdown > h1:first-child {
+  letter-spacing: -0.035em;
+}
+
+.theme-doc-markdown .alert {
+  border-left-width: 4px;
+}
+
+.footer {
+  --ifm-footer-padding-vertical: 1rem;
+  border-top: 1px solid #292929;
+}
+
+.footer__links {
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 996px) {
+  .navbar__title {
+    font-size: 0.95rem;
+  }
+}

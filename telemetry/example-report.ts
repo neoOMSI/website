@@ -1,0 +1,238 @@
+export const EXAMPLE_REPORT = {
+  schema: 3,
+  game_version: "0.4.0-nightly.g5005a6fc",
+  build: {
+    commit: "5005a6fc1234567890abcdef1234567890abcdef",
+    profile: "release",
+    features: ["devtools"],
+  },
+  platform: {
+    arch: "x86_64",
+    cpu: "AMD Ryzen 7 7800X3D 8-Core Processor",
+    logical_threads: 16,
+    physical_cores: 8,
+    memory_mb: 34264,
+    os: "windows",
+    os_version: "Windows 11 23H2 (build 22631)",
+  },
+  gpu: {
+    adapter: "NVIDIA GeForce RTX 5070 (Vulkan)",
+    backend: "Vulkan",
+    driver: "NVIDIA",
+    driver_info: "617.42",
+    type: "DiscreteGpu",
+    vendor: "0x10de",
+    vram_mb: 12288,
+  },
+  display: {
+    hdr: false,
+    output_resolution: [2560, 1440],
+    refresh_rate_hz: 144,
+    render_resolution: [2560, 1440],
+    resolution_class: "1440p",
+    vsync: false,
+    window_mode: "fullscreen",
+  },
+  preset: "custom",
+  graphics_settings: {
+    max_fps: 1000,
+    msaa: 8,
+    post_aa: "fxaa",
+    reflections: true,
+    render_scale: 0.0,
+    shadows: true,
+    ssao: true,
+    upscaler: "off",
+    vsync: false,
+  },
+  session_seconds: 106,
+  average_fps: 62.27,
+  low_1pct_fps: 45.12,
+  low_01pct_fps: 31.25,
+  frame: {
+    frames: 1061,
+    histogram: {
+      under_8ms: 12,
+      "8_12ms": 450,
+      "12_17ms": 500,
+      "17_25ms": 60,
+      "25_33ms": 25,
+      "33_50ms": 8,
+      "50_100ms": 4,
+      over_100ms: 2,
+    },
+    low_01pct_fps: 31.25,
+    low_1pct_fps: 45.12,
+    max_ms: 121.44,
+    mean_ms: 16.06,
+    p50_ms: 15.5,
+    p95_ms: 19.5,
+    p99_ms: 22.0,
+    p99_9_ms: 32.0,
+  },
+  slow_frames_over_33ms: 14,
+  slow_frames_over_50ms: 6,
+  warmup: {
+    seconds_excluded: 0,
+    stats_exclude_warmup: false,
+    first_30s_frame: {
+      frames: 1800,
+      low_01pct_fps: 28.5,
+      low_1pct_fps: 40.0,
+      max_ms: 121.44,
+      mean_ms: 17.2,
+      p50_ms: 16.0,
+      p95_ms: 21.0,
+      p99_ms: 25.0,
+      p99_9_ms: 35.0,
+    },
+  },
+  memory: {
+    peak_process_ram_mb: 2450,
+  },
+  limiter: {
+    active: false,
+    paced_frame_share: 0.02,
+  },
+  limit_share: {
+    cap: 0.02,
+    cpu: 0.15,
+    gpu: 0.83,
+    mixed: 0.0,
+    sim: 0.0,
+  },
+  frame_split_ms: {
+    gap: 0.2,
+    outside: 1.42,
+    wait: 8.17,
+    work: 6.27,
+  },
+  stages: [
+    {
+      max_ms: 12.92,
+      mean_ms: 4.253,
+      p95_ms: 6.481,
+      stage: "render",
+    },
+  ],
+  waits: [
+    {
+      max_ms: 14.0,
+      mean_ms: 8.163,
+      p95_ms: 11.405,
+      stage: "acquire",
+    },
+  ],
+  hitches: {
+    causes: [
+      {
+        cause: "traffic.tick",
+        mean_ms: 34.71,
+        share: 0.75,
+      },
+    ],
+    count: 4,
+    limit_share: {
+      cap: 0.0,
+      cpu: 0.25,
+      gpu: 0.75,
+      mixed: 0.0,
+      sim: 0.0,
+    },
+    mean_ms: 42.62,
+    per_minute: 2.26,
+    size_buckets: {
+      "33_50ms": 2,
+      "50_100ms": 1,
+      "100_250ms": 1,
+      over_250ms: 0,
+    },
+    slowest: [
+      {
+        cause: "traffic.tick",
+        ms: 121.44,
+      },
+      {
+        cause: "streaming",
+        ms: 65.2,
+      },
+      {
+        cause: "render",
+        ms: 45.0,
+      },
+    ],
+  },
+  scene: {
+    instances: {
+      "100k_300k": 0.8,
+      "10k_30k": 0.037,
+      "30k_100k": 0.163,
+    },
+    people: {
+      "200_plus": 1.0,
+    },
+    people_avg: 24.5,
+    people_max: 42,
+    rain: false,
+    time_of_day: "14:30",
+    traffic: {
+      traffic_0_19: 0.034,
+      traffic_20_99: 0.966,
+    },
+    vehicles_avg: 18.2,
+    vehicles_max: 35,
+  },
+  top_frame_stages: [
+    {
+      mean_ms_per_frame: 10.253,
+      stage: "render",
+    },
+    {
+      mean_ms_per_frame: 7.503,
+      stage: "mirrors",
+    },
+    {
+      mean_ms_per_frame: 4.01,
+      stage: "traffic.tick",
+    },
+  ],
+  top_gpu_passes: [
+    {
+      mean_ms: 52.889,
+      pass: "(all passes)",
+      samples: 5,
+    },
+    {
+      mean_ms: 52.475,
+      pass: "(sum of passes)",
+      samples: 5,
+    },
+    {
+      mean_ms: 24.591,
+      pass: "window capture 2",
+      samples: 3,
+    },
+  ],
+  segments: {
+    driver_traffic_0_19_running: {
+      frame: {
+        frames: 36,
+        max_ms: 1213.44,
+        mean_ms: 110.59,
+        p50_ms: 82.5,
+        p95_ms: 90.5,
+        p99_ms: 250.0,
+      },
+      top_frame_stages: [
+        {
+          mean_ms_per_frame: 8.273,
+          stage: "streaming",
+        },
+        {
+          mean_ms_per_frame: 7.799,
+          stage: "render",
+        },
+      ],
+    },
+  },
+};

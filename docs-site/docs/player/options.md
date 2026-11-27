@@ -1,0 +1,420 @@
+# Options and features
+
+This page describes neoOMSI's own options and features, grouped as in **Options**. Open
+**Options** from the navigation rail on the left of the start menu, or from the in-game menu
+(`Esc`). Most changes apply at once; options marked "next start" apply the next time the game
+starts. Each option's description also shows its default.
+
+Each option is saved in [`settings.toml`](user-guide.md#settings-file). The tables give the
+TOML section and key, so you can also set an option by hand. Keys and controllers are on
+[Controls](controls.md). Graphics quality, upscaling, passenger seating and models, and trip
+evaluation are in the [User guide](user-guide.md).
+
+## Gameplay
+
+| Option | What it does | `[gameplay]` key | Default |
+| --- | --- | --- | --- |
+| **Maintenance** | How fast vehicles wear: **Infinite (no wear)**, **Very bad**, **Bad**, **Normal** or **Good**. Next start | `maintenance` | `0` (Infinite) |
+| **Passengers pay the exact fare** | Passengers pay the exact amount, so you give no change at the cash desk | `exact_fare` | on |
+| **Boarding** | How passengers get their tickets: **Pay and take the ticket**, **The driver sells the ticket** or **Just walk in** | `boarding` | `auto` |
+| **Automatic IBIS** | Enters the selected tour into the IBIS for you | `auto_ibis` | off |
+| **Switches by route** | A tram sets the switches ahead for the route its IBIS is set to. You can still set them by key or with the mouse (see [Switches by route](#switches-by-route)) | `tram_points_by_route` | on |
+| **Strict AI stop positions** | AI buses held short of a stop by a red light or traffic wait until they reach the stop before opening their doors. Behind another bus at a stop they may still open up to 10 m short. Off is the OMSI 2 behaviour that maps are built around | `ai_strict_stops` | off |
+| **Torch** | **Head torch** or **Portable torch** (see [Torch](#torch)) | `torch_mode` | `head` |
+| **Collisions with objects**, **Collisions with vehicles**, **Collisions with pedestrians** | Switch each kind of collision on or off | `collision_objects`, `collision_vehicles`, `collision_pedestrians` | on |
+
+### Switches by route
+
+With **Switches by route** on, a tram or train sets the switches ahead of it, about 30 m
+before its front reaches them, for its route:
+
+- The route is the one typed into the IBIS (the route of the bus's depot file). The switches
+  follow a timetable trip of that line that runs this route to its destination.
+- Without a route in the IBIS, or when no trip of the timetable runs it, the switches
+  follow the trip of your duty. On a duty, a route of another line than your duty's does
+  not count.
+- Without a duty and without a route the timetable knows, nothing is set for you.
+
+Each switch is set the way you would set it, by clicking it, so the map's switch scripts
+treat it as the driver's choice. A switch whose script sets it from a traffic light is not
+touched: your vehicle asks for the light of its branch, and the switch turns when the light
+changes. If a switch's script turns it back after three clicks, it is left to the script
+for 30 seconds. A switch that a vehicle stands on, or that an AI train is setting, is not
+changed.
+
+On a map without `[realrail]`, whose switch objects do not steer the vehicle, the tram takes
+the branch of its route at a fork, unless your indicator picks a branch whose path has a
+matching `[blinker]`.
+
+To set the next switch yourself, use the keys in [Trams and trains](controls.md#trams-and-trains).
+That works with **Switches by route** off too. OMSI 2 itself has neither: there, only AI
+trains set switches and the driver clicks them.
+
+### Torch
+
+The torch lights 3.5 metres ahead. Switch it on and off with **Toggle torch** in Quick Access
+(tap `Alt`). The **Head torch** follows your view; the **Portable torch** is aimed with the
+cursor. The beam stays still while the in-game menu or a dialog is open.
+
+### Traffic
+
+These apply from the next start. They are stored under `[ai]`.
+
+| Option | Choices | `[ai]` key | Default |
+| --- | --- | --- | --- |
+| **Unscheduled traffic** | 25 % to 200 % of the map's traffic | `unsched_factor` | `1.0` (100 %) |
+| **Scheduled traffic** | **All**, or at most 10, 25 or 50 timetable buses | `max_scheduled` | `0` (All) |
+| **Parked vehicles** | **None**, **Every space**, or at most 35, 100 or 250 | `max_parked` | `0` (Every space) |
+
+When you choose a tour, the service selector offers **Keep scheduled bus running**. Turned on,
+the AI bus that runs your tour in the timetable keeps running alongside you instead of being
+removed. It is stored as `keep_ai_bus` under `[timetable]` (default off).
+
+### Passengers
+
+| Option | What it does | `[passengers]` key | Default |
+| --- | --- | --- | --- |
+| **Passenger simulation distance** | How far stops and running services carry passenger demand: **Short (450 m)**, **Medium (900 m)**, **Long (1,800 m)** or **Whole map**. *Whole map* tracks distant demand without loading scenery | `simulation_distance` | `medium` |
+| **Passengers hail buses** | Passengers near the kerb turn towards a suitable bus and hold an arm out until they board or the bus passes | `hail_buses` | on |
+| **Humans max count** | The most animated people at once: waiting, walking and riding. Raise it if nearby buses show fewer passengers than they carry; higher limits use more CPU and memory | `max_humans` | `200` |
+| **Pedestrians and passengers** | **All installed humans**, or only those in the map's `humans.txt`. Not used with RealisticPax; from the next map start | `humans` | `installed` |
+
+Seating, rear-door boarding, passenger models and movement are described in the
+[User guide](user-guide.md#passenger-seating).
+
+### Driving
+
+**Options → Gameplay → Driving**:
+
+| Option | What it does | Section and key | Default |
+| --- | --- | --- | --- |
+| **Road Feedback** | Road and suspension vibration through a supported wheel or controller. Experimental: turning it on asks you to confirm. Force feedback must be on too | `[gameplay]` `road_vibration` | on |
+| **Road Feedback Intensity** | 1 (gentle) to 5 (strong) | `[gameplay]` `road_vibration_intensity` | `3` |
+| **Kerb Interaction** | Kerbs push the steering and give wheel or controller feedback. Off removes the steering push and its feedback; the bus still collides with kerbs | `[gameplay]` `kerb_interaction` | on |
+| **Kerb Interaction Intensity** | 1 (gentle) to 5 (strong) | `[gameplay]` `kerb_interaction_intensity` | `3` |
+| **Automatic clutch** | Works the clutch for you | `[gameplay]` `auto_clutch` | on |
+| **Automated manual transmission** | Shifts a manual gearbox for you, by engine speed | `[gameplay]` `auto_shift` | off |
+| **Momentary gear buttons** | Hold a gear button to stay in that gear; releasing it returns to neutral | `[gameplay]` `momentary_gears` | off |
+| **Keyboard brake stays applied** | The brake stays on until you press the throttle | `[controls]` `brake_hold` | on |
+| **Indicators cancel themselves** | The bus's script switches the indicator off after a turn | `[controls]` `blinker_cancel` | on |
+| **Linear keyboard steering** | Keyboard steering turns at a constant rate, as in OMSI | `[controls]` `steering_linear` | off |
+| **Classic keyboard steering** | The wheel stays where the keys left it; you steer back yourself | `[controls]` `old_steering` | off |
+| **Speed-dependent keyboard steering** | The steering keys act more slowly at higher speeds | `[controls]` `red_steer_spd` | off |
+
+### Tram overhead wires
+
+Trams with pantograph data touch the map's overhead wires: they have power only while a
+raised pantograph touches a wire. A tram without such data keeps power everywhere, as in
+OMSI 2. Both options apply when a map is loaded. Available from the 0.4.0 Nightly line on;
+how it works and how to build vehicles and maps for it is on
+[Trams](../creators/trams.md).
+
+| Option | What it does | `[gameplay]` key | Default |
+| --- | --- | --- | --- |
+| **Tram pantographs touch the wires** | Off, a raised pantograph always has power | `catenary` | on |
+| **Staggered tram wires** | The wires run from side to side above the track, as on real lines. OMSI 2 maps lay them straight | `catenary_zigzag` | off |
+
+## Camera
+
+Most camera options are self-explanatory in the game. Head tracking and free look are
+described on [Controls](controls.md#head-tracking).
+
+### Seat and mirrors
+
+**Adjust the seat in the cockpit...** (also **Seat and mirrors** in the in-game menu) sets the
+seat, the mirrors and the field of view of the current vehicle with a live preview. You can
+save the result for this vehicle only or as a named preset.
+
+- **Seat**, **Mirrors** and **Presets** are the panel's three tabs.
+- Click a slider's track to move it there, or drag from its name to move it from where it is.
+  The mouse wheel and the arrow keys change it in steps, finer with `Shift`.
+- A changed value gets a small reset button at the end of its row. It puts that value back to
+  the default.
+- The round reset button at the top (or `R`) goes back to your **saved** seat and mirrors for
+  the open tab.
+
+The field of view set here is a setting of the seat. It is separate from the zoom of the mouse
+wheel, which [the camera reset](controls.md#views-and-camera) puts back.
+
+## Graphics
+
+The [User guide](user-guide.md#graphics-and-frame-rate) explains the quality options and
+upscaling. These options are neoOMSI's own:
+
+| Option | What it does | `[graphics]` key | Default |
+| --- | --- | --- | --- |
+| **Smoke** | **All vehicles**, **Own vehicle only** or **Off**. As in OMSI, *Own vehicle only* also hides the smoke of map objects | `smoke` | `all` |
+| **Envmap pictures** | Shows the reflection pictures that vehicles and objects bring (OMSI's envmaps). Off: paint, chrome and glass reflect only the real-time surroundings | `envmaps` | on |
+| **Paint reflections** | Glossy paint and chrome mirror the street and nearby vehicles, not only the sky. Not where an envmap picture is shown instead (see **Envmap pictures**). Off in the *Low* preset | `paint_reflections` | on |
+| **Texture memory** | How much memory textures may use: **Automatic**, or 500 MB to 24 GB. *Automatic* takes a share of the system and graphics memory | `texture_memory` | `0` (Automatic) |
+
+### Mirrors
+
+Two kinds of mirrors are available. **Upgraded Mirrors** chooses between them and needs a
+restart.
+
+| Option | What it does | `[graphics]` key | Default |
+| --- | --- | --- | --- |
+| **Upgraded Mirrors** | 1024 px mirrors with their own refresh rate and anti-aliasing | `upgraded_mirrors` | off |
+| **Mirrors** (classic) | Mirror resolution: **Off**, **Low (128)**, **Normal (256)**, **High (512)**, **Very high (1024)** | `mirror_size` | `256` |
+| **Mirror refresh** (classic) | How often the mirrors are redrawn: **Frozen**, **Economy** or **Full** | `mirror_refresh` | `full` |
+| **Target mirror refresh** (upgraded) | 20 to 60 updates per second for visible mirrors. Fisheye cameras share up to 15; several visible mirrors can lower it. VR has its own setting | `mirror_target_fps` | `30` |
+| **Mirror anti-aliasing** (upgraded) | **FXAA** or **Off**, independent of the main view | `mirror_aa` | `fxaa` |
+
+## Interface
+
+| Option | What it does | `[ui]` key | Default |
+| --- | --- | --- | --- |
+| **Language** | The language of the game interface | `language` | English |
+| **Units** | **Metric (km/h, km, °C)**, **UK (mph, miles, °C)** or **Imperial (mph, miles, °F)** | `units` | `metric` |
+| **Game interface size** | The size of the texts, the menu, the timetable and the navigator | `scale` | `1.0` (100 %) |
+| **Interface opacity** | How opaque the backgrounds of the interface are | `opacity` | `0.85` (85 %) |
+| **Corner rounding** | How round the corners of menus, panels and buttons are. 0 % makes them square | `corners` | `0.8` (80 %) |
+| **Panel spacing** | The space between the menu panels and the edge of the window. 0 % puts them edge to edge | `spacing` | `1.0` (100 %) |
+| **Background blur** | How much of the blurred picture behind the menus shows through. 0 % makes them solid | `see_through` | `1.0` (100 %) |
+| **Discord status** | Shows on Discord what you are playing: the map, line or tour, and the bus | `[discord]` `status` | on |
+
+neoOMSI comes with ten languages: English, Deutsch, Français, Čeština, Türkçe, Polski,
+Nederlands, Português (Portugal), Português (Brasil) and 简体中文. The list shows how much of
+each is translated; untranslated texts appear in English. In the file, a language is stored by
+its code: `en`, `de`, `fr`, `cs`, `tr`, `pl`, `nl`, `pt-pt`, `pt-br` or `zh-cn`.
+
+### Info bar and timetable window
+
+The info bar along the top shows the time with seconds, your delay, the next stop and its
+departure, a stop request, the line and destination, the tour, speed, passengers, fuel and
+temperature. Each can be switched off under **Info bar**; for example **Tour** (`info_tour`, on
+by default) shows the number or name of the tour you are driving.
+
+The timetable window lists the stops of your trip with the next one marked, and the next trip
+at its foot. It has its own options under **Info bar**:
+
+| Option | What it does | `[ui]` key | Default |
+| --- | --- | --- | --- |
+| **Timetable window with the timetable view** | The timetable view key (`Insert`) also opens the window. Off, the key only switches to the bus's timetable camera; the window then opens with **Show/hide timetable window** or the **Timetable** button in Quick Access | `timetable_with_view` | on |
+| **IBIS codes in the timetable window** | Shows what to type into the IBIS for this trip and the next: the line and its route, or the destination | `timetable_ibis` | off |
+
+The IBIS codes come from the bus's depot file (`.hof`), so a special IBIS may want them typed
+differently. Nothing is shown when the depot file has no match for the trip.
+
+## Game & Updates
+
+neoOMSI updates itself from its GitHub releases. Mods and content in the game folder are not
+touched by an update.
+
+| Option | What it does | `[launcher]` key | Default |
+| --- | --- | --- | --- |
+| **Check for updates automatically** | Looks for a new version when the game starts | `update_check` | on |
+| **Update channel** | Which releases to check: **Stable**, **RC** (release candidates) or **EA (Nightly)** | `update_channel` | `stable` |
+| **Install updates automatically** | Installs a new version as soon as it is found | `update_auto` | off |
+| **Check for updates** | **Check now** looks for a new version | | |
+| **Current version** | The version you are running | | |
+
+Before an update, neoOMSI shows the release notes of the new version and of the previous
+versions on the channel. **Update to** downloads it, installs it and restarts the game. If the
+version is older than yours (after switching to another channel), the dialog says the update
+is a downgrade.
+
+**Coming from openOMSI** (shown when openOMSI is installed) takes its gamepads, steering wheels
+and key bindings. Mods and plugins are described under [Modding](user-guide.md#modding).
+
+### HOF Organiser
+
+Open **Options → Game & Updates → HOF Organiser** to organise depot files (`.hof`)
+from your OMSI 2 installation. The organiser scans the `Vehicles` folders, suggests which
+maps each HOF belongs to, and copies the reviewed files into neoOMSI's library. You can
+import files from several buses and maps in one batch.
+
+#### Scan and assign HOFs
+
+1. Select **Scan OMSI 2** to find HOF files in your OMSI 2 vehicle folders.
+2. Review each file's suggested map assignment and the destination filename before importing.
+   Exact map-name matches take precedence over depot references found in other maps.
+3. Change an assignment if needed. Choose **All Maps** for a HOF that should be available
+   on every map, or leave a file unassigned to skip it.
+4. Select **Run import plan**, then **Import files** to copy the assigned HOFs. The import
+   processes assignments across all pages, not just the page currently shown.
+
+Identical HOFs can share one imported file; bus-specific variants are retained. Skipped
+and unassigned originals are not removed. Use the **HOF file filter** to review files
+without an assignment, including unreadable files, or return to **Show all HOFs**.
+
+#### Keep, back up or remove originals
+
+After a successful import, choose what to do with the original HOFs in OMSI 2:
+
+- **Keep originals** leaves the source files in their vehicle folders.
+- **Remove originals** removes eligible originals only after the corresponding imports
+  have been verified.
+- **Back up to ZIP and remove** creates and verifies a ZIP backup before removing
+  eligible originals.
+
+Only verified imports are eligible for removal. Files that were skipped or left
+unassigned remain in their original locations.
+
+#### Restore a backup
+
+Choose **Restore HOF backup**, select the ZIP file with **Choose ZIP**, and restore its
+HOFs to their original OMSI 2 vehicle folders. **Existing files are kept**, not
+replaced. Run **Scan OMSI 2** again afterwards to refresh the organiser's results.
+
+#### New maps and updated files
+
+When a new map is installed, neoOMSI can prompt you to scan for its HOFs. After a scan,
+**Show new and updated HOFs** filters for new files, changed files, and files whose
+suggested map assignment has changed since the previous scan. If a bus's imported HOFs
+change, neoOMSI can offer to **Copy updates** into its library.
+
+## OMSI parity
+
+| Option | What it does | `[parity]` key | Default |
+| --- | --- | --- | --- |
+| **Passengers as in OMSI** | Fills stops and pavements exactly as OMSI 2 does. Off uses neoOMSI's own rules: people gather over each line's interval, interchanges fill with every line due, running buses already carry riders, and nobody appears in view | `passengers` | off |
+
+With it off, **neoOMSI passenger rules** fine-tune those rules: **Boarders per bus**, **Riders
+changing lines**, **Passers-by who wait**, **Pedestrians out in heavy rain** and **Longest
+arrival time**.
+
+## Privacy and diagnostics
+
+**Share anonymous performance reports** (`performance_reports` under `[privacy]`, off by
+default) sends anonymous performance data after each session; see the
+[privacy notice](https://neoomsi.com/privacy/telemetry/).
+
+## Time and weather
+
+These are on the in-game menu's **World** page.
+
+| Option | What it does | `[gameplay]` key | Default |
+| --- | --- | --- | --- |
+| **Real-time sync** | The game's date and time follow your computer's clock. The time cannot be changed while it is on | `time_sync` | off |
+| **METAR sync** | The weather follows the real weather report (METAR) of an airport, updated every 10 minutes | `metar_sync` | off |
+| **METAR source** | The airport, as a 4-letter ICAO code. Empty: the airport nearest to the map | `metar_station` | empty |
+
+**Refresh now** fetches the report again; **Load once** loads it without keeping the weather
+in sync. The reports come from aviationweather.gov. When no report can be loaded, the weather
+is a clear day. In a LAN session the host sets the clock and the weather.
+
+The start menu has the same choice under **Time & weather**: **AIRPORT (ICAO)** with **Live
+updates (every 10 minutes)**.
+
+## Driver profiles
+
+Your driver profile records your drives: level and XP, **Hours driven**, **Distance**, **Stops
+served** and **On time**, ratings for **Driving**, **Comfort** and **Ticket selling**, and a
+**Trip history** with details for each trip. Choose
+the profile from the driver button at the bottom of the start menu's navigation rail, or with **Driver** on the
+in-game menu's **Vehicle** page. The chosen profile stays selected.
+
+- **New driver** creates a profile.
+- **Merge profiles...** moves the statistics, XP and history of other profiles into the
+  current one and removes them from neoOMSI. A recovery backup is saved first.
+
+Profiles are OMSI's driver files (`Drivers/*.odr`). neoOMSI reads them from your OMSI 2
+folder and saves to the `Drivers` folder of its content folder; OMSI 2's own files are not
+changed.
+
+## Start menu
+
+The navigation rail on the left leads to **Start**, **Multiplayer** and **Options**, and holds
+the update button, your driver and **Quit**. A waiting update also shows as a banner at the top
+right.
+
+The **Start** page shows your drive on one card: the destination, then **Route**, **Vehicle**
+and **Time & weather** as rows that each open their step, then **Drive** and **Continue where
+you left off**. Beside it stands the bus, with its name above it and **Driver**, **Passenger**
+and **External** at the foot to look at it from inside or outside. From inside the bus, the card
+gets smaller and moves to the bottom left to leave the view free.
+
+Choose a map, a vehicle and how the drive starts:
+
+- The map and vehicle lists show the folder each one comes from. **Vehicle details** shows the
+  vehicle's **Description** and **Vehicle file**.
+- **Only fleet numbers from the map's AI list** offers only the fleet numbers, number plates
+  and repaints that the map's AI list gives the chosen bus. It appears when the map lists that
+  bus, and is stored as `map_fleet` under `[start_menu]` (default off).
+- Choose **LINE**, **TOUR** and **FIRST TRIP**. **By start time** picks the trip for the
+  chosen time. **NEXT DEPARTURES** lists up to 40 next passenger trips of all lines from the
+  chosen start time, with each trip's destination sign; picking one sets line, tour and trip.
+- **START POINT** chooses where you start; **Automatic (nearest to the first stop)** is the
+  default. **Start on foot (no bus)** starts without a bus.
+- Maps, timetables, buses, repaints and depot files refresh by themselves while the start
+  menu is open, so you can add content without restarting.
+
+## Map and navigator
+
+Open the map with `Shift + M`, the in-game menu's **Map** page, or **Open navigator map** in
+Quick Access. The map, minimap and navigator also work on foot without a bus, following you.
+
+Buttons on the map show your position, zoom, switch the AI bus and bus-stop markers, and
+search streets: type a name and pick a result to centre the map on that street.
+
+The minimap has these options under **Options → Interface → Map**. The defaults keep its
+usual look:
+
+| Option | What it does | `[navigator]` key | Default |
+| --- | --- | --- | --- |
+| **Minimap background blur** | Blurs the picture behind the minimap. Off, the picture shows through as the interface opacity lets it, so a mirror behind stays readable | `blur` | on |
+| **Buildings on the minimap** | Shows the buildings on the minimap | `buildings` | on |
+| **More road ahead** | Places your bus lower on the minimap, so more of the road ahead shows | `ahead` | off |
+
+### Side mirrors on screen
+
+**Side mirrors on screen** (**Options → Interface → Map**, off by default) shows your bus's
+outside mirrors at the sides of the screen, wherever you look. The **Side mirrors** button in
+Quick Access switches the left and right mirror separately and sets their **Opacity**, **Size**
+and **Height on screen**.
+
+Right-click on the map for:
+
+| Action | What it does |
+| --- | --- |
+| **Set waypoint** / **Clear waypoint** | The navigator guides you to the point |
+| **Teleport here** | Moves your bus to the nearest street within 300 m |
+| **Move free camera** | Puts the free camera there |
+| **Take over bus** | On an AI bus: you drive it, from any distance, and continue its trip. Your previous bus is handed to the AI |
+
+In a LAN session only the host can teleport, and buses cannot be taken over by clients.
+
+Hover over a bus to see its tour, trip, status (early, on time or late), registration,
+passenger count, next stop and speed. Hover over a stop to see its next three services with
+their timetable and expected times.
+
+## Photography mode
+
+Open **Photography mode** from the in-game menu (`Esc`). In single player the simulation is
+paused; in multiplayer the world keeps running, so park safely first. Time and weather changes
+are only for your picture: they leave your timetable, vehicles and passengers unchanged.
+
+| Key or mouse | Action |
+| --- | --- |
+| right mouse button + drag | look around |
+| `W` `A` `S` `D` | move |
+| `Q` / `E` | down / up |
+| `Z` / `C` | roll the camera |
+| `X` | level the camera |
+| `Shift` / `Ctrl` | faster / slower |
+| mouse wheel | zoom |
+| `Ctrl` + click | focus on that point |
+| `Enter` or `F12` | take the photo |
+| `R` | reset the camera |
+| `H` | hide the controls |
+| `Esc` | exit |
+
+The panels offer:
+
+- **Camera** and **Lens**: field of view and **Focal length (35 mm equivalent)**, **Aperture**,
+  **Focus distance**, **Depth of field**, camera roll and movement speed, and three
+  **Positions** to save and restore a camera position during the session.
+- **Time & weather**: time of day, **Weather preset**, **Visibility** and **Cloud cover**.
+  **Street lights**, **Other vehicles' lights** and **Your bus's lights** can each be **Auto**
+  (following the photo's time of day), **On** or **Off**.
+- **Image** and **Colour**: exposure, **Brightness**, **Contrast**, **Saturation**, **White
+  balance**, **Tint**, **Vignette**, and a **Filter** (**Monochrome**, **Warm**, **Cool**,
+  **Vintage**).
+- **Composition**: a **Composition guide** (**Rule of thirds**, **Golden ratio**), **Photo
+  aspect ratio**, **Hide your driver**, and **Traffic visibility** (**Hide normal traffic
+  (keep buses)** or **Hide all traffic, including buses**).
+
+Photos are saved as PNG files in the `Screenshots` folder of the content folder. Leaving
+photography mode restores the scene.

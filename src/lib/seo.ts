@@ -1,0 +1,196 @@
+import mark from "../../assets/icons/app/neoomsi-512.png";
+import { DISCORD, OPENOMSI, REPO, SITE } from "../content/data";
+import { FAQ, OPENOMSI_FAQ, type Question } from "../content/faq";
+import { absolute } from "./routes";
+
+const ENTITIES: Record<string, string> = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#39;",
+};
+
+const esc = (text: string) => text.replace(/[&<>"']/g, (c) => ENTITIES[c]);
+
+export interface Meta {
+  title: string;
+  description: string;
+  path: string;
+  noindex?: boolean;
+  type?: "website" | "article";
+  schema?: object[];
+}
+
+export const OG_IMAGE = { path: "og.png", width: 1200, height: 630 };
+
+export const DESCRIPTION =
+  "neoOMSI is a free 64-bit reimplementation of OMSI 2 in Rust. It uses maps, buses and add-on files from your OMSI 2 installation.";
+
+const ORG = {
+  "@type": "Organization",
+  "@id": `${SITE}#org`,
+  name: "neoOMSI",
+  url: SITE,
+  logo: new URL(mark, SITE).href,
+  sameAs: [`https://github.com/${REPO}`, DISCORD],
+};
+
+const WEBSITE = {
+  "@type": "WebSite",
+  "@id": `${SITE}#website`,
+  name: "neoOMSI",
+  url: SITE,
+  inLanguage: "en",
+  publisher: { "@id": ORG["@id"] },
+};
+
+const APP = {
+  "@type": "SoftwareApplication",
+  "@id": `${SITE}#app`,
+  name: "neoOMSI",
+  description: DESCRIPTION,
+  url: SITE,
+  downloadUrl: absolute("/download/"),
+  image: absolute(OG_IMAGE.path),
+  applicationCategory: "GameApplication",
+  applicationSubCategory: "Bus simulator",
+  operatingSystem: "Windows 10, Windows 11, macOS 11, Linux",
+  softwareRequirements: "An installed copy of OMSI 2",
+  programmingLanguage: "Rust",
+  isAccessibleForFree: true,
+  offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" },
+  publisher: { "@id": ORG["@id"] },
+  isBasedOn: {
+    "@type": "SoftwareApplication",
+    name: "openOMSI",
+    url: OPENOMSI.repo,
+  },
+};
+
+const faqPage = (list: Question[]) => ({
+  "@type": "FAQPage",
+  mainEntity: list.map(({ q, a }) => ({
+    "@type": "Question",
+    name: q,
+    acceptedAnswer: { "@type": "Answer", text: a },
+  })),
+});
+
+const crumbs = (...items: [string, string][]) => ({
+  "@type": "BreadcrumbList",
+  itemListElement: [["neoOMSI", "/"] as [string, string], ...items].map(
+    ([name, path], i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name,
+      item: absolute(path),
+    }),
+  ),
+});
+
+const STATIC: Record<string, Omit<Meta, "path">> = {
+  "/": {
+    title: "neoOMSI: OMSI 2 rebuilt for modern systems",
+    description: DESCRIPTION,
+    schema: [APP],
+  },
+  "/download": {
+    title: "Download neoOMSI for Windows, macOS and Linux",
+    description:
+      "Download neoOMSI for Windows, macOS, or Linux, including stable releases, release candidates, and dedicated headless servers.",
+    schema: [APP, crumbs(["Download", "/download/"])],
+  },
+  "/releases": {
+    title: "neoOMSI releases and changelog",
+    description:
+      "All published neoOMSI releases, release candidates, and development changelogs with packaged downloads for desktop systems and dedicated servers.",
+    schema: [crumbs(["Releases", "/releases/"])],
+  },
+  "/issues": {
+    title: "neoOMSI issues: bugs and feature requests",
+    description:
+      "Open and closed neoOMSI bug reports and feature requests, tracked on GitHub. See current issues or report a problem with a map, bus or mod.",
+    schema: [crumbs(["Issues", "/issues/"])],
+  },
+  "/faq": {
+    title: "neoOMSI FAQ: compatibility, installation and supported systems",
+    description:
+      "Answers about neoOMSI: OMSI 2 requirements, map and bus compatibility, supported systems, mods, multiplayer and project status.",
+    schema: [faqPage(FAQ), crumbs(["FAQ", "/faq/"])],
+  },
+  "/openomsi": {
+    title: "neoOMSI and openOMSI: Comparison & Differences",
+    description:
+      "A comparison of neoOMSI and openOMSI: design focus, supported platforms, graphics, audio, and multiplayer features.",
+    type: "article",
+    schema: [
+      faqPage(OPENOMSI_FAQ),
+      crumbs(["neoOMSI and openOMSI", "/openomsi/"]),
+    ],
+  },
+  "/privacy/telemetry": {
+    title: "Performance report privacy",
+    description:
+      "What optional neoOMSI performance reports contain, how they help improve the game, and how long they are retained.",
+    type: "article",
+  },
+};
+
+export const PAGES = Object.keys(STATIC);
+
+export function meta(path: string): Meta {
+  const page = STATIC[path];
+  if (page) return { ...page, path };
+
+  const issue = path.match(/^\/issues\/(\d+)$/)?.[1];
+  if (issue)
+    return {
+      title: `Issue #${issue} | neoOMSI`,
+      description: STATIC["/issues"].description,
+      path,
+      noindex: true,
+    };
+
+  return {
+    title: "Page not found | neoOMSI",
+    description: DESCRIPTION,
+    path,
+    noindex: true,
+  };
+}
+
+const canonical = (path: string) =>
+  absolute(path === "/" || /\/\d+$/.test(path) ? path : `${path}/`);
+
+const json = (value: unknown) => JSON.stringify(value).replace(/</g, "\\u003c");
+
+export function headTags(m: Meta) {
+  const url = canonical(m.path);
+  const image = absolute(OG_IMAGE.path);
+  const tags = [
+    `<title>${esc(m.title)}</title>`,
+    `<meta name="description" content="${esc(m.description)}">`,
+    `<meta name="robots" content="${m.noindex ? "noindex, follow" : "index, follow, max-image-preview:large, max-snippet:-1"}">`,
+    `<meta property="og:type" content="${m.type ?? "website"}">`,
+    '<meta property="og:site_name" content="neoOMSI">',
+    '<meta property="og:locale" content="en_US">',
+    `<meta property="og:title" content="${esc(m.title)}">`,
+    `<meta property="og:description" content="${esc(m.description)}">`,
+    `<meta property="og:url" content="${url}">`,
+    `<meta property="og:image" content="${image}">`,
+    `<meta property="og:image:width" content="${OG_IMAGE.width}">`,
+    `<meta property="og:image:height" content="${OG_IMAGE.height}">`,
+    '<meta property="og:image:alt" content="neoOMSI, OMSI 2 recreated in Rust">',
+    '<meta name="twitter:card" content="summary_large_image">',
+    `<meta name="twitter:title" content="${esc(m.title)}">`,
+    `<meta name="twitter:description" content="${esc(m.description)}">`,
+    `<meta name="twitter:image" content="${image}">`,
+  ];
+  if (!m.noindex) tags.splice(3, 0, `<link rel="canonical" href="${url}">`);
+  if (!m.noindex)
+    tags.push(
+      `<script type="application/ld+json">${json({ "@context": "https://schema.org", "@graph": [ORG, WEBSITE, ...(m.schema ?? [])] })}</script>`,
+    );
+  return tags.map((t) => t.replace(/^<(\w+)/, "<$1 data-head")).join("\n");
+}
